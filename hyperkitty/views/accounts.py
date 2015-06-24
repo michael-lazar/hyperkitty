@@ -68,8 +68,6 @@ def login_view(request, *args, **kwargs):
 
 @login_required
 def user_profile(request):
-    if not request.user.is_authenticated():
-        return redirect('hk_user_login')
     try:
         profile = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:

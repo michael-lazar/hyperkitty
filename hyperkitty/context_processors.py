@@ -23,6 +23,7 @@
 # pylint: disable=unused-argument
 
 from django.conf import settings
+from django.shortcuts import resolve_url
 from hyperkitty import VERSION
 
 def export_settings(request):
@@ -30,6 +31,9 @@ def export_settings(request):
     extra_context = dict(
         (name.lower(), getattr(settings, name)) for name in exports)
     extra_context["HYPERKITTY_VERSION"] = VERSION
+    # Login and logout URLs can be view names since Django 1.6
+    extra_context["login_url"]  = resolve_url(settings.LOGIN_URL)
+    extra_context["logout_url"] = resolve_url(settings.LOGOUT_URL)
     return extra_context
 
 
