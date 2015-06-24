@@ -60,6 +60,23 @@
         {% endfor %}
 
         {% include "hyperkitty/paginator.html" with pager=threads %}
+        <div class="paginator">
+        <form action="{{ request.path }}" method="get" class="form-inline">
+            <input type="hidden" name="page" value="{{ threads.number }}" />
+            {% trans 'Results per page:' %}</span>
+            <select name="count" class="form-control input-sm">
+                {% for count in per_page_options %}
+                    <option value="{{ count }}"
+                        {% if threads.paginator.per_page == count %}
+                        selected="selected"
+                        {% endif %}
+                        >{{ count }}
+                    </option>
+                {% endfor %}
+            </select>
+            <input type="submit" class="btn btn-sm" value="Go" />
+        </form>
+        </div>
 
     </div>
 
@@ -110,6 +127,13 @@ $(document).ready(function() {
             window.parent.location.href = url;
         });
     }
+
+    // Pagination: results per page
+    $('.paginator form').each(function() {
+        var form = $(this);
+        form.find("select").change(function() {form.submit();});
+        form.find("input[type='submit']").hide();
+    });
 
 });
 </script>

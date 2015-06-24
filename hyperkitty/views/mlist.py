@@ -82,7 +82,8 @@ def _thread_list(request, mlist, threads, template_name='hyperkitty/thread_list.
     categories = [ (c.name, c.name.upper())
                    for c in ThreadCategory.objects.all() ] \
                  + [("", "no category")]
-    threads = paginate(threads, request.GET.get('page'))
+    threads = paginate(threads, request.GET.get('page'),
+                       results_per_page=request.GET.get('count'))
     for thread in threads:
         # Favorites
         thread.favorite = False
@@ -109,6 +110,7 @@ def _thread_list(request, mlist, threads, template_name='hyperkitty/thread_list.
         'threads': threads,
         'months_list': get_months(mlist),
         'flash_messages': flash_messages,
+        'per_page_options': [10, 50, 100, 200],
     }
     if extra_context is not None:
         context.update(extra_context)

@@ -28,7 +28,7 @@ from django.core.paginator import (Paginator, EmptyPage, PageNotAnInteger,
 
 
 def paginate(objects=None, page_num=1, max_page_range=10, paginator=None,
-             results_per_page=10):
+             results_per_page=None):
     if objects is None and paginator is None:
         raise TypeError("You must either provide an 'objects' argument "
                         "or a 'paginator' argument")
@@ -38,7 +38,7 @@ def paginate(objects=None, page_num=1, max_page_range=10, paginator=None,
         page_num = 1
     if paginator is None:
         # else use the provided instance
-        paginator = Paginator(objects, results_per_page)
+        paginator = Paginator(objects, results_per_page or 10)
     try:
         objects = paginator.page(page_num)
     except PageNotAnInteger:
