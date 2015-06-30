@@ -18,9 +18,12 @@
         <link rel="stylesheet" type="text/less" media="all" href="{{ STATIC_URL }}hyperkitty/less/hyperkitty.less" />
         {% endcompress %}
         {% block additional_stylesheets %} {% endblock %}
+        {% include 'hyperkitty/headers.html' %}
     </head>
 
     <body>
+
+    {% include 'hyperkitty/top.html' %}
 
     <nav class="navbar navbar-fixed-top navbar-default">
         <div class="container">
@@ -170,6 +173,8 @@
     <script type="text/javascript" src="{{ STATIC_URL }}hyperkitty/js/hyperkitty-userprofile.js" />
     {% endcompress %}
     {% block additionaljs %} {% endblock %}
+
+    {% include 'hyperkitty/bottom.html' %}
 
     </body>
 </html>

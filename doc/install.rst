@@ -129,6 +129,21 @@ Thread categories can be edited and added from the Django administration
 interface (append ``/admin`` to your base URL).
 
 
+Customization
+=============
+
+You can add HTML snippets to every HyperKitty page by using Django's
+`TEMPLATE DIRS`_ facility (called `TEMPLATE_DIRS`_ before version 1.8)
+and overriding the following templates:
+
+- ``hyperkitty/headers.html``: the content will appear before the ``</head>`` tag
+- ``hyperkitty/top.html``: the content will appear before the ``<body>`` tag
+- ``hyperkitty/bottom.html``: the content will appear before the ``</body>`` tag
+
+.. _TEMPLATE DIRS: https://docs.djangoproject.com/en/1.8/ref/settings/#std:setting-TEMPLATES-DIRS
+.. _TEMPLATE_DIRS: https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-TEMPLATE_DIRS
+
+
 Upgrading
 =========
 
