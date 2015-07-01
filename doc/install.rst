@@ -174,15 +174,19 @@ that you can put in your ``/etc/cron.d`` directory.
 
 RPMs
 ====
-Some preliminary RPMs for Fedora 20 are available from the repository described in this repo file::
+Some preliminary RPMs for Fedora 21 are available from the repository described
+in this repo file::
 
     http://repos.fedorapeople.org/repos/abompard/hyperkitty/hyperkitty.repo
 
-Only Fedora 20 has packages for now, but there will be RPMs for EPEL7 (RHEL-7
-compatible), and the plan is to submit HyperKitty and Mailman3 for inclusion
-into Fedora when Mailman3 itself is out. At the moment, the packages are rather
-stable, but the dependencies can change a lot. These packages have been tested
-on Fedora 20 with the targeted SELinux policy set to enforcing.
+There are also RPMs for RHEL 7 available using this repo file::
+
+    https://repos.fedorapeople.org/repos/abompard/hyperkitty/hyperkitty-el.repo
+
+The long-term plan is to submit HyperKitty and Mailman3 for inclusion into
+Fedora. At the moment, the packages are rather stable, but the dependencies can
+change. These packages have been tested on Fedora 21 and RHEL7 with the
+targeted SELinux policy set to enforcing.
 
 
 License
