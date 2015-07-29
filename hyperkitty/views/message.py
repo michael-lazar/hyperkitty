@@ -34,6 +34,7 @@ from django.contrib.auth.decorators import login_required
 
 from hyperkitty.lib.view_helpers import get_months, check_mlist_private
 from hyperkitty.lib.posting import post_to_list, PostingFailed, reply_subject
+from hyperkitty.lib.mailman import ModeratedListException
 from hyperkitty.models import MailingList, Email, Attachment
 from .forms import ReplyForm, PostForm
 
@@ -143,6 +144,8 @@ def reply(request, mlist_fqdn, message_id_hash):
         post_to_list(request, mlist, subject, form.cleaned_data["message"], headers)
     except PostingFailed, e:
         return HttpResponse(str(e), content_type="text/plain", status=500)
+    except ModeratedListException, e:
+        return HttpResponse(str(e), content_type="text/plain", status=403)
 
     # TODO: if newthread, don't insert the temp mail in the thread, redirect to
     # the new thread. Should we insert the mail in the DB and flag it as

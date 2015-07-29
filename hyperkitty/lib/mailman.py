@@ -31,6 +31,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class ModeratedListException(Exception):
+    pass
+
+
 MailmanClient = Client
 def get_mailman_client():
     # easier to patch during unit tests
@@ -47,7 +51,10 @@ def subscribe(list_address, user):
     subscription_policy = rest_list.settings.get(
         "subscription_policy", "moderate")
     if subscription_policy in ("moderate", "confirm_then_moderate"):
-        return # We don't want to bypass moderation, don't subscribe
+        # We don't want to bypass moderation, don't subscribe. Instead
+        # raise an error so that it can be caught to show the user
+        raise ModeratedListException("This list is moderated, please subscribe"
+                                     " to it before posting.")
     try:
         member = rest_list.get_member(user.email)
     except ValueError:
