@@ -50,6 +50,9 @@ def subscribe(list_address, user):
     rest_list = client.get_list(list_address)
     subscription_policy = rest_list.settings.get(
         "subscription_policy", "moderate")
+    # Add a flag to return that would tell the user they have been subscribed to
+    # the current list.
+    subscribed_now = False
     try:
         member = rest_list.get_member(user.email)
     except ValueError:
@@ -65,8 +68,10 @@ def subscribe(list_address, user):
                 pre_verified=True, pre_confirmed=True)
         member.preferences["delivery_status"] = "by_user"
         member.preferences.save()
+        subscribed_now = False
         cache.delete("User:%s:subscriptions" % user.id)
 
+    return subscribed_now
 
 class FakeMMList:
     def __init__(self, name):

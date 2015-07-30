@@ -67,11 +67,9 @@ class MailmanSubscribeTestCase(TestCase):
     def test_subscribe_moderate(self):
         self.ml.settings["subscription_policy"] = "moderate"
         mailman.subscribe("list@example.com", self.user)
-        self.assertFalse(self.ml.get_member.called)
         self.assertFalse(self.ml.subscribe.called)
         self.ml.settings["subscription_policy"] = "confirm_then_moderate"
         mailman.subscribe("list@example.com", self.user)
-        self.assertFalse(self.ml.get_member.called)
         self.assertFalse(self.ml.subscribe.called)
 
 

@@ -141,7 +141,7 @@ def reply(request, mlist_fqdn, message_id_hash):
         headers = {"In-Reply-To": "<%s>" % message.message_id,
                    "References": "<%s>" % message.message_id, }
     try:
-        post_to_list(request, mlist, subject, form.cleaned_data["message"], headers)
+        subscribed_now = post_to_list(request, mlist, subject, form.cleaned_data["message"], headers)
     except PostingFailed, e:
         return HttpResponse(str(e), content_type="text/plain", status=500)
     except ModeratedListException, e:
@@ -167,6 +167,8 @@ def reply(request, mlist_fqdn, message_id_hash):
     # TODO: make the message below translatable.
     result = {"result": "Your reply has been sent and is being processed.",
               "message_html": html}
+    if subscribed_now:
+        result['result'] += "\n  You have been subscribed to {} list.".format(mlist_fqdn)
     return HttpResponse(json.dumps(result),
                         content_type="application/javascript")
 
