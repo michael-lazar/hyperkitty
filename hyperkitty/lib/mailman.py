@@ -50,14 +50,15 @@ def subscribe(list_address, user):
     rest_list = client.get_list(list_address)
     subscription_policy = rest_list.settings.get(
         "subscription_policy", "moderate")
-    if subscription_policy in ("moderate", "confirm_then_moderate"):
-        # We don't want to bypass moderation, don't subscribe. Instead
-        # raise an error so that it can be caught to show the user
-        raise ModeratedListException("This list is moderated, please subscribe"
-                                     " to it before posting.")
     try:
         member = rest_list.get_member(user.email)
     except ValueError:
+        # We don't want to bypass moderation, don't subscribe. Instead
+        # raise an error so that it can be caught to show the user
+        if subscription_policy in ("moderate", "confirm_then_moderate"):
+            raise ModeratedListException("This list is moderated, please subscribe"
+                                         " to it before posting.")
+
         # not subscribed yet, subscribe the user without email delivery
         member = rest_list.subscribe(user.email,
                 "%s %s" % (user.first_name, user.last_name),
