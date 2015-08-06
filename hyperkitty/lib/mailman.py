@@ -68,7 +68,7 @@ def subscribe(list_address, user):
                 pre_verified=True, pre_confirmed=True)
         member.preferences["delivery_status"] = "by_user"
         member.preferences.save()
-        subscribed_now = False
+        subscribed_now = True
         cache.delete("User:%s:subscriptions" % user.id)
 
     return subscribed_now
