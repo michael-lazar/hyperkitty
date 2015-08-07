@@ -57,7 +57,12 @@ class AccountViewsTestCase(TestCase):
         msg.set_payload("Dummy content")
         return add_to_list("list@example.com", msg)
 
-    def test_login(self):
+    def test_login_page(self):
+        # Try to access the login page
+        response = self.client.get(reverse("hk_user_login"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_redirect_to_login(self):
         # Try to access user profile (private data) without logging in
         response = self.client.get(reverse("hk_user_profile"))
         self.assertRedirects(response,
