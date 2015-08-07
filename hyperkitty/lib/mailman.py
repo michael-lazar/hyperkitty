@@ -52,6 +52,7 @@ def subscribe(list_address, user):
         member = rest_list.get_member(user.email)
     except ValueError:
         # not subscribed yet, subscribe the user without email delivery
+        logger.info("Subscribing %s to %s on first post", user.email, list_address)
         member = rest_list.subscribe(user.email,
                 "%s %s" % (user.first_name, user.last_name),
                 pre_verified=True, pre_confirmed=True)
