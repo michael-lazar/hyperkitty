@@ -114,8 +114,11 @@ class Profile(models.Model):
         mm_user = self.get_mailman_user()
         if mm_user:
             # TODO: caching?
-            addresses.update(mm_user.addresses)
-        return list(sorted(addresses))
+            # (mailman client returns str, must convert to deduplicate)
+            addresses.update([unicode(a) for a in mm_user.addresses])
+        addresses = list(addresses)
+        addresses.sort()
+        return addresses
 
     def get_votes_in_list(self, list_name):
         # TODO: Caching ?
