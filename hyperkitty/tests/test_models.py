@@ -36,7 +36,8 @@ from django.utils.timezone import utc
 
 from hyperkitty.lib.incoming import add_to_list
 from hyperkitty.lib.mailman import FakeMMList
-from hyperkitty.models import MailingList, Email, Thread, Tag, ArchivePolicy
+from hyperkitty.models import (MailingList, Email, Thread, Tag, ArchivePolicy,
+    Sender)
 from hyperkitty.tests.utils import TestCase
 
 
@@ -480,3 +481,15 @@ class MailingListTestCase(TestCase):
             datetime(2015, 3, 31, 0, 0, 0, tzinfo=utc),
             )
         self.assertEqual(march_threads.count(), 1)
+
+
+class SenderTestCase(TestCase):
+
+    def test_set_mailman_id_invalid_address(self):
+        # set_mailman_id: invalid email address given should silently do nothing
+        sender = Sender.objects.create(address="invalid email address")
+        self.mailman_client.get_user.side_effect = ValueError
+        try:
+            sender.set_mailman_id() # The ValueError should not be propagated
+        except ValueError:
+            self.fail("ValueError was raised")

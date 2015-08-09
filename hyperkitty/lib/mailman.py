@@ -87,7 +87,7 @@ def sync_with_mailman():
     upper_bound = buffer_size
     while True:
         try:
-            for sender in query[lower_bound:upper_bound]:
+            for sender in query.all()[lower_bound:upper_bound]:
                 sender.set_mailman_id()
         except MailmanConnectionError:
             break # Can't refresh at this time

@@ -328,7 +328,15 @@ class Sender(models.Model):
             client = get_mailman_client()
             mm_user = client.get_user(self.address)
         except HTTPError as e:
+            if e.code == 404:
+                return # User not found in Mailman
             raise MailmanConnectionError(e) # normalize all possible error types
+        except ValueError as e:
+            # This smells like a badly formatted email address (saw it in the wild)
+            logger.warning(
+                "Invalid response when getting user %s from Mailman",
+                self.address)
+            return # Ignore it
         self.mailman_id = mm_user.user_id
         self.save()
         ## Go further and associate the user's other addresses?
