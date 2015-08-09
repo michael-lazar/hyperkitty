@@ -25,9 +25,9 @@ Sync properties from Mailman into HyperKitty
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-import logging
 from django.core.management.base import BaseCommand, CommandError
 from hyperkitty.lib.mailman import sync_with_mailman
+from hyperkitty.management.utils import setup_logging
 
 
 class Command(BaseCommand):
@@ -35,12 +35,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         options["verbosity"] = int(options.get("verbosity", "1"))
-        # logging
-        if options["verbosity"] >= 3:
-            debuglevel = logging.DEBUG
-        else:
-            debuglevel = logging.INFO
-        logging.basicConfig(format='%(message)s', level=debuglevel)
+        setup_logging(self, options["verbosity"])
         if args:
             raise CommandError("no arguments allowed")
         sync_with_mailman()
