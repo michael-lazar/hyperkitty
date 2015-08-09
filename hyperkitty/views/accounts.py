@@ -91,7 +91,7 @@ def user_profile(request):
                         request.user.first_name, request.user.last_name)
                 mm_user.save()
             redirect_url = reverse('hk_user_profile')
-            redirect_url += "?msg=updated-ok"
+            redirect_url += "?msg=updated-ok" # TODO: Cookie-based flash msg
             return redirect(redirect_url)
     else:
         form = UserProfileForm(initial={
