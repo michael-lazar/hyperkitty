@@ -86,7 +86,7 @@ class FakeMMList:
             }
 
 
-def sync_with_mailman():
+def sync_with_mailman(overwrite=False):
     from hyperkitty.models import MailingList, Sender
     for mlist in MailingList.objects.all():
         mlist.update_from_mailman()
@@ -94,7 +94,9 @@ def sync_with_mailman():
     # There can be thousands of senders, break into smaller chuncks to avoid
     # hogging up the memory
     buffer_size = 1000
-    query = Sender.objects.filter(mailman_id__isnull=True)
+    query = Sender.objects.all()
+    if not overwrite:
+        query = query.filter(mailman_id__isnull=True)
     prev_count = query.count()
     lower_bound = 0
     upper_bound = buffer_size
