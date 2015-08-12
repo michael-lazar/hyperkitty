@@ -239,9 +239,9 @@ class LastViewsTestCase(TestCase):
 
     def test_overview(self):
         response = self.client.get(reverse('hk_list_overview', args=["list@example.com"]))
-        # 2 in posted to, 2 in recently active, 2 in most active
+        # 2 in recently active, 2 in most active
         self.assertContains(response, "fa-envelope",
-                            count=6, status_code=200)
+                            count=4, status_code=200)
 
 
 

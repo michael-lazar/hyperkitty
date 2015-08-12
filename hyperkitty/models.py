@@ -147,7 +147,7 @@ class Profile(models.Model):
         mm_user = self.get_mailman_user()
         if mm_user is None:
             return None
-        return mm_user.user_id
+        return unicode(mm_user.user_id)
 
     def get_subscriptions(self):
         def _get_value():
