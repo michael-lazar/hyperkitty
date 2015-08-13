@@ -63,14 +63,22 @@ def subscribe(list_address, user):
                                          " to it before posting.")
 
         # not subscribed yet, subscribe the user without email delivery
-        logger.info("Subscribing %s to %s on first post", user.email, list_address)
         member = rest_list.subscribe(user.email,
                 "%s %s" % (user.first_name, user.last_name),
                 pre_verified=True, pre_confirmed=True)
+        # The result can be a Member object or a dict if the subscription can't
+        # be done directly, or if it's pending, or something else.
+        # Broken API :-(
+        if isinstance(member, dict):
+            logger.info("Subscription for %s to %s is pending",
+                        user.email, list_address)
+            return subscribed_now
         member.preferences["delivery_status"] = "by_user"
         member.preferences.save()
         subscribed_now = True
         cache.delete("User:%s:subscriptions" % user.id)
+        logger.info("Subscribing %s to %s on first post",
+                    user.email, list_address)
 
     return subscribed_now
 

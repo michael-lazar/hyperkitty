@@ -72,6 +72,24 @@ class MailmanSubscribeTestCase(TestCase):
         mailman.subscribe("list@example.com", self.user)
         self.assertFalse(self.ml.subscribe.called)
 
+    def test_subscribe_moderate_undetected(self):
+        # The list requires moderation but we failed to detect it in the
+        # possible subscription policies. If the subscription requires a
+        # confirmation, Mailman will reply with a 202 code, and mailman.client
+        # will return the response content (a dict) instead of a Member
+        # instance. Make sure we can handle that.
+        self.ml.settings["subscription_policy"] = "open"
+        self.ml.get_member.side_effect = ValueError
+        response_dict = {'token_owner': 'subscriber', 'http_etag': '"deadbeef"',
+                         'token': 'deadbeefdeadbeef'}
+        self.ml.subscribe.side_effect = lambda *a, **kw: response_dict
+        try:
+            mailman.subscribe("list@example.com", self.user)
+        except AttributeError:
+            self.fail("This use case was not properly handled")
+        self.assertTrue(self.ml.get_member.called)
+        # There must be no exception even if the response is not a Member.
+
 
 
 class MailmanSyncTestCase(TestCase):
