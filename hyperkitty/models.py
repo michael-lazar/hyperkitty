@@ -155,14 +155,14 @@ class Profile(models.Model):
             if mm_user is None:
                 return []
             mm_client = get_mailman_client()
-            sub_names = set()
-            for mlist_id in mm_user.subscription_list_ids:
-                mlist_name = mm_client.get_list(mlist_id).fqdn_listname
+            subscriptions = {}
+            for member in mm_user.subscriptions:
+                mlist_name = mm_client.get_list(member.list_id).fqdn_listname
                 ## de-duplicate subscriptions
                 #if mlist_name in [ s["list_name"] for s in sub_names ]:
                 #    continue
-                sub_names.add(mlist_name)
-            return list(sorted(sub_names))
+                subscriptions[mlist_name] = member.address
+            return subscriptions
         # TODO: how should this be invalidated? Subscribe to a signal in
         # mailman when a new subscription occurs? Or store in the session?
         return cache.get_or_set(

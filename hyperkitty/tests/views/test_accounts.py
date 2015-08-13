@@ -36,7 +36,7 @@ from django.test.utils import override_settings
 
 from hyperkitty.lib.utils import get_message_id_hash
 from hyperkitty.lib.incoming import add_to_list
-from hyperkitty.lib.mailman import FakeMMList
+from hyperkitty.lib.mailman import FakeMMList, FakeMMMember
 from hyperkitty.models import (LastView, MailingList, Thread,
     Email, Favorite)
 from hyperkitty.tests.utils import TestCase
@@ -258,7 +258,9 @@ class SubscriptionsTestCase(TestCase):
 
     def test_get_subscriptions(self):
         mlist = MailingList.objects.create(name="test@example.com")
-        self.mm_user.subscription_list_ids = ["test@example.com",]
+        self.mm_user.subscriptions = [
+            FakeMMMember("test@example.com", self.user.email),
+        ]
         self.client.login(username='testuser', password='testPass')
         response = self.client.get(reverse("hk_user_subscriptions"))
         self.assertEqual(response.context["subscriptions"],

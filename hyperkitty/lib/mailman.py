@@ -85,6 +85,11 @@ class FakeMMList:
             "archive_policy": "public",
             }
 
+class FakeMMMember:
+    def __init__(self, list_id, address):
+        self.list_id = list_id
+        self.address = address
+
 
 def sync_with_mailman(overwrite=False):
     from hyperkitty.models import MailingList, Sender

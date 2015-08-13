@@ -195,7 +195,7 @@ def subscriptions(request):
     profile = request.user.hyperkitty_profile
     mm_user_id = profile.get_mailman_user_id()
     subs = []
-    for mlist_name in profile.get_subscriptions():
+    for mlist_name in profile.get_subscriptions().keys():
         try:
             mlist = MailingList.objects.get(name=mlist_name)
         except MailingList.DoesNotExist:
@@ -264,7 +264,7 @@ def public_profile(request, user_id):
     # profile, we have enough spam as it is, thank you very much.
     try:
         email = unicode(mm_user.addresses[0])
-    except KeyError:
+    except (KeyError, IndexError):
         email = None
     fullname = mm_user.display_name
     if not fullname:

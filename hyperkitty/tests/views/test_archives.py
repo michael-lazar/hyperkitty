@@ -34,7 +34,7 @@ from django.core.urlresolvers import reverse
 from hyperkitty.models import (MailingList, ArchivePolicy, Sender, Thread,
     Favorite)
 from hyperkitty.lib.incoming import add_to_list
-from hyperkitty.lib.mailman import FakeMMList
+from hyperkitty.lib.mailman import FakeMMList, FakeMMMember
 from hyperkitty.tests.utils import TestCase
 
 
@@ -113,7 +113,9 @@ class PrivateArchivesTestCase(TestCase):
         self.mm_user = Mock()
         self.mm_user.user_id = "dummy"
         self.mailman_client.get_user.side_effect = lambda name: self.mm_user
-        self.mm_user.subscription_list_ids = ["list@example.com",]
+        self.mm_user.subscriptions = [
+            FakeMMMember("list@example.com", self.user.email),
+        ]
 
     def tearDown(self):
         self.client.logout()
