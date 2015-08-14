@@ -65,11 +65,30 @@ class MailmanSubscribeTestCase(TestCase):
                          None)
 
     def test_subscribe_moderate(self):
+        self.ml.get_member.side_effect = ValueError # User is not subscribed
         self.ml.settings["subscription_policy"] = "moderate"
-        mailman.subscribe("list@example.com", self.user)
+        self.assertRaises(mailman.ModeratedListException,
+                          mailman.subscribe, "list@example.com", self.user)
         self.assertFalse(self.ml.subscribe.called)
         self.ml.settings["subscription_policy"] = "confirm_then_moderate"
-        mailman.subscribe("list@example.com", self.user)
+        self.assertRaises(mailman.ModeratedListException,
+                          mailman.subscribe, "list@example.com", self.user)
+        self.assertFalse(self.ml.subscribe.called)
+
+    def test_subscribe_already_subscribed_moderated(self):
+        # Subscribing to a moderated list a user is already subscribed to
+        # should just do nothing
+        self.ml.settings["subscription_policy"] = "moderate"
+        try:
+            mailman.subscribe("list@example.com", self.user)
+        except mailman.ModeratedListException:
+            self.fail("A ModeratedListException was raised")
+        self.assertFalse(self.ml.subscribe.called)
+        self.ml.settings["subscription_policy"] = "confirm_then_moderate"
+        try:
+            mailman.subscribe("list@example.com", self.user)
+        except mailman.ModeratedListException:
+            self.fail("A ModeratedListException was raised")
         self.assertFalse(self.ml.subscribe.called)
 
     def test_subscribe_moderate_undetected(self):
