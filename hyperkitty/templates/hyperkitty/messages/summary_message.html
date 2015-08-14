@@ -24,7 +24,7 @@
                        title="{% blocktrans with name=email.sender.name|escapeemail|escape %}See the profile for {{ name }}{% endblocktrans %}">
                     {% endif %}
                     {% if message.sender.address %}
-                    {% gravatar message.sender.address 40 %}
+                    {% gravatar message.sender.address 120 %}
                     <br />
                     {% endif %}
                     {{ message.sender.name|escapeemail }}
