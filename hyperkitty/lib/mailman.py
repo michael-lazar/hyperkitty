@@ -31,6 +31,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class ModeratedListException(Exception):
+    pass
+
+
 MailmanClient = Client
 def get_mailman_client():
     # easier to patch during unit tests
@@ -46,11 +50,18 @@ def subscribe(list_address, user):
     rest_list = client.get_list(list_address)
     subscription_policy = rest_list.settings.get(
         "subscription_policy", "moderate")
-    if subscription_policy in ("moderate", "confirm_then_moderate"):
-        return # We don't want to bypass moderation, don't subscribe
+    # Add a flag to return that would tell the user they have been subscribed to
+    # the current list.
+    subscribed_now = False
     try:
         member = rest_list.get_member(user.email)
     except ValueError:
+        # We don't want to bypass moderation, don't subscribe. Instead
+        # raise an error so that it can be caught to show the user
+        if subscription_policy in ("moderate", "confirm_then_moderate"):
+            raise ModeratedListException("This list is moderated, please subscribe"
+                                         " to it before posting.")
+
         # not subscribed yet, subscribe the user without email delivery
         logger.info("Subscribing %s to %s on first post", user.email, list_address)
         member = rest_list.subscribe(user.email,
@@ -58,8 +69,10 @@ def subscribe(list_address, user):
                 pre_verified=True, pre_confirmed=True)
         member.preferences["delivery_status"] = "by_user"
         member.preferences.save()
+        subscribed_now = True
         cache.delete("User:%s:subscriptions" % user.id)
 
+    return subscribed_now
 
 class FakeMMList:
     def __init__(self, name):

@@ -40,7 +40,7 @@ def post_to_list(request, mlist, subject, message, headers=None,
         headers = {}
     # Check that the user is subscribed
     try:
-        mailman.subscribe(mlist.name, request.user)
+        subscribed_now = mailman.subscribe(mlist.name, request.user)
     except MailmanConnectionError:
         raise PostingFailed("Can't connect to Mailman's REST server, "
                             "your message has not been sent.")
@@ -67,6 +67,7 @@ def post_to_list(request, mlist, subject, message, headers=None,
             msg.attach(attach.name, attach.read())
     # XXX: Inject into the incoming queue instead?
     msg.send()
+    return subscribed_now
 
 
 def reply_subject(subject):
