@@ -70,5 +70,6 @@ def update_index(remove=False):
     update_cmd.batchsize = None
     update_cmd.end_date = None
     update_cmd.workers = 0
+    update_cmd.commit = True
     update_cmd.remove = remove
     update_cmd.update_backend("hyperkitty", "default")
