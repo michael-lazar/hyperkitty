@@ -64,7 +64,7 @@ def update_index(remove=False):
         # Different backends can raise different exceptions unfortunately
         update_cmd.start_date = None
     else:
-        update_cmd.start_date = last_email.object.archived_date
+        update_cmd.start_date = last_email.archived_date
     # set defaults
     update_cmd.verbosity = 0
     update_cmd.batchsize = None
