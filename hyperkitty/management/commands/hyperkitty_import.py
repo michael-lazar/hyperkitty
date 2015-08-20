@@ -119,7 +119,10 @@ class DbImporter(object):
             return False
         if date.tzinfo is None:
             date = date.replace(tzinfo=utc)
-        return date <= self.since
+        try:
+            return date <= self.since
+        except ValueError:
+            return False
 
     def from_mbox(self, mbfile):
         """
@@ -150,6 +153,8 @@ class DbImporter(object):
                         "Duplicate email with message-id '%s'" % e.args[0])
                 continue
             except ValueError as e:
+                self.stderr.write("Failed adding message %s: %s"
+                                  % (message.get("Message-ID"), e))
                 if len(e.args) != 2:
                     raise # Regular ValueError exception
                 try:
@@ -157,8 +162,7 @@ class DbImporter(object):
                         % (e.args[0], e.args[1].get("From"),
                            e.args[1].get("Subject")))
                 except UnicodeDecodeError:
-                    self.stderr.write("%s with message-id %s"
-                        % (e.args[0], e.args[1].get("Message-ID")))
+                    pass
                 continue
             except DatabaseError:
                 try:

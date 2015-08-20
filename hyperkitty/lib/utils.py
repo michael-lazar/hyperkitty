@@ -101,8 +101,14 @@ def parsedate(datestring):
         parsed = dateutil.parser.parse(datestring)
     except ValueError:
         return None
-    if parsed.utcoffset() is not None and \
-            abs(parsed.utcoffset()) > timedelta(hours=13):
+    try:
+        offset = parsed.utcoffset()
+    except ValueError:
+        # Wrong offset, reset to UTC
+        offset = None
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    if offset is not None and \
+            abs(offset) > timedelta(hours=13):
         parsed = parsed.astimezone(timezone.utc)
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=timezone.utc) # make it aware

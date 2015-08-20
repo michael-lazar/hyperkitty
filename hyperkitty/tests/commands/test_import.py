@@ -11,6 +11,7 @@ from shutil import rmtree
 from StringIO import StringIO
 from datetime import datetime
 from unittest import SkipTest
+from traceback import format_exc
 
 from mock import patch, Mock
 from django.conf import settings
@@ -91,8 +92,7 @@ class CommandTestCase(TestCase):
                          datetime(2015, 1, 1, 12, 0, tzinfo=utc))
 
     def test_since_override(self):
-        # When there's mail already and the "since" option is not used, it
-        # defaults to the last email's date
+        # The "since" option is used
         msg1 = Message()
         msg1["From"] = "dummy@example.com"
         msg1["Message-ID"] = "<msg1>"
@@ -159,3 +159,33 @@ class CommandTestCase(TestCase):
         # Message 2 must have been accepted
         self.assertEqual(MailingList.objects.count(), 1)
         self.assertEqual(Email.objects.count(), 1)
+
+    def test_weird_timezone(self):
+        # An email has a timezone with a strange offset (seen in the wild).
+        # Make sure it does not break our _is_old_enough() method.
+        mbox = mailbox.mbox(os.path.join(self.tmpdir, "test.mbox"))
+        # First message is already imported
+        msg1 = Message()
+        msg1["From"] = "dummy@example.com"
+        msg1["Message-ID"] = "<msg1>"
+        msg1["Date"] = "2008-01-01 12:00:00"
+        msg1.set_payload("msg1")
+        add_to_list("list@example.com", msg1)
+        # Second message is in the mbox to import
+        msg2 = Message()
+        msg2["From"] = "dummy@example.com"
+        msg2["Message-ID"] = "<msg2>"
+        msg2["Date"] = "Sat, 30 Aug 2008 16:40:31 +05-30"
+        msg2.set_payload("msg2")
+        mbox.add(msg2)
+        # do the import
+        output = StringIO()
+        kw = self.common_cmd_args.copy()
+        kw["stdout"] = kw["stderr"] = output
+        try:
+            self.command.execute(os.path.join(self.tmpdir, "test.mbox"), **kw)
+        except ValueError as e:
+            self.fail(format_exc(e))
+        # Message must have been accepted
+        self.assertEqual(MailingList.objects.count(), 1)
+        self.assertEqual(Email.objects.count(), 2)

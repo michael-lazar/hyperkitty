@@ -24,6 +24,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import datetime
 from email.message import Message
 from email import message_from_file
+from traceback import format_exc
 
 from django.utils import timezone
 try:
@@ -171,6 +172,16 @@ class TestUtils(TestCase):
         datestring = "Sun, 12 Dec 2004 19:11:28"
         parsed = utils.parsedate(datestring)
         expected = datetime.datetime(2004, 12, 12, 19, 11, 28,
+                                     tzinfo=timezone.utc)
+        self.assertEqual(parsed, expected)
+
+    def test_datestring_wrong_offset(self):
+        datestring = "Sat, 30 Aug 2008 16:40:31 +05-30"
+        try:
+            parsed = utils.parsedate(datestring)
+        except ValueError as e:
+            self.fail(format_exc(e))
+        expected = datetime.datetime(2008, 8, 30, 16, 40, 31,
                                      tzinfo=timezone.utc)
         self.assertEqual(parsed, expected)
 
