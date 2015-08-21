@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load hk_generic %}
+{% load staticfiles %}
 
 
 {% block title %}
@@ -35,7 +36,7 @@
         <form action="" method="POST">
             {% csrf_token %}
             <ul class="list-unstyled suggestions">
-                <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{{ STATIC_URL }}hyperkitty/img/ajax-loader.gif" />
+                <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
             </ul>
             <ul class="list-unstyled">
                 <li class="manual">

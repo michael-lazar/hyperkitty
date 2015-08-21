@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load hk_generic %}
 {% load gravatar %}
+{% load staticfiles %}
 
 
 {% block title %}
@@ -157,7 +158,7 @@
         <h3>{% trans "Activity Summary" %}</h3>
         <div class="chart">
             <p class="caption">{% trans "Post volume over the past <strong>30</strong> days." %}</p>
-            <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{{ STATIC_URL }}hyperkitty/img/ajax-loader.gif" />
+            <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
         </div>
 
         <p class="duration-text">

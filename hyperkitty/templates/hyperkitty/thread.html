@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load gravatar %}
 {% load hk_generic %}
+{% load staticfiles %}
 
 
 {% block title %}
@@ -107,7 +108,7 @@
                         {% if is_bot %}
                             {% include 'hyperkitty/ajax/replies.html' %}
                         {% else %}
-                            <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{{ STATIC_URL }}hyperkitty/img/ajax-loader.gif" />
+                            <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
                         {% endif %}
                     </div>
 
