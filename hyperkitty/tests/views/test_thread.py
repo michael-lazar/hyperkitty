@@ -145,14 +145,17 @@ class ThreadTestCase(TestCase):
         msg = self._make_msg("msgid")
         self.threadid = msg["Message-ID-Hash"]
 
-    def _make_msg(self, msgid, reply_to=None):
+    def _make_msg(self, msgid, headers={}):
         msg = Message()
         msg["From"] = "dummy@example.com"
         msg["Message-ID"] = "<%s>" % msgid
         msg["Subject"] = "Dummy message"
         msg.set_payload("Dummy message")
-        if reply_to is not None:
-            msg["In-Reply-To"] = "<%s>" % reply_to
+        for header, value in headers.items():
+            if header in msg:
+                msg.replace_header(header, value)
+            else:
+                msg[header] = value
         msg["Message-ID-Hash"] = add_to_list("list@example.com", msg)
         return msg
 
@@ -230,9 +233,9 @@ class ThreadTestCase(TestCase):
         check_page("testuser_4", 0)
 
     def test_num_comments(self):
-        self._make_msg("msgid2", "msgid")
-        self._make_msg("msgid3", "msgid2")
-        self._make_msg("msgid4", "msgid3")
+        self._make_msg("msgid2", {"In-Reply-To": "<msgid>"})
+        self._make_msg("msgid3", {"In-Reply-To": "<msgid2>"})
+        self._make_msg("msgid4", {"In-Reply-To": "<msgid3>"})
         url = reverse('hk_thread', args=["list@example.com", self.threadid])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -264,3 +267,15 @@ class ThreadTestCase(TestCase):
         self.assertTrue(link is not None)
         self.assertTrue("reply-mailto" in link["class"])
         check_mailto(link)
+
+    def test_subject_changed(self):
+        # Test the detection of subject change
+        self._make_msg("msgid2", {"In-Reply-To": "<msgid>", "Subject": "Re: Dummy message"})
+        self._make_msg("msgid3", {"In-Reply-To": "<msgid2>", "Subject": "Re: Re: Dummy message"})
+        self._make_msg("msgid4", {"In-Reply-To": "<msgid3>", "Subject": "Re: Re: Re: Dummy message"})
+        url = reverse('hk_thread', args=["list@example.com", self.threadid])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["replies"]), 3)
+        for email in response.context["replies"]:
+            self.assertFalse(email.changed_subject)

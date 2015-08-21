@@ -42,6 +42,8 @@ from hyperkitty.lib.view_helpers import (get_months, get_category_widget,
         FLASH_MESSAGES, check_mlist_private)
 
 
+REPLY_RE = re.compile('^(re:\s*)*', re.IGNORECASE)
+
 def _get_thread_replies(request, thread, limit, offset=1):
     '''
     Get and sort the replies for a thread.
@@ -74,9 +76,8 @@ def _get_thread_replies(request, thread, limit, offset=1):
                 email.level = 0
         # Subject change
         subject = stripped_subject(mlist, email.subject)
-        if subject.lower().startswith("re:"):
-            subject = subject[3:].strip()
-        if subject.strip() == initial_subject.strip():
+        subject = REPLY_RE.sub("", subject.strip())
+        if subject == initial_subject.strip():
             email.changed_subject = False
         else:
             email.changed_subject = subject
