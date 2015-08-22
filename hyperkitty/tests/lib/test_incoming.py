@@ -317,6 +317,56 @@ class TestAddToList(TestCase):
         self.assertEqual(stored_msg.sender.name, "")
         self.assertEqual(stored_msg.sender.address, "unknown@example.com")
 
+    def test_get_sender_name_if_empty(self):
+        msg = Message()
+        msg["From"] = "dummy@example.com"
+        msg["Message-ID"] = "<dummy>"
+        msg.set_payload("Dummy message")
+        add_to_list("example-list", msg)
+        self.assertEqual(Email.objects.count(), 1)
+        stored_msg = Email.objects.all()[0]
+        self.assertEqual(stored_msg.sender.name, "dummy@example.com")
+
+    def test_update_sender_name(self):
+        # This first part is equivalent to the test_get_sender_name test.
+        msg = Message()
+        msg["From"] = "Sender Name <dummy@example.com>"
+        msg["Message-ID"] = "<dummy>"
+        msg.set_payload("Dummy message")
+        add_to_list("example-list", msg)
+        self.assertEqual(Email.objects.count(), 1)
+        stored_msg = Email.objects.all()[0]
+        self.assertEqual(stored_msg.sender.name, "Sender Name")
+        # Send a second message with a different sender name
+        msg = Message()
+        msg["From"] = "Another Name <dummy@example.com>"
+        msg["Message-ID"] = "<dummy2>"
+        msg.set_payload("Dummy message")
+        add_to_list("example-list", msg)
+        self.assertEqual(Email.objects.count(), 2)
+        stored_msg = Email.objects.get(message_id="dummy2")
+        self.assertEqual(stored_msg.sender.name, "Another Name")
+
+    def test_no_update_sender_name_if_empty(self):
+        # This first part is equivalent to the test_get_sender_name test.
+        msg = Message()
+        msg["From"] = "Sender Name <dummy@example.com>"
+        msg["Message-ID"] = "<dummy>"
+        msg.set_payload("Dummy message")
+        add_to_list("example-list", msg)
+        self.assertEqual(Email.objects.count(), 1)
+        stored_msg = Email.objects.all()[0]
+        self.assertEqual(stored_msg.sender.name, "Sender Name")
+        # Send a second message with an empty sender name
+        msg = Message()
+        msg["From"] = "dummy@example.com"
+        msg["Message-ID"] = "<dummy2>"
+        msg.set_payload("Dummy message")
+        add_to_list("example-list", msg)
+        self.assertEqual(Email.objects.count(), 2)
+        stored_msg = Email.objects.get(message_id="dummy2")
+        self.assertEqual(stored_msg.sender.name, "Sender Name")
+
     def test_long_subject(self):
         msg = Message()
         msg["From"] = "dummy@example.com"
