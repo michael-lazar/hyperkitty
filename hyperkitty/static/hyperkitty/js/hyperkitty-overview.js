@@ -65,7 +65,7 @@ function setup_overview(recent_activity_url) {
     $('#posted-to h3').click(collapsibleDivs);
 
     // "More threads" links
-    $('.more-threads a').click(function(e) {
+    $('.more-threads > a').click(function(e) {
         e.preventDefault();
         var more_block = $(this).parent('.more-threads');
         $(this).nextAll('.thread').slice(0, 5)
