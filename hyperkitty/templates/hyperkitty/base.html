@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load compress %}
+{% load staticfiles %}
 <!DOCTYPE HTML>
 <html>
     <head>
@@ -8,14 +9,14 @@
         <title>{% block title %}{{ app_name|title }}{% endblock %}</title>
         <meta name="author" content="" />
         <meta name="dc.language" content="en" />
-        <link rel="shortcut icon" href="{{ STATIC_URL }}hyperkitty/img/favicon.ico" />
-        <link rel="stylesheet" media="all" href="{{ STATIC_URL }}hyperkitty/libs/jquery/smoothness/jquery-ui-1.10.3.custom.min.css" />
-        <link rel="stylesheet" media="all" href="{{ STATIC_URL }}hyperkitty/libs/font-awesome/css/font-awesome.min.css" />
-        <link rel="stylesheet" media="all" href="{{ STATIC_URL }}hyperkitty/libs/bootstrap/css/bootstrap.min.css" />
-        <link rel="stylesheet" type="text/css" media="all" href="{{ STATIC_URL }}hyperkitty/libs/icomoon/icomoon.css" />
+        <link rel="shortcut icon" href="{% static 'hyperkitty/img/favicon.ico' %}" />
+        <link rel="stylesheet" media="all" href="{% static 'hyperkitty/libs/jquery/smoothness/jquery-ui-1.10.3.custom.min.css' %}" />
+        <link rel="stylesheet" media="all" href="{% static 'hyperkitty/libs/font-awesome/css/font-awesome.min.css' %}" />
+        <link rel="stylesheet" media="all" href="{% static 'hyperkitty/libs/bootstrap/css/bootstrap.min.css' %}" />
+        <link rel="stylesheet" type="text/css" media="all" href="{% static 'hyperkitty/libs/icomoon/icomoon.css' %}" />
         {% compress css %}
-        <link rel="stylesheet" type="text/less" media="all" href="{{ STATIC_URL }}hyperkitty/less/custom-bootstrap.less" />
-        <link rel="stylesheet" type="text/less" media="all" href="{{ STATIC_URL }}hyperkitty/less/hyperkitty.less" />
+        <link rel="stylesheet" type="text/less" media="all" href="{% static 'hyperkitty/less/custom-bootstrap.less' %}" />
+        <link rel="stylesheet" type="text/less" media="all" href="{% static 'hyperkitty/less/hyperkitty.less' %}" />
         {% endcompress %}
         {% block additional_stylesheets %} {% endblock %}
         {% include 'hyperkitty/headers.html' %}
@@ -159,18 +160,18 @@
     </footer>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}hyperkitty/libs/jquery/jquery-1.10.1.min.js"><\/script>')</script>
-    <script src="{{ STATIC_URL }}hyperkitty/libs/jquery/jquery-ui-1.10.3.custom.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{% static 'hyperkitty/libs/jquery/jquery-1.10.1.min.js' %}"><\/script>')</script>
+    <script src="{% static 'hyperkitty/libs/jquery/jquery-ui-1.10.3.custom.min.js' %}"></script>
     {% compress js %}
-    <script type="text/javascript" src="{{ STATIC_URL }}hyperkitty/libs/bootstrap/js/bootstrap.min.js" />
-    <script type="text/javascript" src="{{ STATIC_URL }}hyperkitty/libs/jquery.expander.js" />
-    <script type="text/javascript" src="{{ STATIC_URL }}hyperkitty/libs/d3.v2.min.js" />
-    <script type="text/javascript" src="{{ STATIC_URL }}hyperkitty/libs/jquery.hotkeys.js" />
-    <script type="text/javascript" src="{{ STATIC_URL }}hyperkitty/js/hyperkitty-common.js" />
-    <script type="text/javascript" src="{{ STATIC_URL }}hyperkitty/js/hyperkitty-index.js" />
-    <script type="text/javascript" src="{{ STATIC_URL }}hyperkitty/js/hyperkitty-overview.js" />
-    <script type="text/javascript" src="{{ STATIC_URL }}hyperkitty/js/hyperkitty-thread.js" />
-    <script type="text/javascript" src="{{ STATIC_URL }}hyperkitty/js/hyperkitty-userprofile.js" />
+    <script type="text/javascript" src="{% static 'hyperkitty/libs/bootstrap/js/bootstrap.min.js' %}" />
+    <script type="text/javascript" src="{% static 'hyperkitty/libs/jquery.expander.js' %}" />
+    <script type="text/javascript" src="{% static 'hyperkitty/libs/d3.v2.min.js' %}" />
+    <script type="text/javascript" src="{% static 'hyperkitty/libs/jquery.hotkeys.js' %}" />
+    <script type="text/javascript" src="{% static 'hyperkitty/js/hyperkitty-common.js' %}" />
+    <script type="text/javascript" src="{% static 'hyperkitty/js/hyperkitty-index.js' %}" />
+    <script type="text/javascript" src="{% static 'hyperkitty/js/hyperkitty-overview.js' %}" />
+    <script type="text/javascript" src="{% static 'hyperkitty/js/hyperkitty-thread.js' %}" />
+    <script type="text/javascript" src="{% static 'hyperkitty/js/hyperkitty-userprofile.js' %}" />
     {% endcompress %}
     {% block additionaljs %} {% endblock %}
 

@@ -3,6 +3,7 @@
 {% load crispy_forms_tags %}
 {% load compress %}
 {% load browserid %}
+{% load staticfiles %}
 
 
 {% block title %}
@@ -10,7 +11,7 @@
 {% endblock %}
 
 {% block additional_stylesheets %}
-<link rel="stylesheet" media="all" href="{{ STATIC_URL }}browserid/persona-buttons.css">
+<link rel="stylesheet" media="all" href="{% static 'browserid/persona-buttons.css' %}">
 {% endblock additional_stylesheets %}
 
 {% block content %}
@@ -35,12 +36,12 @@
                 <input type="hidden" name="assertion" value="" />
                 <a rel="nofollow" id="browserid" href="#" class="disabled"
                    title="{% trans 'Wait for it...' %}"><img
-                   src="{{ STATIC_URL }}hyperkitty/img/login/persona-large-disabled.png"
+                   src="{% static 'hyperkitty/img/login/persona-large-disabled.png' %}"
                    alt="{% trans 'Login using Persona' %}" /></a>
             </form>
         {% elif backend == "openid" %}
             <a class="socialaccount_provider openid" title="OpenID" href="#"><img
-               src="{{ STATIC_URL }}hyperkitty/img/login/openid.png" alt="OpenID" /></a>
+               src="{% static 'hyperkitty/img/login/openid.png' %}" alt="OpenID" /></a>
             <form method="post" class="form-inline openid"
                   action="{% url 'social:begin' "openid" %}?next={{ next }}">
                 {% csrf_token %}
@@ -53,7 +54,7 @@
         {% else %}
             <a title="{{ backend|title }}" class="socialaccount_provider {{ backend }}"
                href="{% url 'social:begin' backend=backend %}?next={{ next }}"><img
-               src="{{ STATIC_URL }}hyperkitty/img/login/{{ backend }}.png"
+               src="{% static 'hyperkitty/img/login/'|add:backend|add:'.png' %}"
                alt="{{ backend|title }}" /></a>
         {% endif %}
         </li>
@@ -87,8 +88,8 @@
 <!-- Include BrowserID JavaScript -->
 <script src="https://login.persona.org/include.js"></script>
 {% compress js %}
-<script type="text/javascript" src="{{ STATIC_URL }}browserid/api.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}browserid/browserid.js"></script>
+<script type="text/javascript" src="{% static 'browserid/api.js' %}"></script>
+<script type="text/javascript" src="{% static 'browserid/browserid.js' %}"></script>
 {% endcompress %}
 <script type="text/javascript">
     $(function() {

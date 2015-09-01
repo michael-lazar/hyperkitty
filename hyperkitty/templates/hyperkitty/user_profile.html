@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load hk_generic %}
 {% load gravatar %}
+{% load staticfiles %}
 
 
 {% block title %}
@@ -105,17 +106,17 @@
         </div> <!-- /tab pane, favorites -->
 
         <div id="views" class="tab-pane">
-            <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{{ STATIC_URL }}hyperkitty/img/ajax-loader.gif" />
+            <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
             <div class="ajaxcontent" data-load-from="{% url 'hk_user_last_views' %}"></div>
         </div> <!-- /tab pane, threads you've read -->
 
         <div id="votes" class="tab-pane">
-            <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{{ STATIC_URL }}hyperkitty/img/ajax-loader.gif" />
+            <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
             <div class="ajaxcontent" data-load-from="{% url 'hk_user_votes' %}"></div>
         </div> <!-- /tab pane, threads you've voted on -->
 
         <div id="subscriptions" class="tab-pane">
-            <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{{ STATIC_URL }}hyperkitty/img/ajax-loader.gif" />
+            <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
             <div class="ajaxcontent" data-load-from="{% url 'hk_user_subscriptions' %}"></div>
         </div> <!-- /tab pane, list subscriptions -->
 
