@@ -35,7 +35,7 @@
                 </li>
                 <li>
                     <a href="{% url 'hk_public_user_profile' user_id=user_id %}">
-                        {% trans "Back to {{ fullname }}'s profile" %}
+                        {% blocktrans %}Back to {{ fullname }}'s profile{% endblocktrans %}
                     </a>
                 </li>
             </ul>
