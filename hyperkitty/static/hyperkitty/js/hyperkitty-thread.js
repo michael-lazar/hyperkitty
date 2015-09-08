@@ -226,7 +226,7 @@ function setup_replies(baseElem) {
                     .delay(2000).fadeOut('slow', function() { $(this).remove(); });
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                $('<div class="reply-result"><div class="alert alert-error">'
+                $('<div class="reply-result"><div class="alert alert-danger">'
                   + '<button type="button" class="close" data-dismiss="alert">&times;</button> '
                   + jqXHR.responseText + '</div></div>')
                     .css("display", "none").prependTo(form).slideDown();
