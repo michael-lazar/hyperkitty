@@ -202,6 +202,8 @@ function setup_replies(baseElem) {
         var form = $(this).parents("form").first();
         // remove previous error messages
         form.find("div.reply-result").remove();
+        var form_elements =  form.find("input").add(
+            form.find("textarea")).add(form.find("button"));
         var data = form_to_json(form);
         $.ajax({
             type: "POST",
@@ -230,10 +232,10 @@ function setup_replies(baseElem) {
                     .css("display", "none").prependTo(form).slideDown();
             },
             complete: function(jqXHR, textStatus) {
-                button.prop("disabled", false);
+                form_elements.prop("disabled", false);
             }
         });
-        button.prop("disabled", true);
+        form_elements.prop("disabled", true);
     });
     $(baseElem).find(".reply-form a.cancel").click(function(e) {
         e.preventDefault();
