@@ -40,7 +40,9 @@ function setup_index(url_template) {
     // Helper to load the graph
     function show_ajax_chart(listrows) {
         var listname = listrows.first().attr("data-list-name");
-        var url = url_template.replace(/PLACEHOLDER@PLACEHOLDER/, listname);
+        var url = url_template
+            .replace(/PLACEHOLDER@PLACEHOLDER/, listname)
+            .replace(/PLACEHOLDER%40PLACEHOLDER/, listname);
         ajax_chart(url, listrows.find("div.chart"), {height: 30});
     }
 
