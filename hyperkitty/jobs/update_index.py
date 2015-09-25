@@ -74,6 +74,8 @@ def run_with_lock(remove=False):
 
 def check_pid(pid):
     """ Check For the existence of a unix pid. """
+    if pid is None:
+        return False
     try:
         os.kill(pid, 0)
     except OSError as e:
