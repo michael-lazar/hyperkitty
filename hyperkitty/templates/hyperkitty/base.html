@@ -15,6 +15,7 @@
         <link rel="stylesheet" media="all" href="{% static 'hyperkitty/libs/bootstrap/3.3.5/bootstrap.min.css' %}" />
         <link rel="stylesheet" type="text/css" media="all" href="{% static 'hyperkitty/libs/icomoon/icomoon.css' %}" />
         {% compress css %}
+        <link rel="stylesheet" type="text/x-scss" media="all" href="{% static 'hyperkitty/sass/custom-bootstrap.scss' %}" />
         <link rel="stylesheet" type="text/x-scss" media="all" href="{% static 'hyperkitty/sass/hyperkitty.scss' %}" />
         {% endcompress %}
         {% block additional_stylesheets %} {% endblock %}
