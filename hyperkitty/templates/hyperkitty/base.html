@@ -12,11 +12,10 @@
         <link rel="shortcut icon" href="{% static 'hyperkitty/img/favicon.ico' %}" />
         <link rel="stylesheet" media="all" href="{% static 'hyperkitty/libs/jquery/smoothness/jquery-ui-1.10.3.custom.min.css' %}" />
         <link rel="stylesheet" media="all" href="{% static 'hyperkitty/libs/font-awesome/css/font-awesome.min.css' %}" />
-        <link rel="stylesheet" media="all" href="{% static 'hyperkitty/libs/bootstrap/css/bootstrap.min.css' %}" />
+        <link rel="stylesheet" media="all" href="{% static 'hyperkitty/libs/bootstrap/3.3.5/bootstrap.min.css' %}" />
         <link rel="stylesheet" type="text/css" media="all" href="{% static 'hyperkitty/libs/icomoon/icomoon.css' %}" />
         {% compress css %}
-        <link rel="stylesheet" type="text/less" media="all" href="{% static 'hyperkitty/less/custom-bootstrap.less' %}" />
-        <link rel="stylesheet" type="text/less" media="all" href="{% static 'hyperkitty/less/hyperkitty.less' %}" />
+        <link rel="stylesheet" type="text/x-scss" media="all" href="{% static 'hyperkitty/sass/hyperkitty.scss' %}" />
         {% endcompress %}
         {% block additional_stylesheets %} {% endblock %}
         {% include 'hyperkitty/headers.html' %}
@@ -163,7 +162,7 @@
     <script>window.jQuery || document.write('<script src="{% static 'hyperkitty/libs/jquery/jquery-1.10.1.min.js' %}"><\/script>')</script>
     <script src="{% static 'hyperkitty/libs/jquery/jquery-ui-1.10.3.custom.min.js' %}"></script>
     {% compress js %}
-    <script type="text/javascript" src="{% static 'hyperkitty/libs/bootstrap/js/bootstrap.min.js' %}" />
+    <script type="text/javascript" src="{% static 'hyperkitty/libs/bootstrap/javascripts/bootstrap.min.js' %}" />
     <script type="text/javascript" src="{% static 'hyperkitty/libs/jquery.expander.js' %}" />
     <script type="text/javascript" src="{% static 'hyperkitty/libs/d3.v2.min.js' %}" />
     <script type="text/javascript" src="{% static 'hyperkitty/libs/jquery.hotkeys.js' %}" />
