@@ -1,5 +1,11 @@
-// bootstrap variables & utilities
+// import bootstrap
 @import "../libs/bootstrap/stylesheets/bootstrap";
+// import our bootstrap customizations
+@import "bootstrap/custom-variables";
+@import "bootstrap/custom-utilities";
+@import "bootstrap/custom-mixins";
+@import "bootstrap/custom-grid";
+@import "bootstrap/custom-modals";
 
 // core variables, shared across pages
 @import "hyperkitty-variables";
