@@ -145,7 +145,9 @@ class ThreadTestCase(TestCase):
         msg = self._make_msg("msgid")
         self.threadid = msg["Message-ID-Hash"]
 
-    def _make_msg(self, msgid, headers={}):
+    def _make_msg(self, msgid, headers=None):
+        if headers is None:
+            headers = {}
         msg = Message()
         msg["From"] = "dummy@example.com"
         msg["Message-ID"] = "<%s>" % msgid

@@ -42,7 +42,7 @@ from hyperkitty.lib.view_helpers import (get_months, get_category_widget,
         FLASH_MESSAGES, check_mlist_private)
 
 
-REPLY_RE = re.compile('^(re:\s*)*', re.IGNORECASE)
+REPLY_RE = re.compile(r'^(re:\s*)*', re.IGNORECASE)
 
 def _get_thread_replies(request, thread, limit, offset=1):
     '''
