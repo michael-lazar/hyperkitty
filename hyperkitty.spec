@@ -28,7 +28,7 @@ BuildRequires:  python-social-auth
 BuildRequires:  django-crispy-forms
 BuildRequires:  python-django-compressor
 BuildRequires:  python-rjsmin
-BuildRequires:  nodejs-less
+BuildRequires:  sassc
 BuildRequires:  python-mailman-client
 BuildRequires:  python-robot-detection
 BuildRequires:  pytz
@@ -57,7 +57,7 @@ Requires:       django-rest-framework >= 2.2.0
 Requires:       django-crispy-forms
 Requires:       python-django-compressor
 Requires:       python-rjsmin
-Requires:       nodejs-less
+Requires:       sassc
 Requires:       python-mailman-client
 Requires:       python-robot-detection
 Requires:       pytz
