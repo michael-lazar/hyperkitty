@@ -48,11 +48,7 @@ Then download the components of HyperKitty::
     cd ..
     git clone https://gitlab.com/mailman/hyperkitty_standalone.git
 
-You will also need to install Node.js and LESS (version >= 1.5) using your package
-manager or the project's installation documentation. If you are using Fedora 20, you
-can just run ``yum install nodejs-less``. If you are using an earlier version,
-you can install the correct version of LESS via rpm: http://pkgs.org/download/nodejs-less
-
+.. include:: _sass.rst
 
 Configuration
 =============

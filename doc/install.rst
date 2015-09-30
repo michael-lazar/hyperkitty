@@ -16,10 +16,7 @@ commands::
 
     sudo python setup.py install
 
-You will also need to install Node.js and LESS (version >= 1.5) using your package
-manager or the project's installation documentation. If you are using Fedora 20, you
-can just run ``yum install nodejs-less``. If you are using an earlier version,
-you can install the correct version of LESS via rpm: http://pkgs.org/download/nodejs-less
+.. include:: _sass.rst
 
 It is however recommended to use Virtualenv to install HyperKitty, even for a
 non-development setup (production). Check out :doc:`the development
