@@ -50,13 +50,27 @@
         padding-bottom: 0.5em;
         max-height: 1.8em;
 
+        font-weight: bold;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         color: $linkColor;  // color ellipsis the same as link color
     }
-    ul.list-stats {
-        margin-bottom: 0.5em;
+
+    .thread-id {
+        font-weight: bold;
+        color: $headingColor;
+        vertical-align: top;
+        padding-right: 10px;
+    }
+
+    .thread-stats {
+        .date {
+            display: inline;
+        }
+        ul.list-stats {
+            margin-bottom: 0.5em;
+        }
     }
 }
 

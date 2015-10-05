@@ -1,4 +1,6 @@
-//=== Threads view header ==/
+/*
+ * Threads view header
+ */
 
 #thread-list .thread-list-header {
     margin-bottom: 2em;
@@ -19,9 +21,6 @@
     }
 }
 
-#thread-list .thread+.thread {
-    padding-top: 1em;
-}
 
 #thread-list .paginator {
     text-align: center;
@@ -31,89 +30,128 @@
     }
 }
 
+
+
+/*
+ * Thread summary
+ */
+
 #thread-list .thread {
     border: none;
-   
-    .thread-email {
-        margin-bottom: 5px;
+    margin-top: 3em;
+
+    .thread-title {
+        font-weight: bold;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        .category {
+            text-align: center;
+            margin-right: 1%;
+        }
     }
-    
+
+    .thread-date {
+        font-style: italic;
+        font-size: 70%;
+        color: $maroon;
+        margin-left: 1em;
+    }
+
     .thread-info {
         padding-top: 0.25em;
+
+        .sender {
+            word-wrap: break-word;
+            float: left;
+        }
+
         .thread-category {
             padding-bottom: 0.25em;
         }
+
         .likestatus + span {
             padding-right: 1em;
         }
         .likestatus {
             vertical-align: -2px;
         }
+
+        .tags {
+            display: none;
+            margin-right: 1em;
+            li {
+                padding: 0 0.2em 0 0.2em;
+            }
+            a {
+                font-size: 90%;
+            }
+        }
+    }
+
+}
+
+// for viewports larger than 320px, add more spacing
+@media (min-width: $screen-xs-min) {
+    #thread-list  {
+        .thread-list-info {
+            padding-top: 10px;
+        }
+    }
+}
+// for small viewports (480 <= x < 768)
+@media (max-width: $screen-md-max) and (min-width: $screen-xs-min) {
+    #thread-list .thread-info {
+        .likeform {
+            float: right;
+        }
+    }
+}
+// for viewports >= 768px, thread stats appears on a single line, so align properly
+@media (min-width: $screen-sm-min) {
+    #thread-list .thread-info {
         .list-stats {
-            padding-bottom: 0.25em;
+            text-align: right;
         }
     }
 }
 
-//=== Thread view ==/
 
-.thread-id {
-    font-weight: bold;
-    color: $headingColor;
-    vertical-align: top;
-    padding-right: 10px;
-}
 
-.thread-title {
-    font-weight: bold;
-    overflow: hidden;
-    text-overflow: ellipsis;
+/*
+ * Relative placement of the sender gravatar+address and the email excerpt
+ */
 
-    .category {
-        text-align: center;
-        margin-right: 1%;
+// Small viewports
+#thread-list .thread .thread-info {
+    .sender {
+        width: 80px;
+    }
+    .thread-content {
+        // sender width + 15px of "row" + some space
+        margin-left: 100px;
     }
 }
 
-.thread-stats .date {
-    display: inline;
-}
-
-.thread-date {
-    font-style: italic;
-    font-size: 70%;
-    color: $maroon;
-    margin-left: 1em;
-}
-
-.thread-info {
-    .tags {
-        display: inline;
-        margin-right: 1em;
-        li {
-            padding: 0 0.2em 0 0.2em;
+// Large viewports (x > 1200)
+@media (min-width: $screen-lg-min) {
+    #thread-list .thread .thread-info {
+        .sender {
+            width: 100px;
         }
-        a {
-            font-size: 90%;
+        .thread-content {
+            // sender width + 15px of "row" + some space
+            margin-left: 130px;
         }
     }
-
-    .thread-show {
-        padding-top: 2px;
-        padding-bottom: 2px;
-        margin-left: 2em;
-    }
 }
 
-.thread-content {
-    margin-top: 0.5em;
 
-    .thread-email {
-        margin-bottom: 5px;
-    }
-}
 
-// Part containing the body of the mail which can be shown/hidden 
+/*
+ * Part containing the body of the mail which can be shown/hidden 
+ */
+
 .expander {
     background-image: linear-gradient(bottom, rgb(236,236,236) 11%, rgb(255,255,255) 100%);
     background-image: -o-linear-gradient(bottom, rgb(236,236,236) 11%, rgb(255,255,255) 100%);
@@ -160,85 +198,5 @@
     .list-stats {
         margin-top: 0.5em;
         margin-bottom: 0.5em;
-    }
-}
-
-/*
-// tiny screens  (<=480px): format thread list header
-@media (max-width: $screen-tn-max) {
-    #thread-list .thread-list-header {
-        h1 {
-            margin-bottom: 0;
-        }
-        .list-address {
-            padding-bottom: 0.5em;
-        }
-        .list-stats li {
-            display: block;
-        }
-        .list-stats li+li {
-            padding-left: 0;
-        }
-    }
-    #thread-list .thread-info {
-        .likeform {
-            padding-top: 0.25em;
-            padding-bottom: 0.25em;
-        }
-    }
-}
-*/
-
-// for viewports larger than 320px, add more spacing 
-@media (min-width: $screen-xs-min) {
-    #thread-list  {
-        .thread-list-info {
-            padding-top: 10px;
-        }
-        img.gravatar {
-            @include square(60px);
-        }
-    }
-}
-// for extra small viewports (480 <= x < 1199px)
-@media (max-width: $screen-md-max) and (min-width: $screen-xs-min) {
-    #thread-list .thread-info {
-        .likeform {
-            float: right;
-        }
-        .thread-content {
-            @include make-xs-column-push(2);
-            margin-top: 0;
-        }
-        .gravatar {
-            @include make-xs-column-pull(10);
-        }
-        .thread-extras {
-            @include make-xs-column-offset(2);
-        }
-    }
-}
-// for viewports >= 768px, thread stats appears on a single line, so align properly
-@media (min-width: $screen-sm-min) {
-    #thread-list .thread-info {
-        .list-stats {
-            text-align: right;
-            padding-left: 0;
-        }
-    }
-}
-// for large viewports (x <= 1200)
-@media (min-width: $screen-lg-min) {
-    #thread-list .thread-info {
-        .thread-content {
-            @include make-lg-column-push(1);
-            margin-top: 0;
-        }
-        .gravatar {
-            @include make-lg-column-pull(11);
-        }
-        .thread-extras {
-            @include make-lg-column-offset(1);
-        }
     }
 }

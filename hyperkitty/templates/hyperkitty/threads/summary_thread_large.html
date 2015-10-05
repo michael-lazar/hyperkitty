@@ -21,55 +21,53 @@
                   title="{{ thread.date_active|date:'l, j F Y H:i:s' }}">
                 {{ thread.date_active|timesince }}
             </span>
-            <div class="thread-info row">
-                <div class="thread-content col-tn-12 col-xs-10 col-lg-11">
-                    <div class="thread-email">
-                        <span class="expander collapsed">
-                            {{ starting_email.content|urlizetrunc:76|escapeemail }}
-                        </span>
-                    </div>
-                </div>
-                <div class="gravatar col-tn-3 col-xs-2 col-lg-1">
+            <div class="thread-info">
+                <div class="sender gravatar">
                     {% if starting_email.sender.address %}
                     {% gravatar starting_email.sender.address 120 %}
                     <br />
                     {% endif %}
                     {{ starting_email.sender.name|escapeemail }}
                 </div>
-                <div class="thread-extras col-tn-9 col-xs-10 col-lg-11">
-                    <div class="row">
+                <div class="thread-content">
+                    <div class="thread-email row">
+                        <span class="expander collapsed col-tn-12">
+                            {{ starting_email.content|urlizetrunc:76|escapeemail }}
+                        </span>
+                    </div>
+                    <div class="thread-extras row">
                         <div class="thread-category col-tn-12 col-xs-6 col-sm-3">
                             {% include 'hyperkitty/threads/category.html' with category=thread.category_hk category_form=thread.category_form threadid=thread.thread_id %}
                         </div>
                         <div class="col-tn-12 col-xs-6 col-sm-4">
                             {% include "hyperkitty/messages/like_form.html" with message_id_hash=starting_email.message_id_hash object=thread %}
                         </div>
-                        <ul class="list-unstyled list-stats col-tn-12 col-sm-5">
-                        <li>
-                            <i class="icomoon participant"></i> {{ thread.participants_count }} {% trans "participants" %}
-                        </li>
-                        <li>
-                            <i class="icomoon discussion"></i> {{ thread|num_comments }} {% trans "comments" %}
-                        </li>
+                        <ul class="list-unstyled list-stats col-tn-12 col-xs-12 col-sm-5">
+                            <li>
+                                <i class="icomoon participant"></i>
+                                {{ thread.participants_count }} {% trans "participants" %}
+                            </li>
+                            <li>
+                                <i class="icomoon discussion"></i>
+                                {{ thread|num_comments }} {% trans "comments" %}
+                            </li>
                         </ul>
                     </div>
+                    <!--
+                    <div class="tags">
+                        {% if thread.tags|length %}
+                        {% trans "Tags:" %}
+                        <ul class="list-unstyled tags">
+                        {% for tag in thread.tags %}
+                            <li>
+                                <a href="{#% url 'hk_search_tag' mlist_fqdn=mlist.name tag=tag.tag %#}">{{tag.tag}}</a>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                    -->
                 </div>
-            </div>
-            <div class="thread-info">
-                <div class="tags">
-                    {% if thread.tags|length %}
-                    {% trans "Tags:" %}
-                    <ul class="list-unstyled tags">
-                    {% for tag in thread.tags %}
-                        <li>
-                            <a href="{#% url 'hk_search_tag' mlist_fqdn=mlist.name tag=tag.tag %#}">{{tag.tag}}</a>
-                        </li>
-                    {% endfor %}
-                    </ul>
-                    {% endif %}
-                </div>
-                <!--<a href="{% url 'hk_thread' threadid=thread.thread_id mlist_fqdn=mlist.name %}"-->
-                <!--   class="btn btn-default thread-show">Show discussion</a>-->
             </div>
         </div>
         {% endwith %}
