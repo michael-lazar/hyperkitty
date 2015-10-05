@@ -100,9 +100,6 @@ def user_profile(request):
                 "timezone": get_current_timezone(),
                 })
 
-    # Favorites
-    favorites = Favorite.objects.filter(user=request.user)
-
     # Emails
     other_addresses = profile.addresses[:]
     other_addresses.remove(request.user.email)
@@ -124,7 +121,6 @@ def user_profile(request):
         'user_profile' : profile,
         'form': form,
         'other_addresses': other_addresses,
-        'favorites': favorites,
         'flash_messages': flash_messages,
         'gravatar_url': gravatar_url,
         'gravatar_shortname': gravatar_shortname,
@@ -165,6 +161,17 @@ def user_registration(request):
         'next': redirect_to,
     }
     return render(request, 'hyperkitty/register.html', context)
+
+
+@login_required
+def favorites(request):
+    # Favorite threads
+    favs = Favorite.objects.filter(user=request.user
+        ).order_by("-thread__date_active")
+    favs = paginate(favs, request.GET.get('favpage'))
+    return render(request, 'hyperkitty/ajax/favorites.html', {
+                "favorites": favs,
+            })
 
 
 @login_required

@@ -5,9 +5,9 @@
         <table class="table table-bordered table-condensed hidden-sm hidden-md hidden-lg">
             <tbody>
             {% for lv in last_views %}
-                {% ifchanged lv.mailinglist.name %}
+                {% ifchanged lv.thread.mailinglist.name %}
                 <tr class="list-address">
-                    <td>{{ lv.mailinglist.name }}</td>
+                    <td>{{ lv.thread.mailinglist.name }}</td>
                 </tr>
                 {% endifchanged %}
                 <tr>
@@ -55,8 +55,8 @@
                         {% endif %}
                     </td>
                     <td>
-                        <span class="hidden-md hidden-lg">{{ lv.mailinglist.name|until:"@" }}</span>
-                        <span class="hidden-sm">{{ lv.mailinglist.name }}</span>
+                        <span class="hidden-md hidden-lg">{{ lv.thread.mailinglist.name|until:"@" }}</span>
+                        <span class="hidden-sm">{{ lv.thread.mailinglist.name }}</span>
                     </td>
                     <td><a href="{% url 'hk_thread' mlist_fqdn=lv.thread.mailinglist.name threadid=lv.thread.thread_id %}"
                             >{{ starting_email.subject }}</a></td>

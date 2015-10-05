@@ -62,21 +62,14 @@
         position: absolute;
     }
 
-    #views tr.list-address,
-    #votes tr.list-address,
-    #subscriptions tr.list-address {
+    tr.list-address {
         font-weight: bold;
         background: $rowBorderColor;
-    }
-
-    #favorites ul {
-        margin-left: 0;
-        padding-left: 30px;
     }
 }
 
 table.user-data {
-    font-size: 95%; 
+    font-size: 95%;
     th {
         font-weight: bold;
         padding-left: 0 !important; // override boostrap default

@@ -89,20 +89,8 @@
         </div> <!-- /tab pane, account info -->
 
         <div class="tab-pane" id="favorites">
-            {% if favorites %}
-            <ul>
-            {% for fav in favorites %}
-                <li>
-                    <a href="{% url 'hk_thread' mlist_fqdn=fav.thread.mailinglist.name threadid=fav.thread.thread_id %}"
-                        >{{ fav.thread.starting_email.subject }}</a> by {{ fav.thread.starting_email.sender.name }}
-                        <span class="hidden-sm hidden-md hidden-lg">({{ fav.thread.date_active|date:"D, j M Y H:i" }})</span>
-                        <span class="hidden-tn hidden-xs">({{ fav.thread.date_active|date:"l, j F Y H:i:s" }})</span>
-                </li>
-            {% endfor %}
-            </ul>
-            {% else %}
-            <p>{% trans "No favorites yet." %}</p>
-            {% endif %}
+            <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
+            <div class="ajaxcontent" data-load-from="{% url 'hk_user_favorites' %}"></div>
         </div> <!-- /tab pane, favorites -->
 
         <div id="views" class="tab-pane">

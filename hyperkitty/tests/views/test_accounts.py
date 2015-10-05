@@ -143,14 +143,14 @@ class AccountViewsTestCase(TestCase):
         self.assertEqual(Favorite.objects.filter(
             thread=thread, user=self.user).count(), 1)
 
-        response = self.client.get(reverse("hk_user_profile"))
+        response = self.client.get(reverse("hk_user_favorites"))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "No favorites yet")
         self.assertContains(response,
             '<a href="{}">Dummy message</a>'.format(
                 reverse("hk_thread", args=("list@example.com", threadid)
-            )), count=1, html=True)
-        self.assertContains(response, "Dummy Sender", count=1, html=False)
+            )), count=2, html=True)
+        self.assertContains(response, "Dummy Sender", count=2, html=False)
 
     def test_posts(self):
         self.client.login(username='testuser', password='testPass')
