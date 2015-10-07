@@ -41,14 +41,14 @@ urlpatterns = patterns('hyperkitty.views',
     url(r'^/?$', 'index.index', name='hk_root'),
 
     # Account (logged-in user)
-    url(r'^accounts/login/$', 'accounts.login_view', {'template_name': 'hyperkitty/login.html', 'SSL': True}, name='hk_user_login'),
+    url(r'^accounts/login/$', 'accounts.login_view', {'template_name': 'hyperkitty/login.html'}, name='hk_user_login'),
     url(r'^accounts/logout/$', logout_view, {'next_page': '/'}, name='hk_user_logout'),
     url(r'^accounts/profile/$', 'accounts.user_profile', name='hk_user_profile'),
     url(r'^accounts/profile/favorites$', 'accounts.favorites', name='hk_user_favorites'),
     url(r'^accounts/profile/last_views$', 'accounts.last_views', name='hk_user_last_views'),
     url(r'^accounts/profile/votes$', 'accounts.votes', name='hk_user_votes'),
     url(r'^accounts/profile/subscriptions$', 'accounts.subscriptions', name='hk_user_subscriptions'),
-    url(r'^accounts/register/$', 'accounts.user_registration', {'SSL': True}, name='hk_user_registration'),
+    url(r'^accounts/register/$', 'accounts.user_registration', name='hk_user_registration'),
 
     # Users
     url(r'^users/$', 'users.users', name='hk_users_overview'),
@@ -140,7 +140,7 @@ urlpatterns = patterns('hyperkitty.views',
         name="hk_error_schemaupgrade"),
 
     # Admin
-    url(r'^admin/', include(admin.site.urls), {"SSL": True}),
+    url(r'^admin/', include(admin.site.urls)),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
@@ -161,3 +161,11 @@ urlpatterns = patterns('hyperkitty.views',
 )
 #) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += staticfiles_urlpatterns()
+
+
+# See the hyperkitty.middleware.SSLRedirect class
+SSL_URLS = (
+    "hyperkitty.views.accounts.login_view",
+    "hyperkitty.views.accounts.user_registration",
+    admin.site.urls,
+    )

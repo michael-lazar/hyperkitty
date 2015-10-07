@@ -27,9 +27,11 @@ from unittest import skipIf
 
 from django import VERSION as DJANGO_VERSION
 from django.contrib.auth.models import AnonymousUser, User
+from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from django.test.client import RequestFactory
 
 from hyperkitty.middleware import SSLRedirect
+from hyperkitty.views.accounts import login_view, user_profile
 from hyperkitty.tests.utils import TestCase
 
 
@@ -69,9 +71,9 @@ class SSLRedirectTestCase(TestCase):
 
     def test_login_redirect(self):
         # Requests to the login page must be redirected to HTTPS
-        request = self.rf.get("/")
+        request = self.rf.get("/accounts/login/")
         request.user = AnonymousUser()
-        result = self.mw.process_view(request, None, [], {"SSL": True})
+        result = self.mw.process_view(request, login_view, [], {})
         self.assertIsNotNone(result)
         self.assertEqual(result.status_code, 301)
         self.assertTrue(result.url.startswith("https://"))
@@ -79,9 +81,9 @@ class SSLRedirectTestCase(TestCase):
     def test_login_already_https(self):
         # Requests to the login page must not be redirected if they already are
         # in HTTPS
-        request = self.rf.get("/", HTTP_X_FORWARDED_SSL="on")
+        request = self.rf.get("/accounts/login", HTTP_X_FORWARDED_SSL="on")
         request.user = AnonymousUser()
-        result = self.mw.process_view(request, None, [], {"SSL": True})
+        result = self.mw.process_view(request, login_view, [], {})
         self.assertIsNone(result)
 
     def test_noredirect(self):
@@ -115,3 +117,49 @@ class SSLRedirectTestCase(TestCase):
             'testuser', 'test@example.com', 'testPass')
         result = self.mw.process_view(request, None, [], {})
         self.assertIsNone(result)
+
+    def test_populate_view_function(self):
+        def fake_view():
+            pass
+        class URLConf:
+            SSL_URLS = [
+                fake_view,
+            ]
+        self.mw._protected_urls = []
+        self.mw._walk_module(URLConf)
+        self.assertEqual(self.mw._protected_urls, [fake_view])
+
+    def test_populate_view_function_name(self):
+        class URLConf:
+            SSL_URLS = [
+                "hyperkitty.views.accounts.login_view",
+            ]
+        self.mw._protected_urls = []
+        self.mw._walk_module(URLConf)
+        self.assertEqual(self.mw._protected_urls, [login_view])
+
+    def test_populate_urlconf_with_ssl_urls(self):
+        class URLConf:
+            SSL_URLS = [
+                "hyperkitty.urls",
+            ]
+        self.mw._protected_urls = []
+        self.mw._walk_module(URLConf)
+        self.assertIn(login_view, self.mw._protected_urls)
+
+    def test_populate_urlconf_no_ssl_urls(self):
+        class URLConf:
+            urlpatterns = []
+        sub_urlconf = URLConf()
+        sub_urlconf.urlpatterns = [
+            RegexURLPattern('', user_profile),
+            ]
+        root_urlconf = URLConf()
+        root_urlconf.urlpatterns = [
+            RegexURLPattern('', login_view),
+            RegexURLResolver('', sub_urlconf),
+            ]
+        self.mw._protected_urls = []
+        self.mw._walk_module(root_urlconf)
+        self.assertIn(login_view, self.mw._protected_urls)
+        self.assertIn(user_profile, self.mw._protected_urls)
