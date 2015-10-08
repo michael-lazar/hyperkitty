@@ -79,9 +79,6 @@ def archives(request, mlist_fqdn, year=None, month=None, day=None):
 
 
 def _thread_list(request, mlist, threads, template_name='hyperkitty/thread_list.html', extra_context=None):
-    categories = [ (c.name, c.name.upper())
-                   for c in ThreadCategory.objects.all() ] \
-                 + [("", "no category")]
     threads = paginate(threads, request.GET.get('page'),
                        results_per_page=request.GET.get('count'))
     for thread in threads:
@@ -96,7 +93,7 @@ def _thread_list(request, mlist, threads, template_name='hyperkitty/thread_list.
                 thread.favorite = True
         # Category
         thread.category_hk, thread.category_form = \
-            get_category_widget(request, thread.category, categories)
+            get_category_widget(request, thread.category)
 
     flash_messages = []
     flash_msg = request.GET.get("msg")
@@ -122,15 +119,10 @@ def overview(request, mlist_fqdn=None):
     if not mlist_fqdn:
         return redirect('/')
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
-    threads = []
-    for thread_obj in mlist.recent_threads:
-        thread_obj.category_widget = get_category_widget(
-                None, thread_obj.category)[0]
-        threads.append(thread_obj)
+    threads = mlist.recent_threads
 
     # top threads are the one with the most answers
     top_threads = sorted(threads, key=lambda t: t.emails_count, reverse=True)
-
     # active threads are the ones that have the most recent posting
     active_threads = sorted(threads, key=lambda t: t.date_active, reverse=True)
 

@@ -42,35 +42,21 @@
     }
 }
 
-.overview .thread {
-    .thread-title {
-        line-height: 1.25em;
-        max-height: 3em;
-        padding-top: 0.5em;
-        padding-bottom: 0.5em;
-        max-height: 1.8em;
-
+.overview .list-group {
+    .list-group-item-heading {
         font-weight: bold;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        color: $linkColor;  // color ellipsis the same as link color
     }
-
     .thread-id {
         font-weight: bold;
         color: $headingColor;
         vertical-align: top;
-        padding-right: 10px;
+        padding-right: 0.5em;
     }
-
-    .thread-stats {
-        .date {
-            display: inline;
-        }
-        ul.list-stats {
-            margin-bottom: 0.5em;
-        }
+    .category {
+        font-size: 65%;
     }
 }
 
@@ -98,24 +84,19 @@
 }
 
 // Threads by category
-.discussion-by-category h4 {
-    font-size: 105%;
-    line-height: 105%;
-    margin: 1.5em 0 0.5em 0;
-    padding-left: 1em;
-    padding-right: 1em;
-
-    h4.first {
-        margin-top: 0;
+.overview section#by-category {
+    h4.label {
+        font-size: 90%;
+        line-height: 90%;
+        //margin: 1.5em 0 0.5em 0;
+        padding-left: 1em;
+        padding-right: 1em;
     }
-    .thread {
-        margin: 0 0 0 0.5em;
-    }
-    .thread-stats {
-        margin-left: 0;
-    }
-    .thread .category {
-        display: none;
+    .list-group {
+        margin-bottom: 1.5em;
+        .category, .thread-id {
+            display: none;
+        }
     }
 }
 

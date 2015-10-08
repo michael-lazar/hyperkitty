@@ -109,11 +109,7 @@ def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
         fav_action = "rm"
 
     # Category
-    categories = [ (c.name, c.name.upper())
-                   for c in ThreadCategory.objects.all() ] \
-                 + [("", "no category")]
-    category, category_form = get_category_widget(
-        request, thread.category, categories)
+    category, category_form = get_category_widget(request, thread.category)
 
     # Extract relative dates
     today = datetime.date.today()
@@ -326,7 +322,7 @@ def set_category(request, mlist_fqdn, threadid):
         thread.category = None
         thread.save()
     elif category and category.name != thread.category:
-        thread.category = category.name
+        thread.category = category
         thread.save()
 
     # Now refresh the category widget

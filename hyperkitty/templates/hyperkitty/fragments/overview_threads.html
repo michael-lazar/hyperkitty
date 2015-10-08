@@ -1,16 +1,20 @@
 {% load i18n %}
 
-<div class="thread-list">
+{% if threads %}
+
+<div class="list-group">
     {% for thread in threads %}
         {% if forloop.counter == 6 %}
-        <div class="bordered more-threads">
-        <a href="#">{% trans "More..." %}</a>
+        <a class="list-group-item text-center more-threads" href="#">{% trans "More..." %}</a>
+        </div> <!-- close list-group -->
+        <div class="hidden-threads hidden">
         {% endif %}
         {% include "hyperkitty/threads/summary_thread.html" with counter=forloop.counter %}
-    {% empty %}
-        <p>{{ empty }}</p>
     {% endfor %}
-    {% if threads|length > 5 %}
-        </div> <!-- closing the more-threads block -->
-    {% endif %}
 </div>
+
+{% elif empty %}
+
+<p>{{ empty }}</p>
+
+{% endif %}

@@ -88,67 +88,53 @@
     {% if user.is_authenticated %}
     <div class="discussions pull-right col-tn-12 col-sm-8">
         <section id="flagged">
-            <h3>{% trans "Discussions You've Flagged" %} ({{ flagged_threads|length }}) <i class="fa fa-caret-right"></i></h3>
+            <h3>{% trans "Discussions You've Flagged" %} ({{ flagged_threads|length }})
+                {% if flagged_threads %}<i class="fa fa-caret-right"></i>{% endif %}
+            </h3>
             {% include "hyperkitty/fragments/overview_threads.html" with threads=flagged_threads empty=empty_messages.flagged %}
         </section>
         <section id="posted-to">
-            <h3>{% trans "Discussions You've Posted to" %} ({{ threads_posted_to|length }}) <i class="fa fa-caret-right"></i></h3>
+            <h3>{% trans "Discussions You've Posted to" %} ({{ threads_posted_to|length }})
+                {% if threads_posted_to %}<i class="fa fa-caret-right"></i>{% endif %}
+            </h3>
             {% include "hyperkitty/fragments/overview_threads.html" with threads=threads_posted_to empty=empty_messages.posted %}
         </section>
     </div> <!-- /home, personalized threads lists -->
     {% endif %}
 
     <div class="discussions pull-right col-tn-12 col-sm-8">
-        <div class="anchor-link">
-            <a id="most-recent"></a>
-        </div>
+
+        <div class="anchor-link"><a id="most-recent"></a></div>
         <section id="most-recent">
             <h3>{% trans "Recently active discussions" %}</h3>
             {% include "hyperkitty/fragments/overview_threads.html" with threads=most_active_threads empty=empty_messages.active %}
         </section>
 
-        <div class="anchor-link">
-            <a id="most-popular"></a>
-        </div>
+        <div class="anchor-link"><a id="most-popular"></a></div>
         <section id="most-popular">
             <h3>{% trans "Most popular discussions" %}</h3>
             {% include "hyperkitty/fragments/overview_threads.html" with threads=pop_threads empty=empty_messages.popular %}
         </section>
 
-        <div class="anchor-link">
-            <a id="most-active"></a>
-        </div>
+        <div class="anchor-link"><a id="most-active"></a></div>
         <section id="most-active">
             <h3>{% trans "Most active discussions" %}</h3>
             {% include "hyperkitty/fragments/overview_threads.html" with threads=top_threads empty=empty_messages.active %}
         </section>
 
-        <div class="anchor-link">
-            <a id="by-category"></a>
-        </div>
+        <div class="anchor-link"><a id="by-category"></a></div>
         <section id="by-category">
             <h3>{% trans "Discussion by category" %}</h3>
             {% for category, threads in threads_by_category.items %}
-                <h4 class="label{% if forloop.first %} first{% endif %}"
-                   style="background-color:{{category.color}}"
+                <h4 class="label" style="background-color:{{category.color}}"
                    >{{ category.name|upper }}
                 </h4>
-                <ul>
-                {% for thread in threads|slice:":5" %}
-                    <li>{% include "hyperkitty/threads/summary_thread.html" %}</li>
-                {% endfor %}
-                {% if threads|length > 5 %}
-                    <li>
-                        <div class="bordered more-threads">
-                            <a href="">{% trans "More..." %}</a>
-                        </div>
-                    </li>
-            {% endif %}
-                </ul>
+                {% include "hyperkitty/fragments/overview_threads.html" with threads=threads|slice:":5" %}
             {% empty %}
                 <p>{% trans "No category has been set this month (yet)." %}</p>
             {% endfor %}
         </section>
+
     </div> <!-- /container, for thread lists -->
 
     <div class="stats col-tn-12 col-sm-4">

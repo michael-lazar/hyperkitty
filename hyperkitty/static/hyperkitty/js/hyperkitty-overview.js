@@ -48,14 +48,14 @@ function setup_overview(recent_activity_url) {
 
     // Collapsible thread lists
     function collapsibleDivs() {
-        if (!$(this).next('.thread-list').is(':visible')) {
+        if (!$(this).next('.list-group').is(':visible')) {
             $(this).children('.fa-caret-right')
                    .removeClass("fa-caret-right")
                    .addClass("fa-caret-down");
-            $(this).next('.thread-list').slideDown();
+            $(this).next('.list-group').slideDown();
         }
         else {
-            $(this).next('.thread-list').slideUp();
+            $(this).next('.list-group').slideUp();
             $(this).children('.fa-caret-down')
                    .removeClass("fa-caret-down")
                    .addClass("fa-caret-right");
@@ -65,13 +65,15 @@ function setup_overview(recent_activity_url) {
     $('#posted-to h3').click(collapsibleDivs);
 
     // "More threads" links
-    $('.more-threads > a').click(function(e) {
+    $('.more-threads').click(function(e) {
         e.preventDefault();
-        var more_block = $(this).parent('.more-threads');
-        $(this).nextAll('.thread').slice(0, 5)
-               .hide().insertBefore(more_block).slideDown();
-        if (more_block.find(".thread").length === 0) {
+        //var more_block = $(this).parent('.more-threads');
+        var more_block = $(this).parent().next();
+        more_block.children().slice(0, 5)
+            .hide().insertBefore($(this)).slideDown();
+        if (more_block.children().length === 0) {
             more_block.remove();
+            $(this).remove();
         }
     });
 }
