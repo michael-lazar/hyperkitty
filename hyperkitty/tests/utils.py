@@ -42,9 +42,7 @@ class TestCase(DjangoTestCase):
     # pylint: disable=attribute-defined-outside-init
 
     _override_settings = {
-        "DEBUG": True,
-        "TEMPLATE_DEBUG": True,
-        "USE_SSL": False,
+        "TESTING": True,
         "USE_MOCKUPS": False,
         "COMPRESS_ENABLED": False,
         "COMPRESS_PRECOMPILERS": (),

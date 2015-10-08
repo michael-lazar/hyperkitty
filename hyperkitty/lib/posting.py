@@ -20,6 +20,7 @@
 #
 
 
+from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import EmailMessage
 from mailmanclient import MailmanConnectionError
@@ -77,7 +78,8 @@ def post_to_list(request, mlist, subject, message, headers=None,
         for attach in attachments:
             msg.attach(attach.name, attach.read())
     # XXX: Inject into the incoming queue instead?
-    msg.send()
+    if not settings.DEBUG:
+        msg.send() # Don't send mail in debug mode, just in case...
     return subscribed_now
 
 
