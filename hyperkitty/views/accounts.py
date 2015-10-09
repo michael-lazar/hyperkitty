@@ -282,6 +282,8 @@ def public_profile(request, user_id):
     else:
         creation = None
     posts_count = Email.objects.filter(sender__mailman_id=user_id).count()
+    is_user = bool(set([str(a) for a in mm_user.addresses])
+                 & set(request.user.hyperkitty_profile.addresses))
     context = {
         "fullname": fullname,
         "creation": creation,
@@ -290,6 +292,7 @@ def public_profile(request, user_id):
         "dislikes": dislikes,
         "likestatus": likestatus,
         "email": email,
+        "is_user": is_user,
     }
     return render(request, "hyperkitty/user_public_profile.html", context)
 
