@@ -29,6 +29,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.contrib.auth import login, get_backends
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import login as django_login_view
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.utils.http import is_safe_url
 from django.utils.timezone import get_current_timezone
@@ -42,7 +43,7 @@ from hyperkitty.models import (Favorite, LastView, MailingList, Sender,
     Email, Vote, Profile)
 from hyperkitty.views.forms import (InternalAuthenticationForm,
     RegistrationForm, UserProfileForm)
-from hyperkitty.lib.view_helpers import FLASH_MESSAGES, is_mlist_authorized
+from hyperkitty.lib.view_helpers import is_mlist_authorized
 from hyperkitty.lib.paginator import paginate
 from hyperkitty.lib.mailman import get_mailman_client
 
@@ -90,9 +91,8 @@ def user_profile(request):
                 mm_user.display_name = "%s %s" % (
                         request.user.first_name, request.user.last_name)
                 mm_user.save()
-            redirect_url = reverse('hk_user_profile')
-            redirect_url += "?msg=updated-ok" # TODO: Cookie-based flash msg
-            return redirect(redirect_url)
+            messages.success(request, "The profile was successfully updated.")
+            return redirect(reverse('hk_user_profile'))
     else:
         form = UserProfileForm(initial={
                 "first_name": request.user.first_name,
@@ -104,14 +104,6 @@ def user_profile(request):
     other_addresses = profile.addresses[:]
     other_addresses.remove(request.user.email)
 
-    # Flash messages
-    flash_messages = []
-    flash_msg = request.GET.get("msg")
-    if flash_msg:
-        flash_msg = { "type": FLASH_MESSAGES[flash_msg][0],
-                      "msg": FLASH_MESSAGES[flash_msg][1] }
-        flash_messages.append(flash_msg)
-
     # Extract the gravatar_url used by django_gravatar2.  The site
     # administrator could alternatively set this to http://cdn.libravatar.org/
     gravatar_url = getattr(settings, 'GRAVATAR_URL', 'http://www.gravatar.com')
@@ -121,7 +113,6 @@ def user_profile(request):
         'user_profile' : profile,
         'form': form,
         'other_addresses': other_addresses,
-        'flash_messages': flash_messages,
         'gravatar_url': gravatar_url,
         'gravatar_shortname': gravatar_shortname,
     }
@@ -315,22 +306,21 @@ def posts(request, user_id):
     fullname = Sender.objects.filter(mailman_id=user_id).exclude(name=""
         ).values_list("name", flat=True).first()
     # Get the messages and paginate them
-    messages = Email.objects.filter(
+    emails = Email.objects.filter(
         mailinglist=mlist, sender__mailman_id=user_id)
     try:
         page_num = int(request.GET.get('page', "1"))
     except ValueError:
         page_num = 1
-    messages = paginate(messages, page_num)
+    emails = paginate(emails, page_num)
 
-    for message in messages:
-        message.myvote = message.votes.filter(
-            user=request.user).first()
+    for email in emails:
+        email.myvote = email.votes.filter(user=request.user).first()
 
     context = {
         'user_id': user_id,
         'mlist' : mlist,
-        'messages': messages,
+        'messages': emails,
         'fullname': fullname,
     }
     return render(request, "hyperkitty/user_posts.html", context)

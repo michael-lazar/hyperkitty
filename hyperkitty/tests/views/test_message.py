@@ -35,7 +35,7 @@ from django_gravatar.helpers import get_gravatar_url
 from hyperkitty.lib.utils import get_message_id_hash
 from hyperkitty.lib.incoming import add_to_list
 from hyperkitty.models import Email
-from hyperkitty.tests.utils import TestCase
+from hyperkitty.tests.utils import TestCase, get_flash_messages
 
 
 
@@ -193,8 +193,12 @@ class MessageViewsTestCase(TestCase):
                     "mlist_fqdn": "list@example.com",
                     'year': timezone.now().year,
                     'month': timezone.now().month})
-        redirect_url += "?msg=sent-ok"
         self.assertRedirects(response, redirect_url)
+        # flash message
+        messages = get_flash_messages(response)
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0].tags, "success")
+        # sent email
         self.assertEqual(len(mail.outbox), 1)
         #print(mail.outbox[0].message())
         self.assertEqual(mail.outbox[0].recipients(), ["list@example.com"])

@@ -34,13 +34,6 @@ from hyperkitty.views.forms import CategoryForm
 from hyperkitty.lib.cache import cache
 
 
-FLASH_MESSAGES = {
-    "updated-ok": ("success", "The profile was successfully updated."),
-    "sent-ok": ("success", "The message has been sent successfully."),
-    "attached-ok": ("success", "Thread successfully re-attached."),
-}
-
-
 def get_months(mlist):
     """ Return a dictionnary of years, months for which there are
     potentially archives available for a given list (based on the

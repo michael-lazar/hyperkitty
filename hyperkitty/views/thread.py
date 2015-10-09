@@ -29,6 +29,7 @@ import json
 from django.http import HttpResponse, Http404
 from django.template import RequestContext, loader
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.exceptions import SuspiciousOperation
 from django.utils.timezone import utc
@@ -39,7 +40,7 @@ from hyperkitty.models import Tag, Tagging, Favorite, LastView, Thread, MailingL
 from hyperkitty.views.forms import AddTagForm, ReplyForm
 from hyperkitty.lib.utils import stripped_subject
 from hyperkitty.lib.view_helpers import (get_months, get_category_widget,
-        FLASH_MESSAGES, check_mlist_private)
+        check_mlist_private)
 
 
 REPLY_RE = re.compile(r'^(re:\s*)*', re.IGNORECASE)
@@ -135,14 +136,6 @@ def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
     else:
         unread_count = thread.emails.filter(date__gt=last_view).count()
 
-    # Flash messages
-    flash_messages = []
-    flash_msg = request.GET.get("msg")
-    if flash_msg:
-        flash_msg = { "type": FLASH_MESSAGES[flash_msg][0],
-                      "msg": FLASH_MESSAGES[flash_msg][1] }
-        flash_messages.append(flash_msg)
-
     # TODO: eventually move to a middleware ?
     # http://djangosnippets.org/snippets/1865/
     user_agent = request.META.get('HTTP_USER_AGENT', None)
@@ -170,7 +163,6 @@ def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
         'unread_count': unread_count,
         'category_form': category_form,
         'category': category,
-        'flash_messages': flash_messages,
     }
 
     if is_bot:
@@ -345,7 +337,6 @@ def reattach(request, mlist_fqdn, threadid):
         'mlist': mlist,
         'thread': thread,
         'months_list': get_months(mlist),
-        'flash_messages': [],
     }
     template_name = "hyperkitty/reattach.html"
 
@@ -354,35 +345,32 @@ def reattach(request, mlist_fqdn, threadid):
         if not parent_tid:
             parent_tid = request.POST.get("parent-manual")
         if not parent_tid or not re.match(r"\w{32}", parent_tid):
-            context["flash_messages"].append(
-                {"type": "warning",
-                 "msg": "Invalid thread id, it should look "
-                        "like OUAASTM6GS4E5TEATD6R2VWMULG44NKJ."})
+            messages.warning(request,
+                "Invalid thread id, it should look "
+                "like OUAASTM6GS4E5TEATD6R2VWMULG44NKJ.")
             return render(request, template_name, context)
         if parent_tid == threadid:
-            context["flash_messages"].append(
-                {"type": "warning",
-                 "msg": "Can't re-attach a thread to "
-                        "itself, check your thread ID."})
+            messages.warning(request,
+                "Can't re-attach a thread to itself, check your thread ID.")
             return render(request, template_name, context)
         try:
             parent = Thread.objects.get(
                 mailinglist=thread.mailinglist, thread_id=parent_tid)
         except Thread.DoesNotExist:
-            context["flash_messages"].append(
-                {"type": "warning",
-                 "msg": "Unknown thread, check your thread ID."})
+            messages.warning(request,
+                "Unknown thread, check your thread ID.")
             return render(request, template_name, context)
         try:
             thread.starting_email.set_parent(parent.starting_email)
         except ValueError as e:
-            context["flash_messages"].append({"type": "error", "msg": str(e)})
+            messages.error(request, str(e))
             return render(request, template_name, context)
+        messages.success(request, "Thread successfully re-attached.")
         return redirect(reverse(
                 'hk_thread', kwargs={
                     "mlist_fqdn": mlist_fqdn,
                     'threadid': parent_tid,
-                })+"?msg=attached-ok")
+                }))
     return render(request, template_name, context)
 
 
@@ -397,10 +385,10 @@ def reattach_suggest(request, mlist_fqdn, threadid):
     if not search_query:
         search_query = default_search_query
     search_query = search_query.strip()
-    messages = SearchQuerySet().filter(
+    emails = SearchQuerySet().filter(
         mailinglist__exact=mlist_fqdn, content=search_query)[:50]
     suggested_threads = []
-    for msg in messages:
+    for msg in emails:
         sugg_thread = msg.object.thread
         if sugg_thread not in suggested_threads \
             and sugg_thread.thread_id != threadid:

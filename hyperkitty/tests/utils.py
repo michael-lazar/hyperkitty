@@ -30,8 +30,9 @@ import haystack
 import mailmanclient
 from mock import Mock, patch
 #from django import VERSION as DJANGO_VERSION
-from django.test import TestCase as DjangoTestCase
+from django.test import RequestFactory, TestCase as DjangoTestCase
 from django.conf import settings
+from django.contrib.messages.storage.cookie import CookieStorage
 from django.core.management import call_command
 #from django.core.cache import get_cache
 
@@ -128,3 +129,12 @@ class SearchEnabledTestCase(TestCase):
 def get_test_file(*fileparts):
     return os.path.join(os.path.dirname(__file__), "testdata", *fileparts)
 get_test_file.__test__ = False
+
+
+def get_flash_messages(response):
+    if "messages" not in response.cookies:
+        return []
+    dummy_request = RequestFactory().get("/")
+    dummy_request.COOKIES["messages"] = response.cookies["messages"].value
+    return list(CookieStorage(dummy_request))
+get_flash_messages.__test__ = False

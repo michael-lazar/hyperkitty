@@ -27,6 +27,7 @@ import json
 
 from django.http import HttpResponse, Http404
 from django.shortcuts import redirect, render, get_object_or_404
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.exceptions import SuspiciousOperation
 from django.template import RequestContext, loader
@@ -188,13 +189,13 @@ def new_message(request, mlist_fqdn):
                         "mlist_fqdn": mlist_fqdn,
                         'year': today.year,
                         'month': today.month})
-            redirect_url += "?msg=sent-ok"
             try:
                 post_to_list(request, mlist, form.cleaned_data['subject'],
                              form.cleaned_data["message"])
             except PostingFailed, e:
                 failure = str(e)
             else:
+                messages.success(request, "The message has been sent successfully.")
                 return redirect(redirect_url)
     else:
         form = PostForm()

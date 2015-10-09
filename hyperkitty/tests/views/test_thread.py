@@ -34,7 +34,8 @@ from django.core.urlresolvers import reverse
 
 from hyperkitty.lib.incoming import add_to_list
 from hyperkitty.models import MailingList, Thread, Tag, Tagging, Email
-from hyperkitty.tests.utils import TestCase, SearchEnabledTestCase
+from hyperkitty.tests.utils import (
+    TestCase, SearchEnabledTestCase, get_flash_messages)
 
 
 
@@ -79,8 +80,11 @@ class ReattachTestCase(SearchEnabledTestCase):
         threads = Thread.objects.order_by("id")
         self.assertEqual(len(threads), 1)
         self.assertEqual(threads[0].thread_id, threadid1)
-        expected_url = reverse('hk_thread', args=["list@example.com", threadid1]) + "?msg=attached-ok"
+        expected_url = reverse('hk_thread', args=["list@example.com", threadid1])
         self.assertRedirects(response, expected_url)
+        messages = get_flash_messages(response)
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0].tags, "success")
 
     def test_reattach_manual(self):
         threadid1 = self.messages[0]["Message-ID-Hash"]
@@ -91,8 +95,11 @@ class ReattachTestCase(SearchEnabledTestCase):
                                           "parent-manual": threadid1})
         threads = Thread.objects.order_by("id")
         self.assertEqual(threads[0].thread_id, threadid1)
-        expected_url = reverse('hk_thread', args=["list@example.com", threadid1]) + "?msg=attached-ok"
+        expected_url = reverse('hk_thread', args=["list@example.com", threadid1])
         self.assertRedirects(response, expected_url)
+        messages = get_flash_messages(response)
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0].tags, "success")
 
     def test_reattach_invalid(self):
         threadid = self.messages[0]["Message-ID-Hash"]
@@ -102,9 +109,10 @@ class ReattachTestCase(SearchEnabledTestCase):
         self.assertEqual(Thread.objects.count(), 2)
         for thread in Thread.objects.all():
             self.assertEqual(thread.emails.count(), 1)
-        self.assertContains(response, '<div class="alert alert-warning">',
-                count=1, status_code=200)
-        self.assertContains(response, "Invalid thread id, it should look")
+        messages = list(response.context["messages"])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0].tags, "warning")
+        self.assertIn("Invalid thread id, it should look", str(messages[0]))
 
     def test_reattach_on_itself(self):
         threadid = self.messages[0]["Message-ID-Hash"]
@@ -114,9 +122,11 @@ class ReattachTestCase(SearchEnabledTestCase):
         self.assertEqual(Thread.objects.count(), 2)
         for thread in Thread.objects.all():
             self.assertEqual(thread.emails.count(), 1)
-        self.assertContains(response, '<div class="alert alert-warning">',
-                count=1, status_code=200)
-        self.assertContains(response, "Can&#39;t re-attach a thread to itself")
+        messages = list(response.context["messages"])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0].tags, "warning")
+        self.assertIn("Can't re-attach a thread to itself",
+            str(messages[0]))
 
     def test_reattach_on_unknown(self):
         threadid = self.messages[0]["Message-ID-Hash"]
@@ -127,9 +137,10 @@ class ReattachTestCase(SearchEnabledTestCase):
         self.assertEqual(Thread.objects.count(), 2)
         for thread in Thread.objects.all():
             self.assertEqual(thread.emails.count(), 1)
-        self.assertContains(response, '<div class="alert alert-warning">',
-                count=1, status_code=200)
-        self.assertContains(response, "Unknown thread")
+        messages = list(response.context["messages"])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0].tags, "warning")
+        self.assertIn("Unknown thread", str(messages[0]))
 
 
 

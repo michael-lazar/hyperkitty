@@ -82,7 +82,7 @@ h1 {
     background-color: #f2dede;
 }
 
-// Flash messages 
+// Flash messages
 .flashmsgs {
     position: absolute;
     left: 0;
@@ -94,6 +94,10 @@ h1 {
     .alert {
         display: inline-block;
     }
+    .alert.info    { @include alert-variant($alert-info-bg, $alert-info-border, $alert-info-text); }
+    .alert.success { @include alert-variant($alert-success-bg, $alert-success-border, $alert-success-text); }
+    .alert.warning { @include alert-variant($alert-warning-bg, $alert-warning-border, $alert-warning-text); }
+    .alert.error   { @include alert-variant($alert-danger-bg, $alert-danger-border, $alert-danger-text); }
 }
 
 // Favorites
