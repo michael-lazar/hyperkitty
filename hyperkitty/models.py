@@ -97,7 +97,7 @@ class Profile(models.Model):
                                 related_name="hyperkitty_profile")
 
     karma = models.IntegerField(default=1)
-    TIMEZONES = [ (tz, tz) for tz in pytz.common_timezones ]
+    TIMEZONES = sorted([ (tz, tz) for tz in pytz.common_timezones ])
     timezone = models.CharField(max_length=100, choices=TIMEZONES, default=u"")
 
     def __unicode__(self):
