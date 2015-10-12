@@ -19,6 +19,9 @@
         font-size: 120%;
         padding-bottom: 0.5em;
     }
+    .list-stats {
+        font-size: 90%;
+    }
 }
 
 
@@ -66,7 +69,12 @@
             float: left;
         }
 
+        .thread-extras {
+            font-size: 90%;
+        }
+
         .thread-category {
+            font-size: 110%;
             padding-bottom: 0.25em;
         }
 
@@ -78,20 +86,20 @@
         }
 
         .tags {
-            display: none;
-            margin-right: 1em;
-            li {
-                padding: 0 0.2em 0 0.2em;
+            ul {
+                display: inline;
+                margin: 0 0 0 0.2em;
             }
-            a {
-                font-size: 90%;
+            li {
+                padding: 0;
+                margin: 0;
             }
         }
     }
 
 }
 
-// for viewports larger than 320px, add more spacing
+// for viewports larger than XS, add more spacing
 @media (min-width: $screen-xs-min) {
     #thread-list  {
         .thread-list-info {
@@ -99,16 +107,16 @@
         }
     }
 }
-// for small viewports (480 <= x < 768)
-@media (max-width: $screen-md-max) and (min-width: $screen-xs-min) {
+// for extra-small viewports, the like form appears on the right
+@media (min-width: $screen-xs-min) and (max-width: $screen-xs-max) {
     #thread-list .thread-info {
         .likeform {
             float: right;
         }
     }
 }
-// for viewports >= 768px, thread stats appears on a single line, so align properly
-@media (min-width: $screen-sm-min) {
+// for small, medium and large viewports, thread stats appears on a single line, so align properly
+@media (min-width: $screen-sm-min) and (max-width: $screen-lg-max) {
     #thread-list .thread-info {
         .list-stats {
             text-align: right;

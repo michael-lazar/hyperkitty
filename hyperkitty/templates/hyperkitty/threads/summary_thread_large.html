@@ -36,13 +36,13 @@
                         </span>
                     </div>
                     <div class="thread-extras row">
-                        <div class="thread-category col-tn-12 col-xs-6 col-sm-3">
-                            {% include 'hyperkitty/threads/category.html' with category=thread.category_hk category_form=thread.category_form threadid=thread.thread_id %}
+                        <div class="thread-category col-tn-12 col-xs-6 col-sm-3 col-xl-2">
+                            {% include 'hyperkitty/threads/category.html' with category=thread.category category_form=thread.category_form threadid=thread.thread_id %}
                         </div>
-                        <div class="col-tn-12 col-xs-6 col-sm-4">
+                        <div class="col-tn-12 col-xs-6 col-sm-4 col-xl-3">
                             {% include "hyperkitty/messages/like_form.html" with message_id_hash=starting_email.message_id_hash object=thread %}
                         </div>
-                        <ul class="list-unstyled list-stats col-tn-12 col-xs-12 col-sm-5">
+                        <ul class="list-unstyled list-stats col-tn-12 col-sm-5 col-xl-3">
                             <li>
                                 <i class="icomoon participant"></i>
                                 {{ thread.participants_count }} {% trans "participants" %}
@@ -52,21 +52,19 @@
                                 {{ thread|num_comments }} {% trans "comments" %}
                             </li>
                         </ul>
+                        <div class="tags col-tn-12 col-xl-4">
+                            {% if thread.tags.count %}
+                            {% trans "Tags:" %}
+                            <ul class="list-unstyled list-inline">
+                            {% for tag in thread.tags.distinct %}
+                                <li>
+                                    <a href="{#% url 'hk_search_tag' mlist_fqdn=mlist.name tag=tag.name %#}">{{tag.name}}</a>{% if not forloop.last %},{% endif %}
+                                </li>
+                            {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
                     </div>
-                    <!--
-                    <div class="tags">
-                        {% if thread.tags|length %}
-                        {% trans "Tags:" %}
-                        <ul class="list-unstyled tags">
-                        {% for tag in thread.tags %}
-                            <li>
-                                <a href="{#% url 'hk_search_tag' mlist_fqdn=mlist.name tag=tag.tag %#}">{{tag.tag}}</a>
-                            </li>
-                        {% endfor %}
-                        </ul>
-                        {% endif %}
-                    </div>
-                    -->
                 </div>
             </div>
         </div>
