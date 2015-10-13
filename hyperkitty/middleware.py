@@ -77,7 +77,7 @@ class SSLRedirect(object):
                 continue
             if isinstance(module_or_view, tuple):
                 # see the django.conf.urls.include method
-                urlconf_module, app_name, namespace = module_or_view
+                urlconf_module, _app_name, _namespace = module_or_view
                 add_patterns(urlconf_module)
                 continue
             try:

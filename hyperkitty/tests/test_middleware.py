@@ -19,7 +19,7 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-# pylint: disable=unnecessary-lambda,protected-access
+# pylint: disable=unnecessary-lambda,protected-access,no-init
 
 from __future__ import absolute_import, print_function, unicode_literals
 

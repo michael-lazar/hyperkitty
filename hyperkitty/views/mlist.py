@@ -31,7 +31,7 @@ from django.utils import formats
 from django.utils.dateformat import format as date_format
 from django.http import Http404, HttpResponse
 
-from hyperkitty.models import Favorite, MailingList, ThreadCategory
+from hyperkitty.models import Favorite, MailingList
 from hyperkitty.lib.view_helpers import (
     get_category_widget, get_months, get_display_dates, daterange,
     check_mlist_private)

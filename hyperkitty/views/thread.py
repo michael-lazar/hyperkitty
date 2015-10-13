@@ -36,7 +36,7 @@ from django.utils.timezone import utc
 import robot_detection
 from haystack.query import SearchQuerySet
 
-from hyperkitty.models import Tag, Tagging, Favorite, LastView, Thread, MailingList, ThreadCategory
+from hyperkitty.models import Tag, Tagging, Favorite, LastView, Thread, MailingList
 from hyperkitty.views.forms import AddTagForm, ReplyForm
 from hyperkitty.lib.utils import stripped_subject
 from hyperkitty.lib.view_helpers import (get_months, get_category_widget,
