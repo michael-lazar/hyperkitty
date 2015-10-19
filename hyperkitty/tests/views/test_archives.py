@@ -37,7 +37,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from hyperkitty.models import (MailingList, ArchivePolicy, Sender, Thread,
-    Favorite)
+    Favorite, Email)
 from hyperkitty.lib.incoming import add_to_list
 from hyperkitty.lib.mailman import FakeMMList, FakeMMMember
 from hyperkitty.tests.utils import TestCase
@@ -166,6 +166,25 @@ class ExportMboxTestCase(TestCase):
         self.assertEqual(len(mbox), 1)
         mbox_msg = mbox.values()[0]
         self.assertEqual(mbox_msg["Message-ID"], "<msg2>")
+
+    def test_thread(self):
+        msg = Message()
+        msg["From"] = "dummy@example.com"
+        msg["Message-ID"] = "<msg2>"
+        msg["In-Reply-To"] = "<msg>"
+        msg.set_payload("Dummy message")
+        add_to_list("list@example.com", msg)
+        # Add a message in a different thread:
+        msg = Message()
+        msg["From"] = "dummy@example.com"
+        msg["Message-ID"] = "<msg3>"
+        msg.set_payload("Dummy message")
+        add_to_list("list@example.com", msg)
+        thread_id = Email.objects.get(message_id="msg").thread.thread_id
+        mbox = self._get_mbox(qs="thread=%s" % thread_id)
+        self.assertEqual(len(mbox), 2)
+        self.assertEqual(
+            [ m["Message-ID"] for m in mbox ], ["<msg>", "<msg2>"])
 
 
 class PrivateArchivesTestCase(TestCase):

@@ -26,14 +26,15 @@ import datetime
 import re
 import json
 
-from django.http import HttpResponse, Http404
-from django.template import RequestContext, loader
-from django.shortcuts import render, redirect, get_object_or_404
+import robot_detection
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.exceptions import SuspiciousOperation
+from django.http import HttpResponse, Http404
+from django.shortcuts import render, redirect, get_object_or_404
+from django.template import RequestContext, loader
 from django.utils.timezone import utc
-import robot_detection
+from django.utils.translation import gettext as _
 from haystack.query import SearchQuerySet
 
 from hyperkitty.models import Tag, Tagging, Favorite, LastView, Thread, MailingList
@@ -144,6 +145,16 @@ def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
     else:
         is_bot = True
 
+    # Export button
+    export = {
+        "url": "%s?thread=%s" % (
+            reverse("hk_list_export_mbox", kwargs={
+                    "mlist_fqdn": mlist.name,
+                    "filename": "%s-%s" % (mlist.name, thread.thread_id)}),
+            thread.thread_id),
+        "message": _("Download this thread (mbox)"),
+    }
+
     context = {
         'mlist': mlist,
         'thread': thread,
@@ -163,6 +174,7 @@ def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
         'unread_count': unread_count,
         'category_form': category_form,
         'category': category,
+        'export': export,
     }
 
     if is_bot:
