@@ -22,14 +22,16 @@
 from __future__ import absolute_import, unicode_literals
 
 import datetime
-
 import json
+from email.message import Message
+
+from dateutil.tz import tzoffset
 from django.shortcuts import redirect, render, get_object_or_404
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.utils import formats
+from django.utils import formats, timezone
 from django.utils.dateformat import format as date_format
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, StreamingHttpResponse
 
 from hyperkitty.models import Favorite, MailingList
 from hyperkitty.lib.view_helpers import (
@@ -218,3 +220,46 @@ def recent_activity(request, mlist_fqdn):
              for d in sorted(emails_per_date) ]
     return HttpResponse(json.dumps({"evolution": evolution}),
                         content_type='application/javascript')
+
+
+@check_mlist_private
+def export_mbox(request, mlist_fqdn, filename):
+    mlist = get_object_or_404(MailingList, name=mlist_fqdn)
+    query = mlist.emails
+    if "start" in request.GET:
+        start_date = datetime.datetime.strptime(
+            request.GET["start"], "%Y-%m-%d")
+        start_date = timezone.make_aware(start_date, timezone.utc)
+        query = query.filter(date__gte=start_date)
+    if "end" in request.GET:
+        end_date = datetime.datetime.strptime(
+            request.GET["end"], "%Y-%m-%d")
+        end_date = timezone.make_aware(end_date, timezone.utc)
+        query = query.filter(date__lt=end_date)
+    def stream_mbox(query):
+        for email in query.order_by("archived_date").all():
+            msg = Message()
+            header_from = email.sender.address.replace("@", " at ")
+            if email.sender.name and email.sender.name != email.sender.address:
+                header_from += " (%s)" % email.sender.name
+            msg["From"] = header_from
+            msg["To"] = email.mailinglist.name.replace("@", " at ")
+            msg["Message-ID"] = "<%s>" % email.message_id
+            msg["Subject"] = email.subject
+            # in Django >= 1.7, use timezone.get_fixed_timezone()
+            tz = tzoffset(None, email.timezone * 60)
+            header_date = email.date.astimezone(tz).replace(microsecond=0)
+            msg["Date"] = header_date.strftime("%Y-%m-%d %H:%M:%S %z")
+            if email.in_reply_to:
+                msg["In-Reply-To"] = email.in_reply_to
+            msg.set_payload(email.content, "utf-8")
+            msg.set_unixfrom("From %s %s" % (
+                email.sender.address.replace("@", " at "),
+                email.archived_date.strftime("%c")))
+            yield msg.as_string(unixfrom=True)
+            yield "\n\n"
+    response = StreamingHttpResponse(
+        stream_mbox(query), content_type="text/mbox")
+    response['Content-Disposition'] = (
+        'attachment; filename="%s.mbox"' % filename)
+    return response

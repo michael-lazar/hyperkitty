@@ -24,7 +24,12 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
+import os
 import datetime
+import mailbox
+import shutil
+import tempfile
+from email import message_from_string
 from email.message import Message
 
 from mock import Mock
@@ -91,6 +96,72 @@ class ListArchivesTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["threads_posted_to"]), 1)
         self.assertEqual(len(response.context["flagged_threads"]), 1)
+
+
+
+class ExportMboxTestCase(TestCase):
+
+    def setUp(self):
+        # Create the list by adding a dummy message
+        msg = Message()
+        msg["From"] = "dummy@example.com"
+        msg["Message-ID"] = "<msg>"
+        msg.set_payload("Dummy message")
+        add_to_list("list@example.com", msg)
+        # We need a temp dir for the mailbox, Python's mailbox module needs a
+        # filesystem path, it does not accept a file-like object.
+        self.tmpdir = tempfile.mkdtemp(prefix="hyperkitty-testing-")
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir)
+
+    def _get_mbox(self, qs=None):
+        url = reverse("hk_list_export_mbox",
+            args=["list@example.com", "dummy"])
+        if qs:
+            url += "?" + qs
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        mboxfilepath = os.path.join(self.tmpdir, "dummy.mbox")
+        with open(mboxfilepath, "w") as mboxfile:
+            for line in response.streaming_content:
+                mboxfile.write(line)
+        mbox = mailbox.mbox(mboxfilepath)
+        return mbox
+
+    def test_basic(self):
+        mbox = self._get_mbox()
+        response = self.client.get(reverse("hk_list_export_mbox",
+            args=["list@example.com", "dummy"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Disposition"],
+            'attachment; filename="dummy.mbox"')
+        content = "".join(response.streaming_content)
+        self.assertTrue(content.startswith("From dummy at example.com "))
+        email = message_from_string(content)
+        self.assertEqual(email["From"], "dummy at example.com")
+        self.assertEqual(email["Message-ID"], "<msg>")
+        self.assertEqual(email.get_payload(decode=True), "Dummy message")
+
+    def test_with_sender_name(self):
+        sender = Sender.objects.get(address='dummy@example.com')
+        sender.name = "Dummy Sender"
+        sender.save()
+        mbox = self._get_mbox()
+        email = mbox.values()[0]
+        self.assertEqual(email["From"], "dummy at example.com (Dummy Sender)")
+
+    def test_between_dates(self):
+        msg = Message()
+        msg["From"] = "dummy@example.com"
+        msg["Date"] = "2015-09-01 00:00:00"
+        msg["Message-ID"] = "<msg2>"
+        msg.set_payload("Dummy message")
+        add_to_list("list@example.com", msg)
+        mbox = self._get_mbox(qs="start=2015-09-01&end=2015-10-01")
+        self.assertEqual(len(mbox), 1)
+        mbox_msg = mbox.values()[0]
+        self.assertEqual(mbox_msg["Message-ID"], "<msg2>")
 
 
 class PrivateArchivesTestCase(TestCase):
