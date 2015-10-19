@@ -26,11 +26,10 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import os
 import datetime
+import gzip
 import mailbox
 import shutil
 import tempfile
-import zlib
-from email import message_from_string
 from email.message import Message
 
 from mock import Mock
@@ -123,25 +122,27 @@ class ExportMboxTestCase(TestCase):
             url += "?" + qs
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/gzip")
+        self.assertEqual(response["Content-Disposition"],
+            'attachment; filename="dummy.mbox.gz"')
         mboxfilepath = os.path.join(self.tmpdir, "dummy.mbox")
-        decompressor = zlib.decompressobj()
-        with open(mboxfilepath, "w") as mboxfile:
+        # Store the gzipped mailbox
+        with open(mboxfilepath + ".gz", "wb") as mboxfile:
             for line in response.streaming_content:
-                mboxfile.write(decompressor.decompress(line))
-            mboxfile.write(decompressor.flush())
+                mboxfile.write(line)
+        # Decompress the mailbox
+        with gzip.open(mboxfilepath + ".gz", 'rb') as f_in, \
+              open(mboxfilepath, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
         mbox = mailbox.mbox(mboxfilepath)
         return mbox
 
     def test_basic(self):
-        response = self.client.get(reverse("hk_list_export_mbox",
-            args=["list@example.com", "dummy"]))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/gzip")
-        self.assertEqual(response["Content-Disposition"],
-            'attachment; filename="dummy.mbox.gz"')
-        content = zlib.decompress(b"".join(response.streaming_content))
+        mbox = self._get_mbox()
+        content = open(mbox._path).read() # pylint: disable-msg=protected-access
         self.assertTrue(content.startswith("From dummy at example.com "))
-        email = message_from_string(content)
+        self.assertEqual(len(mbox), 1)
+        email = mbox.values()[0]
         self.assertEqual(email["From"], "dummy at example.com")
         self.assertEqual(email["Message-ID"], "<msg>")
         self.assertEqual(email.get_payload(decode=True), "Dummy message")

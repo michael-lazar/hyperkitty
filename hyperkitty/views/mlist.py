@@ -271,7 +271,8 @@ def export_mbox(request, mlist_fqdn, filename):
         end_date = timezone.make_aware(end_date, timezone.utc)
         query = query.filter(date__lt=end_date)
     def stream_mbox(query):
-        compressor = zlib.compressobj()
+        # Use the gzip format: http://www.zlib.net/manual.html#Advanced
+        compressor = zlib.compressobj(6, zlib.DEFLATED, zlib.MAX_WBITS | 16)
         for email in query.order_by("archived_date").all():
             msg = Message()
             header_from = email.sender.address.replace("@", " at ")
