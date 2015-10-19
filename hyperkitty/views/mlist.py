@@ -27,12 +27,13 @@ import zlib
 from email.message import Message
 
 from dateutil.tz import tzoffset
-from django.shortcuts import redirect, render, get_object_or_404
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.http import Http404, HttpResponse, StreamingHttpResponse
+from django.shortcuts import redirect, render, get_object_or_404
 from django.utils import formats, timezone
 from django.utils.dateformat import format as date_format
-from django.http import Http404, HttpResponse, StreamingHttpResponse
+from django.utils.translation import gettext as _
 
 from hyperkitty.models import Favorite, MailingList
 from hyperkitty.lib.view_helpers import (
@@ -70,11 +71,23 @@ def archives(request, mlist_fqdn, year=None, month=None, day=None):
         #list_title = date_format(begin_date, settings.DATE_FORMAT)
         list_title = formats.date_format(begin_date) # works with i18n
         no_results_text = "for this day"
+    # Export button
+    export = {
+        "url": "%s?start=%s&end=%s" % (
+            reverse("hk_list_export_mbox", kwargs={
+                    "mlist_fqdn": mlist.name,
+                    "filename": "%s-%s" % (
+                        mlist.name, begin_date.strftime("%Y-%m"))}),
+            begin_date.strftime("%Y-%m-%d"),
+            end_date.strftime("%Y-%m-%d")),
+        "message": _("Download this month (mbox)"),
+    }
     extra_context = {
         'month': begin_date,
         'month_num': begin_date.month,
         "list_title": list_title.capitalize(),
         "no_results_text": no_results_text,
+        "export": export,
     }
     if day is None:
         extra_context["participants_count"] = \
@@ -176,6 +189,25 @@ def overview(request, mlist_fqdn=None):
         "popular": 'No vote has been cast this month (yet).',
     }
 
+    # Export button
+    recent_dates = [
+        d.strftime("%Y-%m-%d") for d in mlist.get_recent_dates() ]
+    recent_url = "%s?start=%s&end=%s" % (
+        reverse("hk_list_export_mbox", kwargs={
+                "mlist_fqdn": mlist.name,
+                "filename": "%s-%s-%s" % (
+                    mlist.name, recent_dates[0], recent_dates[1])}),
+        recent_dates[0], recent_dates[1])
+    today = datetime.date.today()
+    month_dates = get_display_dates(today.year, today.month, None)
+    month_url = "%s?start=%s&end=%s" % (
+        reverse("hk_list_export_mbox", kwargs={
+                "mlist_fqdn": mlist.name,
+                "filename": "%s-%s" % (mlist.name, today.strftime("%Y-%m"))}),
+        month_dates[0].strftime("%Y-%m-%d"),
+        month_dates[1].strftime("%Y-%m-%d"))
+    export = {"recent": recent_url, "month": month_url}
+
     context = {
         'view_name': 'overview',
         'mlist' : mlist,
@@ -188,6 +220,7 @@ def overview(request, mlist_fqdn=None):
         'flagged_threads': favorites,
         'threads_posted_to': threads_posted_to,
         'empty_messages': empty_messages,
+        'export': export,
     }
     return render(request, "hyperkitty/overview.html", context)
 

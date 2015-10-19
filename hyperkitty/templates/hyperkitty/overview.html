@@ -212,6 +212,32 @@
             {% endfor %}
         </section>
         {% endif %}
+
+        <section id="actions" class="col-tn-12 col-xs-6 col-sm-12">
+            <h3>{% trans "Actions" %}</h3>
+            <!-- Subscription -->
+            {% if postorius_installed %}
+            <p>
+              <a class="btn btn-default btn-sm" href="{{ postorius_installed }}/{{ mlist.name }}">
+                <i class="fa fa-inbox"></i>
+                Manage subscription</a>
+            </p>
+            {% endif %}
+            <!-- Download as mbox -->
+            <div class="btn-group">
+                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    {% trans "Download as mbox" %} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ export.recent }}">{% trans "Past 30 days" %}</a></li>
+                    <li><a href="{{ export.month }}">{% trans "This month" %}</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="{% url 'hk_list_export_mbox' mlist_fqdn=mlist.name filename=mlist.name %}">{% trans "Entire archive" %}</a></li>
+                </ul>
+            </div>
+        </section>
+
         </div>
     </div> <!-- /container, for list stats -->
 

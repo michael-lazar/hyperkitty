@@ -56,12 +56,18 @@
     </div>
 </div>
 
+
 {% if mlist and pagename != 'overview' %}
 <div class="row">
-    <a href="{% url 'hk_list_overview' mlist_fqdn=mlist.name %}"
+    <p><a href="{% url 'hk_list_overview' mlist_fqdn=mlist.name %}"
        class="btn btn-default btn-sm">
        <span class="fa fa-angle-double-left"></span>
-       {% trans "List overview" %}</a>
+       {% trans "List overview" %}</a></p>
+
+    <!-- Download as mbox -->
+    {% if export %}
+    <p><a href="{{ export.url }}" class="btn btn-default btn-sm">{{ export.message }}</a></p>
+    {% endif %}
 </div>
 {% endif %}
 

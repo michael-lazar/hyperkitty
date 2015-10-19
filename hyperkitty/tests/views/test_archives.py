@@ -133,7 +133,6 @@ class ExportMboxTestCase(TestCase):
         return mbox
 
     def test_basic(self):
-        mbox = self._get_mbox()
         response = self.client.get(reverse("hk_list_export_mbox",
             args=["list@example.com", "dummy"]))
         self.assertEqual(response.status_code, 200)
