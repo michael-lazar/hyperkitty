@@ -23,6 +23,7 @@ from __future__ import absolute_import, unicode_literals
 
 import datetime
 import json
+import zlib
 from email.message import Message
 
 from dateutil.tz import tzoffset
@@ -237,6 +238,7 @@ def export_mbox(request, mlist_fqdn, filename):
         end_date = timezone.make_aware(end_date, timezone.utc)
         query = query.filter(date__lt=end_date)
     def stream_mbox(query):
+        compressor = zlib.compressobj()
         for email in query.order_by("archived_date").all():
             msg = Message()
             header_from = email.sender.address.replace("@", " at ")
@@ -256,10 +258,11 @@ def export_mbox(request, mlist_fqdn, filename):
             msg.set_unixfrom("From %s %s" % (
                 email.sender.address.replace("@", " at "),
                 email.archived_date.strftime("%c")))
-            yield msg.as_string(unixfrom=True)
-            yield "\n\n"
+            yield compressor.compress(msg.as_string(unixfrom=True))
+            yield compressor.compress("\n\n")
+        yield compressor.flush()
     response = StreamingHttpResponse(
-        stream_mbox(query), content_type="text/mbox")
+        stream_mbox(query), content_type="application/gzip")
     response['Content-Disposition'] = (
-        'attachment; filename="%s.mbox"' % filename)
+        'attachment; filename="%s.mbox.gz"' % filename)
     return response

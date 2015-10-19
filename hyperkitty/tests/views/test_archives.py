@@ -29,6 +29,7 @@ import datetime
 import mailbox
 import shutil
 import tempfile
+import zlib
 from email import message_from_string
 from email.message import Message
 
@@ -123,9 +124,11 @@ class ExportMboxTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         mboxfilepath = os.path.join(self.tmpdir, "dummy.mbox")
+        decompressor = zlib.decompressobj()
         with open(mboxfilepath, "w") as mboxfile:
             for line in response.streaming_content:
-                mboxfile.write(line)
+                mboxfile.write(decompressor.decompress(line))
+            mboxfile.write(decompressor.flush())
         mbox = mailbox.mbox(mboxfilepath)
         return mbox
 
@@ -134,9 +137,10 @@ class ExportMboxTestCase(TestCase):
         response = self.client.get(reverse("hk_list_export_mbox",
             args=["list@example.com", "dummy"]))
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/gzip")
         self.assertEqual(response["Content-Disposition"],
-            'attachment; filename="dummy.mbox"')
-        content = "".join(response.streaming_content)
+            'attachment; filename="dummy.mbox.gz"')
+        content = zlib.decompress(b"".join(response.streaming_content))
         self.assertTrue(content.startswith("From dummy at example.com "))
         email = message_from_string(content)
         self.assertEqual(email["From"], "dummy at example.com")

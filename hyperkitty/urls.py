@@ -66,7 +66,7 @@ urlpatterns = patterns('hyperkitty.views',
         'mlist.overview', name='hk_list_overview'),
     url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/recent-activity$',
         'mlist.recent_activity', name='hk_list_recent_activity'),
-    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/export-mbox/(?P<filename>[^/]+)\.mbox$',
+    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/export-mbox/(?P<filename>[^/]+)\.mbox.gz$',
         'mlist.export_mbox', name='hk_list_export_mbox'),
 
     # Message
