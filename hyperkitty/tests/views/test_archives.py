@@ -145,7 +145,9 @@ class ExportMboxTestCase(TestCase):
         email = mbox.values()[0]
         self.assertEqual(email["From"], "dummy at example.com")
         self.assertEqual(email["Message-ID"], "<msg>")
-        self.assertEqual(email.get_payload(decode=True), "Dummy message")
+        self.assertTrue(email.is_multipart())
+        content = email.get_payload()[0]
+        self.assertEqual(content.get_payload(decode=True), "Dummy message")
 
     def test_with_sender_name(self):
         sender = Sender.objects.get(address='dummy@example.com')
@@ -153,7 +155,7 @@ class ExportMboxTestCase(TestCase):
         sender.save()
         mbox = self._get_mbox()
         email = mbox.values()[0]
-        self.assertEqual(email["From"], "dummy at example.com (Dummy Sender)")
+        self.assertEqual(email["From"], "Dummy Sender <dummy at example.com>")
 
     def test_between_dates(self):
         msg = Message()

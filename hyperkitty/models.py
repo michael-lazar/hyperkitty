@@ -24,8 +24,15 @@
 from __future__ import absolute_import, unicode_literals, print_function
 
 import datetime
+from email.charset import Charset, QP
+from email.encoders import encode_base64
+from email.header import Header
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.nonmultipart import MIMENonMultipart
 from urllib2 import HTTPError
 
+from dateutil.tz import tzoffset
 from django.conf import settings
 from django.db import models, IntegrityError
 from django.db.models.signals import (
@@ -431,6 +438,66 @@ class Email(models.Model):
             if former_thread.emails.count() == 0:
                 former_thread.delete()
         compute_thread_order_and_depth(parent.thread)
+
+    def as_message(self, escape_addresses=True):
+        # http://wordeology.com/computer/how-to-send-good-unicode-email-with-python.html
+        # http://stackoverflow.com/questions/31714221/how-to-send-an-email-with-quoted
+        # http://stackoverflow.com/questions/9403265/how-do-i-use-python/9509718#9509718
+        charset = Charset('utf-8')
+        charset.header_encoding = QP
+        charset.body_encoding = QP
+        msg = MIMEMultipart()
+
+        # Headers
+        unixfrom = "From %s %s" % (
+            self.sender.address, self.archived_date.strftime("%c"))
+        header_from = self.sender.address
+        if self.sender.name and self.sender.name != self.sender.address:
+            header_from = "%s <%s>" % (self.sender.name, header_from)
+        header_to = self.mailinglist.name
+        if escape_addresses:
+            header_from = header_from.replace("@", " at ")
+            header_to = header_to.replace("@", " at ")
+            unixfrom = unixfrom.replace("@", " at ")
+        msg.set_unixfrom(unixfrom)
+        headers = (
+            ("From", header_from),
+            ("To", header_to),
+            ("Subject", self.subject),
+            )
+        for header_name, header_value in headers:
+            if not header_value:
+                continue
+            try:
+                msg[header_name] = header_value.encode('ascii')
+            except UnicodeEncodeError:
+                msg[header_name] = Header(
+                    header_value.encode('utf-8'), charset).encode()
+        # in Django >= 1.7, use timezone.get_fixed_timezone()
+        tz = tzoffset(None, self.timezone * 60)
+        header_date = self.date.astimezone(tz).replace(microsecond=0)
+        msg["Date"] = header_date.strftime("%Y-%m-%d %H:%M:%S %z")
+        msg["Message-ID"] = "<%s>" % self.message_id
+        if self.in_reply_to:
+            msg["In-Reply-To"] = self.in_reply_to
+
+        # Body
+        # Don't use MIMEText, it won't encode to quoted-printable
+        textpart = MIMENonMultipart("text", "plain", charset='utf-8')
+        textpart.set_payload(self.content, charset=charset)
+        msg.attach(textpart)
+
+        # Attachments
+        for attachment in self.attachments.order_by("counter"):
+            mimetype = attachment.content_type.split('/', 1)
+            part = MIMEBase(mimetype[0], mimetype[1])
+            part.set_payload(attachment.content)
+            encode_base64(part)
+            part.add_header('Content-Disposition', 'attachment',
+                            filename=attachment.name)
+            msg.attach(part)
+
+        return msg
 
 
 @receiver([post_init, pre_save], sender=Email)

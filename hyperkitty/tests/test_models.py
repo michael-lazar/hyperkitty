@@ -28,6 +28,7 @@ import random
 import uuid
 from datetime import datetime
 from email.message import Message
+from email.mime.text import MIMEText
 from traceback import format_exc
 
 from mock import Mock
@@ -142,6 +143,68 @@ class ThreadTestCase(TestCase):
         msg_db = Email.objects.all()[0]
         self.assertTrue(len(msg_db.subject) < 2712,
                 "Very long subjects are not trimmed")
+
+
+class EmailTestCase(TestCase):
+
+    def test_as_message(self):
+        msg_in = Message()
+        msg_in["From"] = "dummy@example.com"
+        msg_in["Message-ID"] = "<msg>"
+        msg_in.set_payload("Dummy message")
+        add_to_list("list@example.com", msg_in)
+        email = Email.objects.get(message_id="msg")
+        msg = email.as_message()
+        self.assertEqual(msg["From"], "dummy at example.com")
+        self.assertEqual(msg["Message-ID"], "<msg>")
+        self.assertTrue(msg.is_multipart())
+        payload = msg.get_payload()
+        self.assertEqual(len(payload), 1)
+        self.assertEqual(payload[0].get_payload(decode=True), "Dummy message")
+
+    def test_as_message_unicode(self):
+        msg_in = Message()
+        msg_in["From"] = "dummy@example.com"
+        msg_in["Message-ID"] = "<msg>"
+        msg_in.set_payload("Dummy message ünîcödé", "utf-8")
+        add_to_list("list@example.com", msg_in)
+        email = Email.objects.get(message_id="msg")
+        msg = email.as_message()
+        self.assertEqual(msg["From"], "dummy at example.com")
+        self.assertEqual(msg["Message-ID"], "<msg>")
+        self.assertTrue(msg.is_multipart())
+        payload = msg.get_payload()
+        self.assertEqual(len(payload), 1)
+        payload = payload[0]
+        self.assertEqual(
+            payload["Content-Transfer-Encoding"], "quoted-printable")
+        self.assertEqual(payload.get_charset(), "utf-8")
+        self.assertEqual(
+            payload.get_payload(decode=True).decode("utf-8"),
+            "Dummy message ünîcödé")
+
+    def test_as_message_attachments(self):
+        msg_in = Message()
+        msg_in["From"] = "dummy@example.com"
+        msg_in["Message-ID"] = "<msg>"
+        msg_in.attach(MIMEText("Dummy message"))
+        msg_in.attach(MIMEText("<html><body>Dummy message</body></html>", _subtype="html"))
+        add_to_list("list@example.com", msg_in)
+        email = Email.objects.get(message_id="msg")
+        msg = email.as_message()
+        self.assertEqual(msg["From"], "dummy at example.com")
+        self.assertEqual(msg["Message-ID"], "<msg>")
+        self.assertTrue(msg.is_multipart())
+        payload = msg.get_payload()
+        self.assertEqual(len(payload), 2)
+        self.assertEqual(
+            payload[0].get_payload(decode=True).strip(), "Dummy message")
+        self.assertEqual(payload[1].get_content_type(), "text/html")
+        self.assertEqual(payload[1]["Content-Disposition"],
+            'attachment; filename="attachment.html"')
+        self.assertEqual(
+            payload[1].get_payload(decode=True),
+            "<html><body>Dummy message</body></html>")
 
 
 class EmailSetParentTestCase(TestCase):
