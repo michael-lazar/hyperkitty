@@ -151,7 +151,7 @@ class EmailTestCase(TestCase):
         msg_in = Message()
         msg_in["From"] = "dummy@example.com"
         msg_in["Message-ID"] = "<msg>"
-        msg_in.set_payload("Dummy message")
+        msg_in.set_payload("Dummy message with email@address.com")
         add_to_list("list@example.com", msg_in)
         email = Email.objects.get(message_id="msg")
         msg = email.as_message()
@@ -160,7 +160,8 @@ class EmailTestCase(TestCase):
         self.assertTrue(msg.is_multipart())
         payload = msg.get_payload()
         self.assertEqual(len(payload), 1)
-        self.assertEqual(payload[0].get_payload(decode=True), "Dummy message")
+        self.assertEqual(payload[0].get_payload(decode=True),
+            "Dummy message with email(a)address.com")
 
     def test_as_message_unicode(self):
         msg_in = Message()

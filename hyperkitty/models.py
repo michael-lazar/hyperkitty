@@ -24,6 +24,7 @@
 from __future__ import absolute_import, unicode_literals, print_function
 
 import datetime
+import re
 from email.charset import Charset, QP
 from email.encoders import encode_base64
 from email.header import Header
@@ -439,6 +440,9 @@ class Email(models.Model):
                 former_thread.delete()
         compute_thread_order_and_depth(parent.thread)
 
+
+    ADDRESS_REPLACE_RE = re.compile(r"([\w.+-]+)@([\w.+-]+)")
+
     def as_message(self, escape_addresses=True):
         # http://wordeology.com/computer/how-to-send-good-unicode-email-with-python.html
         # http://stackoverflow.com/questions/31714221/how-to-send-an-email-with-quoted
@@ -482,9 +486,10 @@ class Email(models.Model):
             msg["In-Reply-To"] = self.in_reply_to
 
         # Body
+        content = self.ADDRESS_REPLACE_RE.sub(r"\1(a)\2", self.content)
         # Don't use MIMEText, it won't encode to quoted-printable
         textpart = MIMENonMultipart("text", "plain", charset='utf-8')
-        textpart.set_payload(self.content, charset=charset)
+        textpart.set_payload(content, charset=charset)
         msg.attach(textpart)
 
         # Attachments
