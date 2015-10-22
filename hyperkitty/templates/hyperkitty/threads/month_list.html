@@ -61,12 +61,15 @@
 <div class="row">
     <p><a href="{% url 'hk_list_overview' mlist_fqdn=mlist.name %}"
        class="btn btn-default btn-sm">
-       <span class="fa fa-angle-double-left"></span>
+       <span class="fa fa-backward"></span>
        {% trans "List overview" %}</a></p>
 
     <!-- Download as mbox -->
     {% if export %}
-    <p><a href="{{ export.url }}" class="btn btn-default btn-sm">{{ export.message }}</a></p>
+    <p><a href="{{ export.url }}" title="{{ export.title }}"
+        class="btn btn-default btn-sm">
+        <i class="fa fa-download"></i> {{ export.message }}</a>
+    </p>
     {% endif %}
 </div>
 {% endif %}

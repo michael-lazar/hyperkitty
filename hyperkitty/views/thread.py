@@ -152,7 +152,8 @@ def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
                     "mlist_fqdn": mlist.name,
                     "filename": "%s-%s" % (mlist.name, thread.thread_id)}),
             thread.thread_id),
-        "message": _("Download this thread (mbox)"),
+        "message": _("Download"),
+        "title": _("This thread in gzipped mbox format"),
     }
 
     context = {

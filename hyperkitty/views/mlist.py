@@ -78,7 +78,8 @@ def archives(request, mlist_fqdn, year=None, month=None, day=None):
                         mlist.name, begin_date.strftime("%Y-%m"))}),
             begin_date.strftime("%Y-%m-%d"),
             end_date.strftime("%Y-%m-%d")),
-        "message": _("Download this month (mbox)"),
+        "message": _("Download"),
+        "title": _("This month in gzipped mbox format"),
     }
     extra_context = {
         'month': begin_date,
