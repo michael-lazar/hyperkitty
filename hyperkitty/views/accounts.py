@@ -273,7 +273,8 @@ def public_profile(request, user_id):
     else:
         creation = None
     posts_count = Email.objects.filter(sender__mailman_id=user_id).count()
-    is_user = bool(set([str(a) for a in mm_user.addresses])
+    is_user = request.user.is_authenticated() and bool(
+                   set([str(a) for a in mm_user.addresses])
                  & set(request.user.hyperkitty_profile.addresses))
     context = {
         "fullname": fullname,

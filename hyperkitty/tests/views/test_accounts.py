@@ -81,6 +81,12 @@ class AccountViewsTestCase(TestCase):
                                    args=[user_id.int]))
         self.assertEqual(response.status_code, 200)
 
+    def test_public_profile_anonymous(self):
+        user_id = uuid.uuid1()
+        response = self.client.get(reverse("hk_public_user_profile",
+                                   args=[user_id.int]))
+        self.assertEqual(response.status_code, 200)
+
     @override_settings(USE_INTERNAL_AUTH=True)
     def test_registration_redirect(self):
         self.client.login(username='testuser', password='testPass')
