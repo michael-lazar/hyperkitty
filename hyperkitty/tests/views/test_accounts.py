@@ -87,6 +87,21 @@ class AccountViewsTestCase(TestCase):
                                    args=[user_id.int]))
         self.assertEqual(response.status_code, 200)
 
+    def test_public_profile_as_oneself(self):
+        user_id = uuid.uuid1()
+        self.mailman_client.get_list.side_effect = lambda name: FakeMMList(name)
+        self.mm_user = Mock()
+        self.mailman_client.get_user.side_effect = lambda name: self.mm_user
+        self.mm_user.user_id = user_id.int
+        self.mm_user.created_on = None
+        self.mm_user.addresses = ["test@example.com"]
+        self.client.login(username='testuser', password='testPass')
+        response = self.client.get(reverse("hk_public_user_profile",
+                                   args=[user_id.int]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["is_user"])
+        self.assertContains(response, reverse("hk_user_profile"), count=2)
+
     @override_settings(USE_INTERNAL_AUTH=True)
     def test_registration_redirect(self):
         self.client.login(username='testuser', password='testPass')
