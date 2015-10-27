@@ -78,7 +78,9 @@
                     </button>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="loginDropdownMenu">
                         {% if postorius_installed %}
-                        <li role="presentation"><a role="menuitem" tabindex="-1" class="postorius" href="{{ postorius_installed }}">{% trans 'Manage lists' %}</a></li>
+                        <li role="presentation">
+                            <a role="menuitem" tabindex="-1" class="postorius" href="{{ postorius_installed }}">{% trans 'Manage lists' %}</a>
+                        </li>
                         {% endif %}
                         {% if use_internal_auth %}
                         <li role="presentation"><a role="menuitem" tabindex="-1" class="mm_user" href="{{ login_url }}?next={{next|default:request.path|urlencode}}">{% trans "Login" %}</a></li>
@@ -103,11 +105,17 @@
                     {% endif %}
                 </ul>
 
+                {% with postorius_installed="/postorius" %}
                 {% if postorius_installed %}
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a class="postorius" href="{{ postorius_installed }}">{% trans 'Manage lists' %}</a></li>
-                </ul>
+                <ul class="nav navbar-nav navbar-right"><li>
+                    {% if mlist %}
+                    <a href="{{ postorius_installed }}/{{ mlist.name }}">{% trans 'Manage this list' %}</a>
+                    {% else %}
+                    <a href="{{ postorius_installed }}">{% trans 'Manage lists' %}</a>
+                    {% endif %}
+                </li></ul>
                 {% endif %}
+                {% endwith %}
 
                 <form name="search" method="get" action="{% url 'hk_search' %}" class="navbar-form navbar-right" role="search">
                     {% if mlist %}<input type="hidden" name="mlist" value="{{ mlist.name }}" />{% endif %}
