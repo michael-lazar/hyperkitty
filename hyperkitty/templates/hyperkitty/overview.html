@@ -63,13 +63,14 @@
 
         <div class="row">
             <a id="home"></a>
-            <div class="list-actions col-tn-6 col-sm-4" {% if not user.is_authenticated %}title="{% trans 'You must be logged-in to create a thread.' %}"{% endif %}>
+            <div class="list-actions col-tn-6 col-sm-4">
                 <a href="{% url "hk_message_new" mlist_fqdn=mlist.name %}"
-                    class="btn btn-default{% if not user.is_authenticated %} disabled{% endif %}">
+                    class="btn btn-default{% if not user.is_authenticated %} disabled" title="{% trans 'You must be logged-in to create a thread.' %}{% endif %}">
                     <i class="fa fa-plus"></i>
                     <span class="hidden-tn hidden-xs">Start a n</span><span class="hidden-sm hidden-md hidden-lg">N</span>ew thread
                 </a>
                 {% if postorius_installed %}
+                <!-- Subscription -->
                 <a class="btn btn-default" href="{{ postorius_installed }}/{{ mlist.name }}">
                   <i class="fa fa-inbox"></i>
                   <span class="hidden-tn hidden-xs">Manage s</span><span class="hidden-sm hidden-md hidden-lg">S</span>ubscription</a>
@@ -212,33 +213,6 @@
             {% endfor %}
         </section>
         {% endif %}
-
-        <section id="actions" class="col-tn-12 col-xs-6 col-sm-12">
-            <h3>{% trans "Actions" %}</h3>
-            <ul class="list-inline">
-                <!-- Subscription -->
-                {% if postorius_installed %}
-                <li><a class="btn btn-default btn-sm" href="{{ postorius_installed }}/{{ mlist.name }}">
-                  <i class="fa fa-inbox"></i>
-                  Manage subscription</a></li>
-                {% endif %}
-                <!-- Download as mbox -->
-                <li><div class="btn-group">
-                    <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-download"></i>
-                        {% trans "Download" %} <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a href="{{ export.recent }}">{% trans "Past 30 days" %} <small>(mbox)</small></a></li>
-                        <li><a href="{{ export.month }}">{% trans "This month" %} <small>(mbox)</small></a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="{% url 'hk_list_export_mbox' mlist_fqdn=mlist.name filename=mlist.name %}">
-                            {% trans "Entire archive" %} <small>(mbox)</small></a></li>
-                    </ul>
-                </div></li>
-            </ul>
-        </section>
 
         </div>
     </div> <!-- /container, for list stats -->
