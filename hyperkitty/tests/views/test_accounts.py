@@ -100,7 +100,8 @@ class AccountViewsTestCase(TestCase):
                                    args=[user_id.int]))
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context["is_user"])
-        self.assertContains(response, reverse("hk_user_profile"), count=2)
+        self.assertContains(response, "This is you.", count=1)
+        self.assertContains(response, "Edit your private profile", count=1)
 
     @override_settings(USE_INTERNAL_AUTH=True)
     def test_registration_redirect(self):
