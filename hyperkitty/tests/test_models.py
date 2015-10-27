@@ -29,6 +29,7 @@ import uuid
 from datetime import datetime
 from email.message import Message
 from email.mime.text import MIMEText
+from mimetypes import guess_all_extensions
 from traceback import format_exc
 
 from mock import Mock
@@ -200,9 +201,13 @@ class EmailTestCase(TestCase):
         self.assertEqual(len(payload), 2)
         self.assertEqual(
             payload[0].get_payload(decode=True).strip(), "Dummy message")
+        # The filename extension detection from content type is a bit random
+        # (depends on the PYTHON_HASHSEED), make sure we get the right one
+        # here for testing.
+        expected_ext = guess_all_extensions("text/html", strict=False)[0]
         self.assertEqual(payload[1].get_content_type(), "text/html")
         self.assertEqual(payload[1]["Content-Disposition"],
-            'attachment; filename="attachment.html"')
+            'attachment; filename="attachment%s"' % expected_ext)
         self.assertEqual(
             payload[1].get_payload(decode=True),
             "<html><body>Dummy message</body></html>")
