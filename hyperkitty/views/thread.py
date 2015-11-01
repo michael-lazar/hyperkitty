@@ -77,7 +77,9 @@ def _get_thread_replies(request, thread, limit, offset=1):
             elif email.level < 0:
                 email.level = 0
         # Subject change
-        subject = stripped_subject(mlist, email.subject)
+        subject = email.subject.strip()
+        if mlist.subject_prefix:
+            subject = subject.replace(mlist.subject_prefix, "")
         subject = REPLY_RE.sub("", subject.strip())
         if subject == initial_subject.strip():
             email.changed_subject = False

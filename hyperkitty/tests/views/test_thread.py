@@ -283,12 +283,22 @@ class ThreadTestCase(TestCase):
 
     def test_subject_changed(self):
         # Test the detection of subject change
-        self._make_msg("msgid2", {"In-Reply-To": "<msgid>", "Subject": "Re: Dummy message"})
-        self._make_msg("msgid3", {"In-Reply-To": "<msgid2>", "Subject": "Re: Re: Dummy message"})
-        self._make_msg("msgid4", {"In-Reply-To": "<msgid3>", "Subject": "Re: Re: Re: Dummy message"})
+        self._make_msg("msgid2", {"In-Reply-To": "<msgid>",
+                        "Subject": "Re: Dummy message"})
+        self._make_msg("msgid3", {"In-Reply-To": "<msgid2>",
+                        "Subject": "Re: Re: Dummy message"})
+        self._make_msg("msgid4", {"In-Reply-To": "<msgid3>",
+                        "Subject": "Re: Re: Re: Dummy message"})
+        self._make_msg("msgid5", {"In-Reply-To": "<msgid4>",
+                       "Subject": "[example] Re: Dummy message"})
+        self._make_msg("msgid6", {"In-Reply-To": "<msgid5>",
+                       "Subject": "Re: [example] Dummy message"})
+        self._make_msg("msgid7", {"In-Reply-To": "<msgid6>",
+                       "Subject": "Re: [example] Re: Dummy message"})
         url = reverse('hk_thread', args=["list@example.com", self.threadid])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["replies"]), 3)
+        self.assertEqual(len(response.context["replies"]), 6)
         for email in response.context["replies"]:
-            self.assertFalse(email.changed_subject)
+            self.assertFalse(email.changed_subject,
+                "Message %s changed subject" % email.message_id)
