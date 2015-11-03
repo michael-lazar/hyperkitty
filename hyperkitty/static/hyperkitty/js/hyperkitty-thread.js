@@ -274,6 +274,11 @@ function setup_replies(baseElem) {
     $(baseElem).find(".reply-form input[name='newthread']").change(function() {
         set_new_thread($(this));
     }).change();
+    $(baseElem).find(".reply-form select[name='sender']").each(function() {
+        if ($(this).find("option").length < 2) {
+            $(this).closest("li").hide();
+        }
+    });
 }
 
 function setup_unreadnavbar(element) {

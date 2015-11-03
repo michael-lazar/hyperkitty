@@ -131,20 +131,18 @@
             <form method="post" enctype="multipart/form-data"
                   action="{% url 'hk_message_reply' mlist_fqdn=email.mailinglist.name message_id_hash=email.message_id_hash %}">
                 {% csrf_token %}
-                <div class="reply-tools">
-                    <a class="btn quote" href="#">{% trans "Quote" %}</a>
-                    <label>{{ reply_form.newthread }} {% trans "Create new thread" %}</label>
-                    <a class="reply-mailto"
+                <ul class="list-inline reply-tools">
+                    <li><a class="btn btn-sm btn-default quote" href="#">{% trans "Quote" %}</a></li>
+                    <li class="checkbox"><label>{{ reply_form.newthread }} {% trans "Create new thread" %}</label></li>
+                    <li><label for="{{ reply_form.sender.id_for_label }}">{% trans "Sent as:" %}</label>
+                        {{ reply_form.sender }}</li>
+                    <li><a class="btn btn-sm btn-default reply-mailto"
                        href="mailto:{{ email.mailinglist.name }}?Subject={{ email.subject|reply_subject|urlencode }}&amp;In-Reply-To=&lt;{{ email.message_id|urlencode }}&gt;"
-                       >{% trans 'Use email software' %}</a>
-                </div>
+                       >{% trans 'Use email software' %}</a></li>
+                </ul>
                 {{ reply_form.non_field_errors }}
-                {% for field in reply_form %}
-                    {% if field.html_name != "newthread" %}
-                        <p>{{ field }} {{ field.errors}}</p>
-                    {% endif %}
-                {% endfor %}
-                {# { reply_form.as_p } #}
+                <p>{{ reply_form.subject }} {{ reply_form.subject.errors}}</p>
+                <p>{{ reply_form.message }} {{ reply_form.message.errors}}</p>
                 <p class="buttons">
                     <button type="submit" class="submit btn btn-primary">{% trans "Send" %}</button>
                     {% trans "or" %} <a class="cancel" href="#">{% trans "cancel" %}</a>

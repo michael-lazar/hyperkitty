@@ -97,6 +97,7 @@ class MailmanSubscribeTestCase(TestCase):
         # confirmation, Mailman will reply with a 202 code, and mailman.client
         # will return the response content (a dict) instead of a Member
         # instance. Make sure we can handle that.
+        cache.set("User:%s:subscriptions" % self.user.id, "test-value")
         self.ml.settings["subscription_policy"] = "open"
         self.ml.get_member.side_effect = ValueError
         response_dict = {'token_owner': 'subscriber', 'http_etag': '"deadbeef"',
@@ -108,6 +109,28 @@ class MailmanSubscribeTestCase(TestCase):
             self.fail("This use case was not properly handled")
         self.assertTrue(self.ml.get_member.called)
         # There must be no exception even if the response is not a Member.
+        # Cache was not cleared because the subscription was not done
+        self.assertEqual(cache.get("User:%s:subscriptions" % self.user.id),
+                         "test-value")
+
+    def test_subscribe_different_address(self):
+        self.ml.settings["subscription_policy"] = "open"
+        self.ml.get_member.side_effect = ValueError
+        #class Prefs(dict):
+        #    save = Mock()
+        #member = Mock()
+        #member.preferences = Prefs()
+        #self.ml.subscribe.side_effect = lambda *a, **kw: member
+        self.ml.subscribe.side_effect = lambda *a, **kw: {}
+        mailman.subscribe(
+            "list@example.com", self.user, "otheremail@example.com",
+            "Other Display Name")
+        self.assertTrue(self.ml.get_member.called)
+        self.ml.subscribe.assert_called_with(
+            'otheremail@example.com', "Other Display Name",
+            pre_verified=True, pre_confirmed=True)
+        #self.assertEqual(member.preferences["delivery_status"], "by_user")
+        #self.assertTrue(member.preferences.save.called)
 
 
 

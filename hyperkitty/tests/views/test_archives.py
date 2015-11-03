@@ -212,6 +212,7 @@ class PrivateArchivesTestCase(TestCase):
         self.mm_user.subscriptions = [
             FakeMMMember("list@example.com", self.user.email),
         ]
+        self.mm_user.addresses = ['test@example.com']
 
     def tearDown(self):
         self.client.logout()

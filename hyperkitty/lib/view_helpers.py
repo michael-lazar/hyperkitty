@@ -30,8 +30,9 @@ from django.utils.decorators import available_attrs
 from django.shortcuts import render
 
 from hyperkitty.models import ThreadCategory, MailingList, Profile
-from hyperkitty.views.forms import CategoryForm
+from hyperkitty.views.forms import CategoryForm, ReplyForm
 from hyperkitty.lib.cache import cache
+from hyperkitty.lib.posting import get_sender
 
 
 def get_months(mlist):
@@ -159,3 +160,12 @@ def is_mlist_authorized(request, mlist):
         return True
     else:
         return False
+
+
+def get_reply_form(request, mlist, data=None):
+    reply_form = ReplyForm(data, initial={
+        "sender": get_sender(request, mlist)})
+    if request.user.is_authenticated():
+        reply_form.fields['sender'].choices = [ (a, a) for a in
+            request.user.hyperkitty_profile.addresses ]
+    return reply_form

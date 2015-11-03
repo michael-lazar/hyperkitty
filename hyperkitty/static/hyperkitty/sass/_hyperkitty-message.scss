@@ -149,16 +149,15 @@ $oddEmailColor: rgb(238, 238, 238);
     .reply-form {
         display: none;
         .reply-tools {
-            margin-top: 0.7em;
-            .quote {
-                margin-bottom: 3px;
-                padding-left: 0;
-            }
+            margin-top: 10px;
+            margin-bottom: 0;
             label {
                 font-size: 90%;
+                font-weight: normal;
             }
-            .reply-mailto {
-                margin-left: 1em;
+            select {
+                display: inline;
+                width: auto;
             }
         }
         p { margin: 0; }

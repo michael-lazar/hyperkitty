@@ -38,10 +38,10 @@ from django.utils.translation import gettext as _
 from haystack.query import SearchQuerySet
 
 from hyperkitty.models import Tag, Tagging, Favorite, LastView, Thread, MailingList
-from hyperkitty.views.forms import AddTagForm, ReplyForm
+from hyperkitty.views.forms import AddTagForm
 from hyperkitty.lib.utils import stripped_subject
 from hyperkitty.lib.view_helpers import (get_months, get_category_widget,
-        check_mlist_private)
+        check_mlist_private, get_reply_form)
 
 
 REPLY_RE = re.compile(r'^(re:\s*)*', re.IGNORECASE)
@@ -170,7 +170,7 @@ def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
         'days_old': days_old.days,
         'sort_mode': sort_mode,
         'fav_action': fav_action,
-        'reply_form': ReplyForm(),
+        'reply_form': get_reply_form(request, mlist),
         'is_bot': is_bot,
         'num_comments': thread.emails_count - 1,
         'last_view': last_view,
@@ -193,6 +193,7 @@ def replies(request, mlist_fqdn, threadid):
     """Get JSON encoded lists with the replies and the participants"""
     chunk_size = 6 # must be an even number, or the even/odd cycle will be broken
     offset = int(request.GET.get("offset", "1"))
+    mlist = get_object_or_404(MailingList, name=mlist_fqdn)
     thread = get_object_or_404(Thread,
         mailinglist__name=mlist_fqdn, thread_id=threadid)
     # Last view
@@ -204,7 +205,7 @@ def replies(request, mlist_fqdn, threadid):
             last_view = None
     context = {
         'threadid': thread,
-        'reply_form': ReplyForm(),
+        'reply_form': get_reply_form(request, mlist),
         'last_view': last_view,
     }
     context["replies"] = _get_thread_replies(request, thread, offset=offset,

@@ -33,15 +33,23 @@ class PostingFailed(Exception):
 
 
 def get_sender(request, mlist):
+    """Returns the appropriate sender email address"""
+    if not request.user.is_authenticated():
+        return None
     # Fallback to the logged-in user
     address = request.user.email
-    display_name = "%s %s" % (request.user.first_name, request.user.last_name)
     # Try to get the email used to susbscribe to the list
     subscriptions = request.user.hyperkitty_profile.get_subscriptions()
     if mlist.name in subscriptions:
         address = subscriptions[mlist.name]
-        # Get the display_name from the Address in Mailman? And if not found,
-        # from the User in Mailman?
+    return address
+
+def get_from(request, address):
+    """Returns the appropriate 'From' header"""
+    assert address is not None
+    display_name = "%s %s" % (request.user.first_name, request.user.last_name)
+    # Get the display_name from the Address in Mailman? And if not found,
+    # from the User in Mailman?
     if display_name.strip():
         return '"%s" <%s>' % (display_name, address)
     else:
@@ -55,15 +63,23 @@ def post_to_list(request, mlist, subject, message, headers=None,
         raise SuspiciousOperation("I don't know this mailing-list")
     if headers is None:
         headers = {}
+
+    sender = headers.pop("From", get_sender(request, mlist))
+    display_name = "%s %s" % (request.user.first_name, request.user.last_name)
+    if display_name.strip():
+        from_email = '"%s" <%s>' % (display_name, sender)
+    else:
+        from_email = sender
+
     # Check that the user is subscribed
     try:
-        subscribed_now = mailman.subscribe(mlist.name, request.user)
+        subscribed_now = mailman.subscribe(
+            mlist.name, request.user, sender, display_name)
     except MailmanConnectionError:
         raise PostingFailed("Can't connect to Mailman's REST server, "
                             "your message has not been sent.")
     # send the message
     headers["User-Agent"] = "HyperKitty on %s" % request.build_absolute_uri("/")
-    from_email = get_sender(request, mlist)
     msg = EmailMessage(
                subject=subject,
                body=message,

@@ -33,11 +33,12 @@ from django.core.exceptions import SuspiciousOperation
 from django.template import RequestContext, loader
 from django.contrib.auth.decorators import login_required
 
-from hyperkitty.lib.view_helpers import get_months, check_mlist_private
-from hyperkitty.lib.posting import post_to_list, PostingFailed, reply_subject
 from hyperkitty.lib.mailman import ModeratedListException
+from hyperkitty.lib.posting import post_to_list, PostingFailed, reply_subject
+from hyperkitty.lib.view_helpers import (
+    get_months, check_mlist_private, get_reply_form)
 from hyperkitty.models import MailingList, Email, Attachment
-from .forms import ReplyForm, PostForm
+from .forms import PostForm
 
 
 @check_mlist_private
@@ -60,7 +61,7 @@ def index(request, mlist_fqdn, message_id_hash):
         'message_id_hash' : message_id_hash,
         'months_list': get_months(mlist),
         'month': message.date,
-        'reply_form': ReplyForm(),
+        'reply_form': get_reply_form(request, mlist),
     }
     return render(request, "hyperkitty/message.html", context)
 
@@ -127,11 +128,11 @@ def reply(request, mlist_fqdn, message_id_hash):
     """Sends a reply to the list."""
     if request.method != 'POST':
         raise SuspiciousOperation
-    form = ReplyForm(request.POST)
+    mlist = get_object_or_404(MailingList, name=mlist_fqdn)
+    form = get_reply_form(request, mlist, request.POST)
     if not form.is_valid():
         return HttpResponse(form.errors.as_text(),
                             content_type="text/plain", status=400)
-    mlist = get_object_or_404(MailingList, name=mlist_fqdn)
     if form.cleaned_data["newthread"]:
         subject = form.cleaned_data["subject"]
         headers = {}
@@ -141,8 +142,11 @@ def reply(request, mlist_fqdn, message_id_hash):
         subject = reply_subject(message.subject)
         headers = {"In-Reply-To": "<%s>" % message.message_id,
                    "References": "<%s>" % message.message_id, }
+    if form.cleaned_data["sender"]:
+        headers["From"] = form.cleaned_data["sender"]
     try:
-        subscribed_now = post_to_list(request, mlist, subject, form.cleaned_data["message"], headers)
+        subscribed_now = post_to_list(
+            request, mlist, subject, form.cleaned_data["message"], headers)
     except PostingFailed, e:
         return HttpResponse(str(e), content_type="text/plain", status=500)
     except ModeratedListException, e:
@@ -160,6 +164,7 @@ def reply(request, mlist_fqdn, message_id_hash):
         email_reply = {
             "sender_name": "%s %s" % (request.user.first_name,
                                       request.user.last_name),
+            "sender_email": form.cleaned_data["sender"] or request.user.email,
             "content": form.cleaned_data["message"],
             "level": message.thread_depth, # no need to increment, level = thread_depth - 1
         }

@@ -23,9 +23,10 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import json
+import uuid
 from email.message import Message
 
-from mock import patch
+from mock import Mock, patch
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core import mail
@@ -34,7 +35,7 @@ from django_gravatar.helpers import get_gravatar_url
 
 from hyperkitty.lib.utils import get_message_id_hash
 from hyperkitty.lib.incoming import add_to_list
-from hyperkitty.models import Email
+from hyperkitty.models import Email, MailingList
 from hyperkitty.tests.utils import TestCase, get_flash_messages
 
 
@@ -130,12 +131,16 @@ class MessageViewsTestCase(TestCase):
         self.user.first_name = "Django"
         self.user.last_name = "User"
         self.user.save()
+        mlist = MailingList.objects.get(name="list@example.com")
         url = reverse('hk_message_reply', args=("list@example.com",
                       get_message_id_hash("msg")))
-        with patch("hyperkitty.lib.posting.mailman.subscribe") as sub_fn:
+        with patch("hyperkitty.views.message.post_to_list") as posting_fn:
             response = self.client.post(url, {"message": "dummy reply content"})
             self.assertEqual(response.status_code, 200)
-            self.assertTrue(sub_fn.called)
+            self.assertEqual(posting_fn.call_count, 1)
+            self.assertEqual(posting_fn.call_args[0][1:],
+                (mlist, 'Re: Dummy Subject', 'dummy reply content',
+                 {'References': '<msg>', 'In-Reply-To': '<msg>'}))
         result = json.loads(response.content)
         #print(result["message_html"])
         self.assertIn("Django User", result["message_html"])
@@ -143,34 +148,52 @@ class MessageViewsTestCase(TestCase):
         self.assertIn(
             get_gravatar_url("test@example.com", 120).replace("&", "&amp;"),
             result["message_html"])
-        self.assertEqual(len(mail.outbox), 1)
-        #print(mail.outbox[0].message())
-        self.assertEqual(mail.outbox[0].recipients(), ["list@example.com"])
-        self.assertEqual(mail.outbox[0].from_email, '"Django User" <test@example.com>')
-        self.assertEqual(mail.outbox[0].subject, 'Re: Dummy Subject')
-        self.assertEqual(mail.outbox[0].body, "dummy reply content")
-        self.assertEqual(mail.outbox[0].message().get("references"), "<msg>")
-        self.assertEqual(mail.outbox[0].message().get("in-reply-to"), "<msg>")
 
     def test_reply_newthread(self):
+        mlist = MailingList.objects.get(name="list@example.com")
         url = reverse('hk_message_reply', args=("list@example.com",
                       get_message_id_hash("msg")))
-        with patch("hyperkitty.lib.posting.mailman.subscribe") as sub_fn:
+        with patch("hyperkitty.views.message.post_to_list") as posting_fn:
             response = self.client.post(url,
                 {"message": "dummy reply content",
                  "newthread": 1, "subject": "new subject"})
             self.assertEqual(response.status_code, 200)
-            self.assertTrue(sub_fn.called)
+            self.assertEqual(posting_fn.call_count, 1)
+            self.assertEqual(posting_fn.call_args[0][1:],
+                (mlist, 'new subject', 'dummy reply content', {}))
         result = json.loads(response.content)
         self.assertEqual(result["message_html"], None)
-        self.assertEqual(len(mail.outbox), 1)
-        #print(mail.outbox[0].message())
-        self.assertEqual(mail.outbox[0].recipients(), ["list@example.com"])
-        self.assertEqual(mail.outbox[0].from_email, 'test@example.com')
-        self.assertEqual(mail.outbox[0].subject, 'new subject')
-        self.assertEqual(mail.outbox[0].body, "dummy reply content")
-        self.assertNotIn("references", mail.outbox[0].message())
-        self.assertNotIn("in-reply-to", mail.outbox[0].message())
+
+    def test_reply_different_sender(self):
+        self.user.first_name = "Django"
+        self.user.last_name = "User"
+        self.user.save()
+        mm_user = Mock()
+        self.mailman_client.get_user.side_effect = lambda name: mm_user
+        mm_user.user_id = uuid.uuid1().int
+        mm_user.addresses = ["testuser@example.com", "otheremail@example.com"]
+        mm_user.subscriptions = []
+        mlist = MailingList.objects.get(name="list@example.com")
+        url = reverse('hk_message_reply', args=("list@example.com",
+                      get_message_id_hash("msg")))
+        with patch("hyperkitty.views.message.post_to_list") as posting_fn:
+            response = self.client.post(url, {
+                "message": "dummy reply content",
+                "sender": "otheremail@example.com",
+                })
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(posting_fn.call_count, 1)
+            self.assertEqual(posting_fn.call_args[0][1:],
+                (mlist, 'Re: Dummy Subject', 'dummy reply content',
+                 {'From': 'otheremail@example.com',
+                  'In-Reply-To': '<msg>', 'References': '<msg>'}))
+        result = json.loads(response.content)
+        #print(result["message_html"])
+        self.assertIn("Django User", result["message_html"])
+        self.assertIn("dummy reply content", result["message_html"])
+        self.assertIn(
+            get_gravatar_url("otheremail@example.com", 120).replace("&", "&amp;"),
+            result["message_html"])
 
     def test_new_message_page(self):
         url = reverse('hk_message_new', args=["list@example.com"])

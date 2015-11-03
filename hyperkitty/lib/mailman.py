@@ -45,7 +45,11 @@ def get_mailman_client():
     return client
 
 
-def subscribe(list_address, user):
+def subscribe(list_address, user, email=None, display_name=None):
+    if email is None:
+        email = user.email
+    if display_name is None:
+        display_name = "%s %s" % (user.first_name, user.last_name)
     client = get_mailman_client()
     rest_list = client.get_list(list_address)
     subscription_policy = rest_list.settings.get(
@@ -54,7 +58,7 @@ def subscribe(list_address, user):
     # the current list.
     subscribed_now = False
     try:
-        member = rest_list.get_member(user.email)
+        member = rest_list.get_member(email)
     except ValueError:
         # We don't want to bypass moderation, don't subscribe. Instead
         # raise an error so that it can be caught to show the user
@@ -63,22 +67,21 @@ def subscribe(list_address, user):
                                          " to it before posting.")
 
         # not subscribed yet, subscribe the user without email delivery
-        member = rest_list.subscribe(user.email,
-                "%s %s" % (user.first_name, user.last_name),
+        member = rest_list.subscribe(email, display_name,
                 pre_verified=True, pre_confirmed=True)
         # The result can be a Member object or a dict if the subscription can't
         # be done directly, or if it's pending, or something else.
         # Broken API :-(
         if isinstance(member, dict):
             logger.info("Subscription for %s to %s is pending",
-                        user.email, list_address)
+                        email, list_address)
             return subscribed_now
         member.preferences["delivery_status"] = "by_user"
         member.preferences.save()
         subscribed_now = True
         cache.delete("User:%s:subscriptions" % user.id)
         logger.info("Subscribing %s to %s on first post",
-                    user.email, list_address)
+                    email, list_address)
 
     return subscribed_now
 
