@@ -105,7 +105,6 @@
                     {% endif %}
                 </ul>
 
-                {% with postorius_installed="/postorius" %}
                 {% if postorius_installed %}
                 <ul class="nav navbar-nav navbar-right"><li>
                     {% if mlist %}
@@ -115,7 +114,6 @@
                     {% endif %}
                 </li></ul>
                 {% endif %}
-                {% endwith %}
 
                 <form name="search" method="get" action="{% url 'hk_search' %}" class="navbar-form navbar-right" role="search">
                     {% if mlist %}<input type="hidden" name="mlist" value="{{ mlist.name }}" />{% endif %}
