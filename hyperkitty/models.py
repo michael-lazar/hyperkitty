@@ -310,8 +310,13 @@ class MailingList(models.Model):
             return # can't update at this time
         if not mm_list:
             return
+        def convert_date(value):
+            value = dateutil.parser.parse(value)
+            if value.tzinfo is None:
+                value = value.replace(tzinfo=utc)
+            return value
         converters = {
-            "created_at": dateutil.parser.parse,
+            "created_at": convert_date,
             "archive_policy": lambda p: ArchivePolicy[p].value,
         }
         for propname in self.MAILMAN_ATTRIBUTES:

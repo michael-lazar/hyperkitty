@@ -457,6 +457,15 @@ class MailingListTestCase(TestCase):
         self.assertEqual(self.ml.created_at, new_date)
         self.assertEqual(self.ml.archive_policy, ArchivePolicy.private.value)
 
+    def test_update_from_mailman_naive(self):
+        self.ml.created_at = datetime(2000, 1, 1, 0, 0, 0, tzinfo=utc)
+        self.ml.save()
+        new_date = datetime(2010, 12, 31, 0, 0, 0, tzinfo=None)
+        self.mailman_ml.settings["created_at"] = new_date.isoformat()
+        self.ml.update_from_mailman()
+        self.assertTrue(self.ml.created_at.tzinfo is not None)
+        self.assertEqual(self.ml.created_at, new_date.replace(tzinfo=utc))
+
     def test_get_threads_between(self):
         # the get_threads_between method should return all threads that have
         # been active between the two specified dates, including the threads
