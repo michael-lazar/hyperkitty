@@ -33,9 +33,11 @@
                     {% endif %}
                 </div>
                 <div class="thread-extras col-tn-9 col-xs-10 col-lg-11">
+                    {% if use_mockups %}
                     <div class="thread-category col-tn-12 col-xs-6 col-sm-3">
                         {% include 'hyperkitty/threads/category.html' with category=message.category_hk category_form=message.category_form thread=message.thread %}
                     </div>
+                    {% endif %}
                     <div class="col-tn-12 col-xs-6 col-sm-4">
                         {% include "hyperkitty/messages/like_form.html" with message_id_hash=message.message_id_hash object=message %}
                     </div>
