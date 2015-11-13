@@ -177,7 +177,8 @@ class Profile(models.Model):
         # mailman when a new subscription occurs? Or store in the session?
         return cache.get_or_set(
             "User:%s:subscriptions" % self.id,
-            _get_value, 60 * 10) # 10 minutes
+            _get_value, 10) # 10 seconds
+        # TODO: increase the cache duration when we have Mailman signals
 
     def get_first_post(self, mlist):
         return self.emails.filter(mailinglist=mlist
