@@ -109,7 +109,7 @@ def vote(request, mlist_fqdn, message_id_hash):
 
     # Extract all the votes for this message to refresh it
     message.myvote = message.votes.filter(user=request.user).first()
-    t = loader.get_template('hyperkitty/messages/like_form.html')
+    t = loader.get_template('hyperkitty/fragments/like_form.html')
     html = t.render(RequestContext(request, {
             "object": message,
             "message_id_hash": message_id_hash,

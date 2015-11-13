@@ -38,7 +38,7 @@
                         </div>
                         {% endif %}
                         <div class="col-tn-12 col-xs-6 col-sm-4 col-xl-3">
-                            {% include "hyperkitty/messages/like_form.html" with message_id_hash=email.message_id_hash object=email %}
+                            {% include "hyperkitty/fragments/like_form.html" with message_id_hash=email.message_id_hash object=email %}
                         </div>
                         <div class="tags col-tn-12 col-xl-4">
                             {% if email.tags.count %}

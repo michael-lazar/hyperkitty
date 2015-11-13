@@ -223,7 +223,7 @@ def subscriptions(request):
             "likestatus": likestatus,
             "all_posts_url": all_posts_url,
         })
-    return render(request, 'hyperkitty/fragments/user_subscriptions.html', {
+    return render(request, 'hyperkitty/ajax/user_subscriptions.html', {
                 "subscriptions": subs,
             })
 

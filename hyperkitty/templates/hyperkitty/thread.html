@@ -14,7 +14,7 @@
 
 <div class="row view-thread">
 
-{% include 'hyperkitty/threads/month_list.html' %}
+{% include 'hyperkitty/fragments/month_list.html' %}
 
     <div class="col-tn-12 col-sm-10">
 
@@ -80,7 +80,7 @@
                 <a href="#stats">{% trans "Stats" %}</a>
             </li>
             <li class="dropdown">
-                {% include 'hyperkitty/threads/month_list.html' with show_dropdown=True %}
+                {% include 'hyperkitty/fragments/month_list.html' with show_dropdown=True %}
             </li>
         </ul> <!-- /navtab -->
 
