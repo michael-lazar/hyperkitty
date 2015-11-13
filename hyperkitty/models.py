@@ -152,6 +152,8 @@ class Profile(models.Model):
             return None
 
     def get_mailman_user_id(self):
+        # TODO: Optimization: look in the cache first, if not found call
+        # get_mailman_user() as before
         mm_user = self.get_mailman_user()
         if mm_user is None:
             return None

@@ -274,9 +274,15 @@ function setup_replies(baseElem) {
     $(baseElem).find(".reply-form input[name='newthread']").change(function() {
         set_new_thread($(this));
     }).change();
-    $(baseElem).find(".reply-form select[name='sender']").each(function() {
+    $(baseElem).find(".send-as .send-as-default").click(function(e) {
+        e.preventDefault();
+        var select = $(this).next();
+        $(this).hide();
+        select.show();
+    });
+    $(baseElem).find(".reply-form .send-as select").each(function() {
         if ($(this).find("option").length < 2) {
-            $(this).closest("li").hide();
+            $(this).closest(".send-as").hide();
         }
     });
 }
