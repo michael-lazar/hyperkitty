@@ -321,7 +321,7 @@ def posts(request, user_id):
     context = {
         'user_id': user_id,
         'mlist' : mlist,
-        'messages': emails,
+        'emails': emails,
         'fullname': fullname,
     }
     return render(request, "hyperkitty/user_posts.html", context)

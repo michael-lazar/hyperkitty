@@ -41,13 +41,13 @@
             <ul class="list-unstyled list-stats col-tn-12 col-sm-6 col-md-4">
                 <li>
                     <span class="icomoon discussion"></span>
-                    {{ messages.paginator.count }} {% trans "messages" %}
+                    {{ emails.paginator.count }} {% trans "messages" %}
                 </li>
             </ul>
 
             <form method="get" action="{% url 'hk_search' %}" class="form-inline pull-right right col-tn-12 col-sm-6 col-md-4">
                 <input type="hidden" name="q" value="{{ query|escape }}" />
-                <input type="hidden" name="page" value="{{ messages.number }}" />
+                <input type="hidden" name="page" value="{{ emails.number }}" />
                 {% if mlist %}<input type="hidden" name="mlist" value="{{ mlist.name }}" />{% endif %}
                 <!--<p>-->
                 <!--<span class="col-tn-3">Sort by:</span>-->
@@ -70,9 +70,9 @@
 
 
         {% if query %}
-            {% for message in messages %}
+            {% for email in emails %}
                 <!--<div class="search-result">-->
-                {% include "hyperkitty/messages/summary_message.html" with message=message.object %}
+                {% include "hyperkitty/messages/summary_message.html" with email=email.object %}
                 <!--</div>-->
             {% empty %}
                 <p>{% trans "Sorry no email could be found for this query." %}</p>
@@ -82,7 +82,7 @@
             <p style="font-style:italic;font-size:small;color:#ccc">{% trans "these are not the messages you are looking for" %}</p>
         {% endif %}
 
-        {% include "hyperkitty/paginator.html" with pager=messages notbydate=True %}
+        {% include "hyperkitty/paginator.html" with pager=emails notbydate=True %}
 
     </div>
 

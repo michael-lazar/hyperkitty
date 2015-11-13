@@ -31,7 +31,7 @@
                 </li>
                 {% endif %}
                 <li class="discussion">
-                    {{ messages.paginator.count }} {% trans "messages" %}
+                    {{ emails.paginator.count }} {% trans "messages" %}
                 </li>
                 <li>
                     <a href="{% url 'hk_public_user_profile' user_id=user_id %}">
@@ -42,13 +42,13 @@
 
         </div>
 
-        {% for message in messages %}
+        {% for email in emails %}
             {% include "hyperkitty/messages/summary_message.html" %}
         {% empty %}
             <p>{% trans "Sorry no email could be found by this user." %}</p>
         {% endfor %}
 
-        {% include "hyperkitty/paginator.html" with pager=messages %}
+        {% include "hyperkitty/paginator.html" with pager=emails %}
 
     </div>
 

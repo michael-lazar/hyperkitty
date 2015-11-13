@@ -82,18 +82,18 @@ def search(request):
     else:
         form = SearchForm(searchqueryset=sqs, load_all=True)
 
-    messages = paginate(results, page_num=request.GET.get('page'))
-    for message in messages:
+    emails = paginate(results, page_num=request.GET.get('page'))
+    for email in emails:
         if request.user.is_authenticated():
-            message.object.myvote = message.object.votes.filter(user=request.user).first()
+            email.object.myvote = email.object.votes.filter(user=request.user).first()
         else:
-            message.object.myvote = None
+            email.object.myvote = None
 
 
     context = {
         'mlist' : mlist,
         'form': form,
-        'messages': messages,
+        'emails': emails,
         'query': query,
         'sort_mode': sort_mode,
         'suggestion': None,

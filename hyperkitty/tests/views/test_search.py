@@ -113,5 +113,5 @@ class SearchViewsTestCase(SearchEnabledTestCase):
         self.client.login(username='testuser', password='testPass')
         response = self.client.get(reverse("hk_search"), {"q": "keyword"})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["messages"].paginator.count, 2)
+        self.assertEqual(response.context["emails"].paginator.count, 2)
         self.assertContains(response, "Dummy message", count=2)
