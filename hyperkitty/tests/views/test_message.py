@@ -230,3 +230,35 @@ class MessageViewsTestCase(TestCase):
         self.assertEqual(mail.outbox[0].body, "Test message content")
         self.assertIsNone(mail.outbox[0].message().get("references"))
         self.assertIsNone(mail.outbox[0].message().get("in-reply-to"))
+
+    def test_new_message_different_sender(self):
+        self.user.first_name = "Django"
+        self.user.last_name = "User"
+        self.user.save()
+        mm_user = Mock()
+        self.mailman_client.get_user.side_effect = lambda name: mm_user
+        mm_user.user_id = uuid.uuid1().int
+        mm_user.addresses = ["testuser@example.com", "otheremail@example.com"]
+        mm_user.subscriptions = []
+        mlist = MailingList.objects.get(name="list@example.com")
+        url = reverse('hk_message_new', args=["list@example.com"])
+        with patch("hyperkitty.views.message.post_to_list") as posting_fn:
+            response = self.client.post(url, {
+                "subject": "Test subject",
+                "sender": "otheremail@example.com",
+                "message": "Test message content",
+                })
+            self.assertEqual(posting_fn.call_count, 1)
+            self.assertEqual(posting_fn.call_args[0][1:],
+                (mlist, 'Test subject', 'Test message content',
+                 {'From': 'otheremail@example.com'}))
+        redirect_url = reverse(
+                'hk_archives_with_month', kwargs={
+                    "mlist_fqdn": "list@example.com",
+                    'year': timezone.now().year,
+                    'month': timezone.now().month})
+        self.assertRedirects(response, redirect_url)
+        # flash message
+        messages = get_flash_messages(response)
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0].tags, "success")

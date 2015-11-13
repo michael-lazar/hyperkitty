@@ -24,18 +24,28 @@
             </h1>
         </div>
 
-        {% if failure %}
-        <div class="alert alert-error">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            {{ failure }}
-        </div>
-        {% endif %}
-
         <div class="new-thread-form">
             <form method="post" enctype="multipart/form-data"
                   action="{% url 'hk_message_new' mlist_fqdn=mlist.name %}">
+
+                {% comment "Crispy should take care of all that" %}
                 {% csrf_token %}
-                {{ post_form|crispy }}
+                <ul class="list-unstyled">
+                {% for error in post_form.non_field_errors %}
+                    <li><i class="fa-li fa fa-times-circle"></i> {{ error }}</li>
+                {% endfor %}
+                </ul>
+                <div class="form-group {% if post_form.subject.errors %}has-error{% endif %}">
+                    {{ post_form.subject.label }}
+                    {{ post_form.subject }}
+                    <span class="help-block">{{ post_form.subject.errors }}</span>
+                </div>
+                {% endcomment %}
+
+                {% crispy post_form %}
+
+                {% include "hyperkitty/fragments/send_as.html" with form=post_form %}
+
                 <p class="buttons">
                     <button type="submit" class="submit btn btn-primary">{% trans "Send" %}</button>
                     {% trans "or" %} <a class="cancel" href="{% url 'hk_archives_latest' mlist_fqdn=mlist.name %}">{% trans "cancel" %}</a>
@@ -47,4 +57,12 @@
 
 </div>
 
+{% endblock %}
+
+{% block additionaljs %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        setup_send_as($(".new-thread-form"));
+    });
+</script>
 {% endblock %}

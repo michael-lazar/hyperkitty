@@ -316,6 +316,23 @@ function setup_back_to_top_link(offset, duration) {
     })
 }
 
+function setup_send_as(baseElem) {
+    $(baseElem).find(".send-as .send-as-default").click(function(e) {
+        e.preventDefault();
+        var select = $(this).next();
+        $(this).hide();
+        select.show();
+    });
+    $(baseElem).find(".send-as select").each(function() {
+        if ($(this).find("option").length < 2) {
+            $(this).closest(".send-as").hide();
+        }
+    });
+}
+
+
+
+
 /*
  * Activate
  */

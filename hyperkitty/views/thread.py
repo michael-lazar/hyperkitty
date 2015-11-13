@@ -38,10 +38,10 @@ from django.utils.translation import gettext as _
 from haystack.query import SearchQuerySet
 
 from hyperkitty.models import Tag, Tagging, Favorite, LastView, Thread, MailingList
-from hyperkitty.views.forms import AddTagForm
+from hyperkitty.views.forms import AddTagForm, ReplyForm
 from hyperkitty.lib.utils import stripped_subject
 from hyperkitty.lib.view_helpers import (get_months, get_category_widget,
-        check_mlist_private, get_reply_form)
+        check_mlist_private, get_posting_form)
 
 
 REPLY_RE = re.compile(r'^(re:\s*)*', re.IGNORECASE)
@@ -170,7 +170,7 @@ def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
         'days_old': days_old.days,
         'sort_mode': sort_mode,
         'fav_action': fav_action,
-        'reply_form': get_reply_form(request, mlist),
+        'reply_form': get_posting_form(ReplyForm, request, mlist),
         'is_bot': is_bot,
         'num_comments': thread.emails_count - 1,
         'last_view': last_view,
@@ -205,7 +205,7 @@ def replies(request, mlist_fqdn, threadid):
             last_view = None
     context = {
         'threadid': thread,
-        'reply_form': get_reply_form(request, mlist),
+        'reply_form': get_posting_form(ReplyForm, request, mlist),
         'last_view': last_view,
     }
     context["replies"] = _get_thread_replies(request, thread, offset=offset,

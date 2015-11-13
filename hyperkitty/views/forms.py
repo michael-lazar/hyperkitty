@@ -28,7 +28,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import Layout, Submit
 
 from hyperkitty.models import Profile
 
@@ -164,10 +164,19 @@ class ReplyForm(forms.Form):
     #attachment = forms.FileField(required=False, widget=AttachmentFileInput)
 
 class PostForm(forms.Form):
+
     subject = forms.CharField()
     message = forms.CharField(widget=forms.Textarea)
+    sender = forms.ChoiceField(label="", required=False,
+        widget=forms.Select(attrs={ 'class': 'form-control input-sm' }))
     #attachment = forms.FileField(required=False, label="",
     #                             widget=AttachmentFileInput)
+
+    def __init__(self, *args, **kwargs):
+        super(PostForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout('subject', 'message')
 
 class CategoryForm(forms.Form):
     category = forms.ChoiceField(label="", required=False)

@@ -36,9 +36,9 @@ from django.contrib.auth.decorators import login_required
 from hyperkitty.lib.mailman import ModeratedListException
 from hyperkitty.lib.posting import post_to_list, PostingFailed, reply_subject
 from hyperkitty.lib.view_helpers import (
-    get_months, check_mlist_private, get_reply_form)
+    get_months, check_mlist_private, get_posting_form)
 from hyperkitty.models import MailingList, Email, Attachment
-from .forms import PostForm
+from .forms import PostForm, ReplyForm
 
 
 @check_mlist_private
@@ -61,7 +61,7 @@ def index(request, mlist_fqdn, message_id_hash):
         'message_id_hash' : message_id_hash,
         'months_list': get_months(mlist),
         'month': message.date,
-        'reply_form': get_reply_form(request, mlist),
+        'reply_form': get_posting_form(ReplyForm, request, mlist),
     }
     return render(request, "hyperkitty/message.html", context)
 
@@ -129,7 +129,7 @@ def reply(request, mlist_fqdn, message_id_hash):
     if request.method != 'POST':
         raise SuspiciousOperation
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
-    form = get_reply_form(request, mlist, request.POST)
+    form = get_posting_form(ReplyForm, request, mlist, request.POST)
     if not form.is_valid():
         return HttpResponse(form.errors.as_text(),
                             content_type="text/plain", status=400)
@@ -184,30 +184,29 @@ def reply(request, mlist_fqdn, message_id_hash):
 def new_message(request, mlist_fqdn):
     """ Sends a new thread-starting message to the list. """
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
-    failure = None
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = get_posting_form(PostForm, request, mlist, request.POST)
         if form.is_valid():
             today = datetime.date.today()
-            redirect_url = reverse(
-                    'hk_archives_with_month', kwargs={
-                        "mlist_fqdn": mlist_fqdn,
-                        'year': today.year,
-                        'month': today.month})
+            headers = {}
+            if form.cleaned_data["sender"]:
+                headers["From"] = form.cleaned_data["sender"]
             try:
                 post_to_list(request, mlist, form.cleaned_data['subject'],
-                             form.cleaned_data["message"])
+                             form.cleaned_data["message"], headers)
             except PostingFailed, e:
-                failure = str(e)
+                messages.error(request, str(e))
             else:
                 messages.success(request, "The message has been sent successfully.")
+                redirect_url = reverse('hk_archives_with_month', kwargs={
+                    "mlist_fqdn": mlist_fqdn,
+                    'year': today.year, 'month': today.month})
                 return redirect(redirect_url)
     else:
-        form = PostForm()
+        form = get_posting_form(PostForm, request, mlist)
     context = {
         "mlist": mlist,
         "post_form": form,
-        "failure": failure,
         'months_list': get_months(mlist),
     }
     return render(request, "hyperkitty/message_new.html", context)

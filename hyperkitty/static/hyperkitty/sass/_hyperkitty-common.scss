@@ -208,6 +208,15 @@ div#months-list {
 }
 
 
+//=== 'Send as' widget in replies or new threads ===/
+.send-as select {
+    display: none;
+    width: auto;
+}
+.send-as .send-as-add-address {
+    margin-left: 1em;
+}
+
 //=== Attachments in replies or new threads ===/
 .attach-files-template {
     display: none;
