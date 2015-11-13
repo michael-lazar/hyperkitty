@@ -53,20 +53,28 @@
                                     <div class="ellipsis-overflow">{{ user.email }}</div>
                                 </td>
                             </tr>
-                            {% if other_addresses %}
                             <tr>
                                 <th>{% trans 'Other emails:' %}</th>
                                 <td>
                                     <div class="ellipsis-overflow">
                                         <ul class="list-unstyled">
-                                            {% for address in other_addresses %}
+                                        {% for address in other_addresses %}
                                             <li>{{ address }}</li>
-                                            {% endfor %}
+                                        {% empty %}
+                                            <li>{% trans "(no other email)" %}</li>
+                                        {% endfor %}
+                                        {% if postorius_installed %}
+                                            <li>
+                                                <i class="fa fa-link" aria-hidden="true"></i>
+                                                <a href="{{ postorius_installed }}/users/address_activation/">
+                                                    {% trans "Link another address" %}
+                                                </a>
+                                            </li>
+                                        {% endif %}
                                         </ul>
                                     </div>
                                 </td>
                             </tr>
-                            {% endif %}
                             {% if use_mockups %}
                             <tr>
                                 <th>{% trans 'Karma:' %}</th>
