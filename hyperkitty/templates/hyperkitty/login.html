@@ -22,10 +22,12 @@
 <ul class="social-login list-unstyled">
     {% csrf_token %}  {# necessary to set the token in a cookie #}
     <!-- Persona first -->
+    {% if "browserid" in social_backends %}
     {% browserid_info %}
     <li class="browserid">
         {% browserid_login text="Login using Persona" color='blue' next=next %}
     </li>
+    {% endif %}
     <!-- then other backends from social_auth -->
     {% for backend in social_backends %}
         <li class="{{ backend }}">

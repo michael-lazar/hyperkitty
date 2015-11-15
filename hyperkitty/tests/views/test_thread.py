@@ -234,7 +234,7 @@ class ThreadTestCase(TestCase):
             self.client.logout()
             self.client.login(username=username, password='testPass')
             response = self.client.get(url)
-            soup = BeautifulSoup(response.content)
+            soup = BeautifulSoup(response.content, "html.parser")
             tags = soup.find("div", id="tags")
             self.assertEqual(len(tags.find_all("li")), 2)
             self.assertEqual(len(tags.find_all("form")), expected_num_form)
@@ -266,7 +266,7 @@ class ThreadTestCase(TestCase):
         url = reverse('hk_thread', args=["list@example.com", self.threadid])
         # Authenticated request
         response = self.client.get(url)
-        soup = BeautifulSoup(response.content)
+        soup = BeautifulSoup(response.content, "html.parser")
         self.assertEqual(len(soup.find_all("a", class_="reply-mailto")), 1)
         self.assertTrue(soup.find("a", class_="reply") is not None)
         link = soup.find(class_="reply-tools").find("a", class_="reply-mailto")
@@ -274,7 +274,7 @@ class ThreadTestCase(TestCase):
         # Anonymous request
         self.client.logout()
         response = self.client.get(url)
-        soup = BeautifulSoup(response.content)
+        soup = BeautifulSoup(response.content, "html.parser")
         self.assertEqual(len(soup.find_all("a", class_="reply-mailto")), 1)
         link = soup.find("a", class_="reply")
         self.assertTrue(link is not None)

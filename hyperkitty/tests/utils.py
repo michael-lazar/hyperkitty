@@ -42,28 +42,16 @@ from hyperkitty.lib.cache import cache
 class TestCase(DjangoTestCase):
     # pylint: disable=attribute-defined-outside-init
 
-    _override_settings = {
-        "TESTING": True,
-        "USE_MOCKUPS": False,
-        "COMPRESS_ENABLED": False,
-        "COMPRESS_PRECOMPILERS": (),
-        #"CACHES": {
-        #    'default': {
-        #        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-        #    },
-        #},
-    }
-
     # Testcase classes can use this variable to add more overrides:
     override_settings = {}
 
 
     def _pre_setup(self):
         super(TestCase, self)._pre_setup()
+        self.tmpdir = tempfile.mkdtemp(prefix="hyperkitty-testing-")
         # Override settings
         self._old_settings = {}
-        override_settings = self._override_settings.copy()
-        override_settings.update(self.override_settings)
+        override_settings = self.override_settings.copy()
         for key, value in override_settings.items():
             self._old_settings[key] = getattr(settings, key, None)
             setattr(settings, key, value)
@@ -87,8 +75,7 @@ class TestCase(DjangoTestCase):
                 delattr(settings, key)
             else:
                 setattr(settings, key, value)
-        #if DJANGO_VERSION[:2] < (1, 7):
-        #    cache.backend = get_cache("default")
+        shutil.rmtree(self.tmpdir)
         super(TestCase, self)._post_teardown()
 
 
@@ -100,7 +87,6 @@ class SearchEnabledTestCase(TestCase):
             import whoosh # pylint: disable=unused-variable
         except ImportError:
             raise SkipTest("The Whoosh library is not available")
-        self.tmpdir = tempfile.mkdtemp(prefix="hyperkitty-testing-")
         self.override_settings["HAYSTACK_CONNECTIONS"] = {
             'default': {
                 'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
@@ -120,7 +106,6 @@ class SearchEnabledTestCase(TestCase):
 
     def _post_teardown(self):
         haystack.signal_processor.teardown()
-        shutil.rmtree(self.tmpdir)
         super(SearchEnabledTestCase, self)._post_teardown()
 
 

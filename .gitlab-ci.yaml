@@ -1,0 +1,34 @@
+django16:
+  script:
+  - tox -e django16
+  tags:
+  - sqlite
+  - gcc
+
+django17:
+  script:
+  - tox -e django17
+  tags:
+  - sqlite
+  - gcc
+
+django18:
+  script:
+  - tox -e django18
+  tags:
+  - sqlite
+  - gcc
+
+pylint:
+  script:
+  - tox -e pylint
+  tags:
+  - sqlite
+  - gcc
+
+docs:
+  script:
+  - tox -e docs
+  tags:
+  - sqlite
+  - gcc

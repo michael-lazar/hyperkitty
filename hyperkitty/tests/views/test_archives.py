@@ -29,7 +29,6 @@ import datetime
 import gzip
 import mailbox
 import shutil
-import tempfile
 from email.message import Message
 
 from mock import Mock
@@ -110,10 +109,6 @@ class ExportMboxTestCase(TestCase):
         add_to_list("list@example.com", msg)
         # We need a temp dir for the mailbox, Python's mailbox module needs a
         # filesystem path, it does not accept a file-like object.
-        self.tmpdir = tempfile.mkdtemp(prefix="hyperkitty-testing-")
-
-    def tearDown(self):
-        shutil.rmtree(self.tmpdir)
 
     def _get_mbox(self, qs=None):
         url = reverse("hk_list_export_mbox",

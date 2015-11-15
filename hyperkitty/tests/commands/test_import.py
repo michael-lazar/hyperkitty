@@ -4,10 +4,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import os.path
 import mailbox
-import tempfile
 from email.message import Message
 from email import message_from_file
-from shutil import rmtree
 from StringIO import StringIO
 from datetime import datetime
 from unittest import SkipTest
@@ -28,7 +26,6 @@ from hyperkitty.tests.utils import TestCase, get_test_file
 class CommandTestCase(TestCase):
 
     def setUp(self):
-        self.tmpdir = tempfile.mkdtemp(prefix="hyperkitty-testing-")
         self.command = Command()
         self.common_cmd_args = dict(
             verbosity=2, list_address="list@example.com",
@@ -36,7 +33,6 @@ class CommandTestCase(TestCase):
         )
 
     def tearDown(self):
-        rmtree(self.tmpdir)
         settings.HYPERKITTY_BATCH_MODE = False
 
     def test_impacted_threads(self):
