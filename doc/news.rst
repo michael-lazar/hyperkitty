@@ -2,6 +2,18 @@
 News / Changelog
 ================
 
+
+1.0.3
+=====
+(2015-11-15)
+
+- Switch from LESS to Sass
+- Many graphical improvements
+- The SSLRedirect middleware is now optional
+- Add an "Export to mbox" feature
+- Allow choosing the email a reply or a new message will be sent as
+
+
 0.9.6
 =====
 (2015-03-16)
