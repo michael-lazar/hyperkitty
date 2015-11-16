@@ -22,6 +22,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import os
+import logging
 import shutil
 import tempfile
 from unittest import SkipTest
@@ -39,6 +40,25 @@ from django.core.management import call_command
 from hyperkitty.lib.cache import cache
 
 
+def setup_logging(tmpdir):
+    formatter = logging.Formatter(fmt="%(message)s")
+    levels = ["debug", "info", "warning", "error"]
+    handlers = []
+    for level_name in levels:
+        log_path = os.path.join(tmpdir, "%s.log" % level_name)
+        handler = logging.FileHandler(log_path)
+        handler.setLevel(getattr(logging, level_name.upper()))
+        handler.setFormatter(formatter)
+        handlers.append(handler)
+    for logger_name in ["django", "hyperkitty"]:
+        logger = logging.getLogger(logger_name)
+        logger.propagate = False
+        logger.setLevel(logging.DEBUG)
+        del logger.handlers[:]
+        for handler in handlers:
+            logger.addHandler(handler)
+
+
 class TestCase(DjangoTestCase):
     # pylint: disable=attribute-defined-outside-init
 
@@ -49,12 +69,13 @@ class TestCase(DjangoTestCase):
     def _pre_setup(self):
         super(TestCase, self)._pre_setup()
         self.tmpdir = tempfile.mkdtemp(prefix="hyperkitty-testing-")
+        # Logging
+        setup_logging(self.tmpdir)
         # Override settings
         self._old_settings = {}
         override_settings = self.override_settings.copy()
         for key, value in override_settings.items():
-            self._old_settings[key] = getattr(settings, key, None)
-            setattr(settings, key, value)
+            self._override_setting(key, value)
         #if DJANGO_VERSION[:2] < (1, 7):
         #    cache.backend = get_cache("default") # in 1.7 it's a proxy
         #else:
@@ -66,6 +87,10 @@ class TestCase(DjangoTestCase):
         self._mm_client_patcher = patch("hyperkitty.lib.mailman.MailmanClient",
                                         lambda *a: self.mailman_client)
         self._mm_client_patcher.start()
+
+    def _override_setting(self, key, value):
+        self._old_settings[key] = getattr(settings, key, None)
+        setattr(settings, key, value)
 
     def _post_teardown(self):
         self._mm_client_patcher.stop()
@@ -87,15 +112,15 @@ class SearchEnabledTestCase(TestCase):
             import whoosh # pylint: disable=unused-variable
         except ImportError:
             raise SkipTest("The Whoosh library is not available")
-        self.override_settings["HAYSTACK_CONNECTIONS"] = {
+        super(SearchEnabledTestCase, self)._pre_setup()
+        self._override_setting("HAYSTACK_CONNECTIONS", {
             'default': {
                 'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
                 'PATH': os.path.join(self.tmpdir, 'fulltext_index'),
             },
-        }
-        #self.override_settings["HAYSTACK_SIGNAL_PROCESSOR"] = \
-        #    'haystack.signals.RealtimeSignalProcessor'
-        super(SearchEnabledTestCase, self)._pre_setup()
+        })
+        #self.override_setting("HAYSTACK_SIGNAL_PROCESSOR",
+        #    'haystack.signals.RealtimeSignalProcessor')
         # Connect to the backend using the new settings. Using the reload()
         # method is not enough, because the settings are cached in the class
         haystack.connections.connections_info = settings.HAYSTACK_CONNECTIONS
