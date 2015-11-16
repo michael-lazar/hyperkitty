@@ -73,6 +73,8 @@ class TestCase(DjangoTestCase):
         setup_logging(self.tmpdir)
         # Override settings
         self._old_settings = {}
+        self._override_setting("STATIC_ROOT",
+            os.path.join(self.tmpdir, "static"))
         override_settings = self.override_settings.copy()
         for key, value in override_settings.items():
             self._override_setting(key, value)

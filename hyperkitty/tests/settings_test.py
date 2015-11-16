@@ -264,12 +264,9 @@ SOCIAL_AUTH_PIPELINE = (
 # https://pypi.python.org/pypi/django_compressor
 #
 COMPRESS_ENABLED = False
-
-COMPRESS_PRECOMPILERS = (
-   ('text/less', 'lessc {infile} {outfile}'),
-   ('text/x-scss', 'sassc {infile} {outfile}'),
-   ('text/x-sass', 'sassc {infile} {outfile}'),
-)
+# Empty the precompilers mapping for testing: django-compressor will run them
+# even if compress_enabled is false, no idea why
+COMPRESS_PRECOMPILERS = ()
 #COMPRESS_OFFLINE = True
 # needed for debug mode
 #INTERNAL_IPS = ('127.0.0.1',)
