@@ -32,7 +32,8 @@ class EmailIndex(indexes.SearchIndex, indexes.Indexable):
 
     text = indexes.CharField(document=True, use_template=True)
     mailinglist = indexes.CharField(model_attr='mailinglist__name')
-    subject = indexes.CharField(model_attr='subject', boost=1.25)
+    subject = indexes.CharField(model_attr='subject', boost=1.25,
+                                use_template=True)
     date = indexes.DateTimeField(model_attr='date')
     sender = indexes.CharField(model_attr='sender__name', boost=1.125)
     archived_date = indexes.DateTimeField(model_attr='archived_date')
