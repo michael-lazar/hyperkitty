@@ -65,7 +65,7 @@
 
     </div> <!-- /email-header: gravatar, author-info, date, peramlink, changed_subject -->
 
-    <div class="email-body">
+    <div class="email-body {% if email.display_fixed %}fixed{% endif %}">
         {{ email.content|snip_quoted|snip_pgp|wordwrap:90|urlizetrunc:76|escapeemail }}
     </div>
 

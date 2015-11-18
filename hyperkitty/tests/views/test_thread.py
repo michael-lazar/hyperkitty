@@ -302,3 +302,17 @@ class ThreadTestCase(TestCase):
         for email in response.context["replies"]:
             self.assertFalse(email.changed_subject,
                 "Message %s changed subject" % email.message_id)
+
+    def test_display_fixed(self):
+        msg = Message()
+        msg["From"] = "dummy@example.com"
+        msg["Message-ID"] = "<msgid2>"
+        msg["Subject"] = "Dummy message"
+        msg["In-Reply-To"] = "<msgid>"
+        msg.set_payload("Dummy message with @@ signs (looks like a patch)")
+        msg["Message-ID-Hash"] = add_to_list("list@example.com", msg)
+        url = reverse('hk_thread', args=["list@example.com", self.threadid])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '"email-body fixed"', count=1)
+        self.assertContains(response, '"email-body "', count=1)

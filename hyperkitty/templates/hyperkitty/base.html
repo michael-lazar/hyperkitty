@@ -10,10 +10,11 @@
         <meta name="author" content="" />
         <meta name="dc.language" content="en" />
         <link rel="shortcut icon" href="{% static 'hyperkitty/img/favicon.ico' %}" />
-        <link rel="stylesheet" media="all" href="{% static 'hyperkitty/libs/jquery/smoothness/jquery-ui-1.10.3.custom.min.css' %}" />
-        <link rel="stylesheet" media="all" href="{% static 'hyperkitty/libs/font-awesome/css/font-awesome.min.css' %}" />
-        <link rel="stylesheet" type="text/css" media="all" href="{% static 'hyperkitty/libs/icomoon/icomoon.css' %}" />
+        <link rel="stylesheet" href="{% static 'hyperkitty/libs/jquery/smoothness/jquery-ui-1.10.3.custom.min.css' %}" type="text/css" media="all" />
+        <link rel="stylesheet" href="{% static 'hyperkitty/libs/fonts/font-awesome/css/font-awesome.min.css' %}" type="text/css" media="all" />
         {% compress css %}
+        <link rel="stylesheet" href="{% static 'hyperkitty/libs/fonts/icomoon/icomoon.css' %}" type="text/css" media="all" />
+        <link rel="stylesheet" href="{% static 'hyperkitty/libs/fonts/droid/droid.css' %}" type="text/css" media="all" />
         <link rel="stylesheet" type="text/x-scss" media="all" href="{% static 'hyperkitty/sass/hyperkitty.scss' %}" />
         {% endcompress %}
         {% block additional_stylesheets %} {% endblock %}

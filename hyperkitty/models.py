@@ -522,6 +522,10 @@ class Email(models.Model):
 
         return msg
 
+    @property
+    def display_fixed(self):
+        return "@@" in self.content
+
 
 @receiver([post_init, pre_save], sender=Email)
 def Email_set_message_id_hash(sender, **kwargs):

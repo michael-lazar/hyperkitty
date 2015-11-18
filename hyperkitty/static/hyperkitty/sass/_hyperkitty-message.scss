@@ -119,6 +119,10 @@ $oddEmailColor: rgb(238, 238, 238);
         padding: 3px 10px 0 0;
     }
 }
+.email-body.fixed {
+    font-family: 'Droid Sans Mono', monospace;
+    white-space: pre;
+}
 
 .attachments {
     padding-top: 8px;

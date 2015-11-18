@@ -262,3 +262,20 @@ class MessageViewsTestCase(TestCase):
         messages = get_flash_messages(response)
         self.assertEqual(len(messages), 1)
         self.assertEqual(messages[0].tags, "success")
+
+    def test_display_fixed(self):
+        msg = Message()
+        msg["From"] = "Dummy Sender <dummy@example.com>"
+        msg["Subject"] = "Dummy Subject"
+        msg["Date"] = "Mon, 02 Feb 2015 13:00:00 +0300"
+        msg["Message-ID"] = "<msg2>"
+        msg.set_payload("Dummy message with @@ signs (looks like a patch)")
+        add_to_list("list@example.com", msg)
+        url1 = reverse('hk_message_index', args=("list@example.com",
+                      get_message_id_hash("msg")))
+        response1 = self.client.get(url1)
+        self.assertNotContains(response1, "email-body fixed", status_code=200)
+        url2 = reverse('hk_message_index', args=("list@example.com",
+                      get_message_id_hash("msg2")))
+        response2 = self.client.get(url2)
+        self.assertContains(response2, "email-body fixed", status_code=200)
