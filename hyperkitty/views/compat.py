@@ -98,6 +98,8 @@ def message(request, list_name, year, month_name, msg_num):
     # pylint: disable=unused-argument
     mlist = get_list_by_name(list_name, request.get_host())
     msg_num = int(msg_num) - 1 # pipermail starts at 1, not 0
+    if msg_num < 0:
+        raise Http404("No such message in this mailing-list.")
     try:
         msg = Email.objects.filter(mailinglist=mlist
             ).order_by("archived_date")[msg_num]
