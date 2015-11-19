@@ -163,7 +163,7 @@ class Profile(models.Model):
         def _get_value():
             mm_user = self.get_mailman_user()
             if mm_user is None:
-                return []
+                return {}
             mm_client = get_mailman_client()
             subscriptions = {}
             for member in mm_user.subscriptions:
