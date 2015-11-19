@@ -21,6 +21,8 @@
 
 from __future__ import absolute_import, unicode_literals
 
+from urllib2 import HTTPError
+
 from django.conf import settings
 from django.utils.timezone import now
 from mailmanclient import Client, MailmanConnectionError
@@ -135,3 +137,33 @@ def sync_with_mailman(overwrite=False):
                 upper_bound += buffer_size
         prev_count = count
         logger.info("%d emails left to refresh, checked %d", count, lower_bound)
+
+
+def add_user_to_mailman(user, details, *args, **kwargs): # pylint: disable-msg=unused-argument
+    """
+    On social_auth login, create the Mailman user and associate any secondary
+    email addresses with it.
+    """
+    from hyperkitty.models import Profile
+    try:
+        profile = Profile.objects.get(user_id=user.id)
+    except Profile.DoesNotExist:
+        # Create the profile if it does not exist. There's a signal receiver
+        # that creates it for new users, but HyperKitty may be added to an
+        # existing Django project with existing users.
+        profile = Profile.objects.create(user=user)
+    mm_user = profile.get_mailman_user()
+    if mm_user is None:
+        return
+    try:
+        secondary_email = details["secondary_email"]
+    except KeyError:
+        return
+    if secondary_email not in [unicode(a) for a in mm_user.addresses]:
+        try:
+            mm_user.add_address(secondary_email, force_existing=True)
+            logger.debug("Associated secondary address %s with %s",
+                         secondary_email, user.username)
+        except HTTPError as e:
+            logger.warning("Can't add %s to %s: %s",
+                           secondary_email, user.username, e)
