@@ -81,7 +81,7 @@ MIDDLEWARE_CLASSES = (
     'hyperkitty.middleware.TimezoneMiddleware',
 )
 
-ROOT_URLCONF = 'hyperkitty.urls'
+ROOT_URLCONF = 'hyperkitty.tests.urls_test'
 
 
 # Database
