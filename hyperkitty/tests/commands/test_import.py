@@ -185,3 +185,27 @@ class CommandTestCase(TestCase):
         # Message must have been accepted
         self.assertEqual(MailingList.objects.count(), 1)
         self.assertEqual(Email.objects.count(), 2)
+
+    def test_unixfrom(self):
+        # Make sure the UNIX From line is forwarded to the incoming function.
+        msg = mailbox.mboxMessage()
+        msg["From"] = "dummy@example.com"
+        msg["Message-ID"] = "<msg1>"
+        msg["Date"] = "2008-01-01 12:00:00"
+        msg.set_payload("msg1")
+        msg.set_from("dummy@example.com Mon Jul 21 11:44:51 2008")
+        mbox = mailbox.mbox(os.path.join(self.tmpdir, "test.mbox"))
+        mbox.add(msg)
+        # do the import
+        output = StringIO()
+        kw = self.common_cmd_args.copy()
+        kw["stdout"] = kw["stderr"] = output
+        self.command.execute(os.path.join(self.tmpdir, "test.mbox"), **kw)
+        #print(output.getvalue())
+        # Message must have been accepted
+        self.assertEqual(MailingList.objects.count(), 1)
+        self.assertEqual(Email.objects.count(), 1)
+        email = Email.objects.first()
+        self.assertEqual(
+            email.archived_date,
+            datetime(2008, 7, 21, 11, 44, 51, tzinfo=utc))

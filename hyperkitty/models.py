@@ -390,7 +390,7 @@ class Email(models.Model):
         blank=True, null=True, on_delete=models.SET_NULL,
         related_name="children")
     thread = models.ForeignKey("Thread", related_name="emails")
-    archived_date = models.DateTimeField(auto_now_add=True, db_index=True)
+    archived_date = models.DateTimeField(default=now, db_index=True)
     thread_depth = models.IntegerField(default=0)
     thread_order = models.IntegerField(default=0, db_index=True)
 

@@ -403,3 +403,32 @@ class TestAddToList(TestCase):
         orphan = Email.objects.get(id=orphan.id) # Refresh the instance
         parent = Email.objects.filter(message_id="msg1").first()
         self.assertEqual(orphan.parent_id, parent.id)
+
+    def test_archived_date(self):
+        msg = Message()
+        msg["From"] = "dummy@example.com"
+        msg["Subject"] = "Fake Subject"
+        msg["Message-ID"] = "<dummy>"
+        msg["Date"] = "Fri, 02 Nov 2012 16:07:54"
+        msg.set_payload("Fake Message")
+        msg.set_unixfrom("mail@example.com Mon Jul 21 11:59:48 2013")
+        add_to_list("example-list", msg)
+        self.assertEqual(Email.objects.count(), 1)
+        stored_msg = Email.objects.all()[0]
+        self.assertEqual(
+            stored_msg.archived_date,
+            datetime.datetime(2013, 7, 21, 11, 59, 48, tzinfo=timezone.utc))
+
+    def test_archived_date_unparseable(self):
+        msg = Message()
+        msg["From"] = "dummy@example.com"
+        msg["Subject"] = "Fake Subject"
+        msg["Message-ID"] = "<dummy>"
+        msg["Date"] = "Fri, 02 Nov 2012 16:07:54"
+        msg.set_payload("Fake Message")
+        msg.set_unixfrom("mail@example.com Something that cant be parsed")
+        add_to_list("example-list", msg)
+        self.assertEqual(Email.objects.count(), 1)
+        stored_msg = Email.objects.all()[0]
+        one_hour_ago = timezone.now() - datetime.timedelta(hours=1)
+        self.assertTrue(stored_msg.archived_date > one_hour_ago)

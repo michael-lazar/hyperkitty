@@ -41,6 +41,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+UNIXFROM_DATE_RE = re.compile(r'^\s*[^\s]+@[^\s]+ (.*)$')
+
+
 class DuplicateMessage(Exception):
     """
     The database already contains an email with the same Message-ID header.
@@ -64,6 +67,12 @@ def add_to_list(list_name, message):
         raise DuplicateMessage(msg_id)
     email = Email(mailinglist=mlist, message_id=msg_id)
     email.in_reply_to = get_ref(message) # Find thread id
+    if message.get_unixfrom() is not None:
+        mo = UNIXFROM_DATE_RE.match(message.get_unixfrom())
+        if mo:
+            archived_date = parsedate(mo.group(1))
+            if archived_date is not None:
+                email.archived_date = archived_date
 
     # Sender
     try:

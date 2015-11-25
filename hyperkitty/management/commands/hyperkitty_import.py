@@ -143,6 +143,8 @@ class DbImporter(object):
             if message["subject"]:
                 message.replace_header("subject",
                         TEXTWRAP_RE.sub(" ", message["subject"]))
+            if message.get_from():
+                message.set_unixfrom(message.get_from())
             # Now insert the message
             try:
                 with transaction.atomic():
