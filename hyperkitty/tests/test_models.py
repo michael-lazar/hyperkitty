@@ -152,12 +152,14 @@ class EmailTestCase(TestCase):
         msg_in = Message()
         msg_in["From"] = "dummy@example.com"
         msg_in["Message-ID"] = "<msg>"
+        msg_in["Date"] = "Fri, 02 Nov 2012 16:07:54 +0000"
         msg_in.set_payload("Dummy message with email@address.com")
         add_to_list("list@example.com", msg_in)
         email = Email.objects.get(message_id="msg")
         msg = email.as_message()
         self.assertEqual(msg["From"], "dummy at example.com")
         self.assertEqual(msg["Message-ID"], "<msg>")
+        self.assertEqual(msg["Date"], msg_in["Date"])
         self.assertTrue(msg.is_multipart())
         payload = msg.get_payload()
         self.assertEqual(len(payload), 1)

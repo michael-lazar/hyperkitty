@@ -498,7 +498,8 @@ class Email(models.Model):
         # in Django >= 1.7, use timezone.get_fixed_timezone()
         tz = tzoffset(None, self.timezone * 60)
         header_date = self.date.astimezone(tz).replace(microsecond=0)
-        msg["Date"] = header_date.strftime("%Y-%m-%d %H:%M:%S %z")
+        # Date format: http://tools.ietf.org/html/rfc5322#section-3.3
+        msg["Date"] = header_date.strftime("%a, %d %b %Y %H:%M:%S %z")
         msg["Message-ID"] = "<%s>" % self.message_id
         if self.in_reply_to:
             msg["In-Reply-To"] = self.in_reply_to
