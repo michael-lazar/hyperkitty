@@ -146,6 +146,8 @@ def check_mlist_private(func):
 def is_mlist_authorized(request, mlist):
     if not mlist.is_private:
         return True
+    if request.user.is_superuser:
+        return True
     if not request.user.is_authenticated():
         return False
     # Private list and logged-in user: check subscriptions
