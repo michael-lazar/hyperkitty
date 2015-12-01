@@ -29,6 +29,7 @@ from django.utils import timezone
 from django.db import IntegrityError
 
 from hyperkitty.models import MailingList, Email, Thread, Attachment
+from hyperkitty.lib.cache import cache
 from hyperkitty.lib.incoming import add_to_list, DuplicateMessage
 from hyperkitty.lib.utils import get_message_id_hash
 from hyperkitty.tests.utils import TestCase, get_test_file
@@ -432,3 +433,19 @@ class TestAddToList(TestCase):
         stored_msg = Email.objects.all()[0]
         one_hour_ago = timezone.now() - datetime.timedelta(hours=1)
         self.assertTrue(stored_msg.archived_date > one_hour_ago)
+
+    def test_clear_recent_threads_cache(self):
+        # The recent threads cache must be cleared when a new message arrives
+        mlist = MailingList.objects.create(name="example-list")
+        cache.set("MailingList:example-list:recent_threads", "test-value")
+        msg = Message()
+        msg["From"] = "dummy@example.com"
+        msg["Subject"] = "Fake Subject"
+        msg["Message-ID"] = "<dummy>"
+        msg.set_payload("Fake Message")
+        m_hash = add_to_list("example-list", msg)
+        thread = Thread.objects.get(thread_id=m_hash)
+        self.assertEqual(
+            cache.get("MailingList:example-list:recent_threads"), [thread.id])
+        self.assertEqual(
+            [t.thread_id for t in mlist.recent_threads], [m_hash])
