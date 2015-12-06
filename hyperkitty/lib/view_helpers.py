@@ -30,7 +30,7 @@ from django.utils.decorators import available_attrs
 from django.shortcuts import render
 
 from hyperkitty.models import ThreadCategory, MailingList, Profile
-from hyperkitty.views.forms import CategoryForm
+from hyperkitty.forms import CategoryForm
 from hyperkitty.lib.cache import cache
 from hyperkitty.lib.posting import get_sender
 

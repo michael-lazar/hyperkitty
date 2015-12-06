@@ -41,7 +41,7 @@ import mailmanclient
 
 from hyperkitty.models import (Favorite, LastView, MailingList, Sender,
     Email, Vote, Profile)
-from hyperkitty.views.forms import (InternalAuthenticationForm,
+from hyperkitty.forms import (InternalAuthenticationForm,
     RegistrationForm, UserProfileForm)
 from hyperkitty.lib.view_helpers import is_mlist_authorized
 from hyperkitty.lib.paginator import paginate

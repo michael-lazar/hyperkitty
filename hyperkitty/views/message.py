@@ -38,7 +38,7 @@ from hyperkitty.lib.posting import post_to_list, PostingFailed, reply_subject
 from hyperkitty.lib.view_helpers import (
     get_months, check_mlist_private, get_posting_form)
 from hyperkitty.models import MailingList, Email, Attachment
-from .forms import PostForm, ReplyForm
+from hyperkitty.forms import PostForm, ReplyForm
 
 
 @check_mlist_private
