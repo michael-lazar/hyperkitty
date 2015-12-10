@@ -221,7 +221,7 @@ class ThreadTestCase(TestCase):
     def test_tag_removal_form(self):
         user_2 = User.objects.create_user('testuser_2', 'test2@example.com', 'testPass')
         user_3 = User.objects.create_user('testuser_3', 'test3@example.com', 'testPass')
-        _user4 = User.objects.create_user('testuser_4', 'test4@example.com', 'testPass')
+        user4_ = User.objects.create_user('testuser_4', 'test4@example.com', 'testPass')
         url = reverse('hk_thread', args=["list@example.com", self.threadid])
         thread = Thread.objects.get(thread_id=self.threadid)
         # Create tags

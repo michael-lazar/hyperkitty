@@ -131,7 +131,7 @@ class ThreadTestCase(TestCase):
         # We use random chars to build the subject, if we use a single repeated
         # char, the index will never be big enough.
         subject = [ random.choice(string.letters + string.digits + " ")
-                    for _i in range(3000) ]
+                    for i_ in range(3000) ]
         subject = "".join(subject)
         msg = Message()
         msg["From"] = "sender@example.com"

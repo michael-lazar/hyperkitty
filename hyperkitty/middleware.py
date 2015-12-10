@@ -77,14 +77,14 @@ class SSLRedirect(object):
                 continue
             if isinstance(module_or_view, tuple):
                 # see the django.conf.urls.include method
-                urlconf_module, _app_name, _namespace = module_or_view
+                urlconf_module, app_name_, namespace_ = module_or_view
                 add_patterns(urlconf_module)
                 continue
             try:
                 submodule = import_module(module_or_view)
             except ImportError:
                 # Its a function name, resolve it and add it
-                submodule, _dot, func_name = module_or_view.rpartition(".")
+                submodule, dot_, func_name = module_or_view.rpartition(".")
                 submodule = import_module(submodule)
                 self._protected_urls.append(getattr(submodule, func_name))
             else:

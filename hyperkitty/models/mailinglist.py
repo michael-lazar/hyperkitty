@@ -176,7 +176,7 @@ class MailingList(models.Model):
             return value
         converters = {
             "created_at": convert_date,
-            "archive_policy": lambda p: ArchivePolicy[p].value,
+            "archive_policy": lambda p: ArchivePolicy[p].value, # pylint: disable=unsubscriptable-object
         }
         for propname in self.MAILMAN_ATTRIBUTES:
             try:
