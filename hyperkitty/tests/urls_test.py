@@ -20,12 +20,12 @@
 This file is the main URL config for a Django website including HyperKitty.
 """
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'', include('hyperkitty.urls')),
     # Social Auth
     #url(r'', include('social.apps.django_app.urls', namespace='social')),
     # BrowserID
     url(r'', include('django_browserid.urls')),
-)
+]

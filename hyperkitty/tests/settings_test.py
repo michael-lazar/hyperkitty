@@ -282,9 +282,11 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-        'PATH': os.path.join(BASE_DIR, "fulltext_index"),
+        'PATH': ':memory:',
+        'STORAGE': 'ram',
     },
 }
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 
 # A sample logging configuration. The only tangible logging

@@ -60,6 +60,18 @@ class SearchViewsTestCase(SearchEnabledTestCase):
         response = self.client.get(reverse("hk_search"), {"q": "dummy"})
         self.assertEqual(response.status_code, 200)
 
+    def test_search_basic(self):
+        mlist = MailingList.objects.create(
+            name="public@example.com",
+            archive_policy=ArchivePolicy.private.value
+        )
+        mm_mlist = FakeMMList("public@example.com")
+        self.mailman_client.get_list.side_effect = lambda name: mm_mlist
+        self._send_message(mlist)
+        response = self.client.get(reverse("hk_search"),
+            {"q": "dummy", "mlist": "public@example.com"})
+        self.assertContains(response, "Dummy message")
+
     def test_search_private_list(self):
         mlist = MailingList.objects.create(
             name="private@example.com",

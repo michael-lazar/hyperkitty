@@ -30,7 +30,7 @@ from unittest import SkipTest
 import haystack
 import mailmanclient
 from mock import Mock, patch
-#from django import VERSION as DJANGO_VERSION
+from django import VERSION as DJANGO_VERSION
 from django.test import RequestFactory, TestCase as DjangoTestCase
 from django.conf import settings
 from django.contrib.messages.storage.cookie import CookieStorage
@@ -115,24 +115,11 @@ class SearchEnabledTestCase(TestCase):
         except ImportError:
             raise SkipTest("The Whoosh library is not available")
         super(SearchEnabledTestCase, self)._pre_setup()
-        self._override_setting("HAYSTACK_CONNECTIONS", {
-            'default': {
-                'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-                'PATH': os.path.join(self.tmpdir, 'fulltext_index'),
-            },
-        })
-        #self.override_setting("HAYSTACK_SIGNAL_PROCESSOR",
-        #    'haystack.signals.RealtimeSignalProcessor')
-        # Connect to the backend using the new settings. Using the reload()
-        # method is not enough, because the settings are cached in the class
-        haystack.connections.connections_info = settings.HAYSTACK_CONNECTIONS
-        haystack.connections.reload("default")
-        haystack.signal_processor = haystack.signals.RealtimeSignalProcessor(
-            haystack.connections, haystack.connection_router)
+        if DJANGO_VERSION < (1, 7):
+            haystack.connections.reload("default")
         call_command('rebuild_index', interactive=False, verbosity=0)
 
     def _post_teardown(self):
-        haystack.signal_processor.teardown()
         super(SearchEnabledTestCase, self)._post_teardown()
 
 

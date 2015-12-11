@@ -19,6 +19,13 @@ django18:
   - sqlite
   - gcc
 
+#django19:
+#  script:
+#  - tox -e django19
+#  tags:
+#  - sqlite
+#  - gcc
+
 pylint:
   script:
   - tox -e pylint

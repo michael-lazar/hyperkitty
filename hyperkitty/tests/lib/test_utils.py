@@ -31,6 +31,7 @@ try:
     from django.utils.timezone import get_fixed_timezone
 except ImportError:
     # Django < 1.7
+    # pylint: disable=import-error,no-name-in-module
     from django.utils.tzinfo import FixedOffset as get_fixed_timezone
 
 from hyperkitty.lib import utils

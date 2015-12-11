@@ -62,7 +62,7 @@ class Email(models.Model):
     message_id = models.CharField(max_length=255, db_index=True)
     message_id_hash = models.CharField(max_length=255, db_index=True)
     sender = models.ForeignKey("Sender", related_name="emails")
-    subject = models.CharField(max_length="512", db_index=True)
+    subject = models.CharField(max_length=512, db_index=True)
     content = models.TextField()
     date = models.DateTimeField(db_index=True)
     timezone = models.SmallIntegerField()
