@@ -19,6 +19,7 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
+import re
 
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
@@ -70,6 +71,7 @@ def post_to_list(request, mlist, subject, message, headers=None,
         from_email = '"%s" <%s>' % (display_name, sender)
     else:
         from_email = sender
+    subject = re.sub(r'\n\s*', ' ', subject)
 
     # Check that the user is subscribed
     try:
