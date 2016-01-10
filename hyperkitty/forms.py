@@ -51,9 +51,9 @@ class RegistrationForm(UserCreationForm):
             "A user with that email already exists.")
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-4 col-md-offset-1 col-md-4 col-lg-offset-2 col-lg-3'
-        self.helper.field_class = 'col-sm-6 col-md-5 col-lg-4'
-        self.helper.add_input(Submit('submit', _('Register'), css_class="col-sm-offset-6"))
+        self.helper.label_class = 'col-sm-5 col-md-offset-1 col-md-4 col-lg-offset-3 col-lg-2'
+        self.helper.field_class = 'col-sm-6 col-md-5 col-lg-4 col-xl-3'
+        self.helper.add_input(Submit('submit', _('Register')))
 
     def clean_email(self):
         email = self.cleaned_data["email"]
@@ -82,10 +82,9 @@ class InternalAuthenticationForm(AuthenticationForm):
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = \
-            'col-sm-6 col-md-offset-2 col-md-4 col-lg-offset-4 col-lg-2'
-        self.helper.field_class = 'col-sm-6 col-md-4 col-lg-3'
-        self.helper.add_input(Submit(
-            'submit', _('Login'), css_class="col-sm-offset-6"))
+            'col-sm-5 col-md-offset-1 col-md-4 col-lg-offset-3 col-lg-2'
+        self.helper.field_class = 'col-sm-6 col-md-5 col-lg-4 col-xl-3'
+        self.helper.add_input(Submit('submit', _('Login')))
 
 
 class UserProfileForm(forms.Form):
