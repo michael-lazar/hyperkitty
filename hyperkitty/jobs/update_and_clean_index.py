@@ -31,7 +31,7 @@ from hyperkitty.jobs.update_index import run_with_lock
 
 class Job(BaseJob):
     help = "Update the full-text index and clean old entries"
-    when = "daily"
+    when = "monthly"
 
     def execute(self):
         run_with_lock(remove=True)
