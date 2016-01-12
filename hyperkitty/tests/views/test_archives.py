@@ -32,6 +32,7 @@ import shutil
 from email.message import Message
 
 from mock import Mock
+from bs4 import BeautifulSoup
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
@@ -243,3 +244,57 @@ class PrivateArchivesTestCase(TestCase):
 
     def test_message_view(self):
         self._do_test(reverse('hk_message_index', args=["list@example.com", self.msgid]))
+
+
+class MonthsListTestCase(TestCase):
+
+    def setUp(self):
+        # Create the list by adding a dummy message
+        # The message must be old to create multiple year accordion panels in
+        # the months list.
+        msg = Message()
+        msg["From"] = "dummy@example.com"
+        msg["Message-ID"] = "<msg>"
+        msg["Date"] = "2010-02-01 00:00:00 UTC"
+        msg.set_payload("Dummy message")
+        add_to_list("list@example.com", msg)
+
+    def _assertCollapsed(self, panel):
+        self.assertTrue("in" not in panel["class"],
+            "Panel %s has the 'in' class" % panel["id"])
+        self.assertTrue("collapse" in panel["class"],
+            "Panel %s has no 'collapse' class" % panel["id"])
+
+    def _assertNotCollapsed(self, panel):
+        self.assertTrue("in" in panel["class"],
+            "Panel %s has no 'in' class" % panel["id"])
+
+    def _assertActivePanel(self, html, panel_num):
+        """ Checks that the <panel_num> year is active.
+        The panel_num arg is the id in the years list. Example: panel_num=0
+        means the current year is active, panel_num=-1 means the year of the
+        first archived email is active.
+        """
+        soup = BeautifulSoup(html, "html.parser")
+        months_list = soup.find(id="months-list")
+        panels = months_list.find_all(class_="panel-collapse")
+        for panel in panels:
+            if panel == panels[panel_num]:
+                self._assertNotCollapsed(panel)
+            else:
+                self._assertCollapsed(panel)
+
+    def test_overview(self):
+        response = self.client.get(reverse('hk_list_overview', args=["list@example.com"]))
+        self.assertEqual(response.status_code, 200)
+        self._assertActivePanel(response.content, 0)
+
+    def test_month_list(self):
+        response = self.client.get(reverse(
+                'hk_archives_with_month', kwargs={
+                    'mlist_fqdn': 'list@example.com',
+                    'year': '2011',
+                    'month': '1',
+                }))
+        self.assertEqual(response.status_code, 200)
+        self._assertActivePanel(response.content, -2)
