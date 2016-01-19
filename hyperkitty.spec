@@ -183,7 +183,7 @@ done
 
 
 %check
-PYTHONPATH=`pwd`:`pwd`/hyperkitty_standalone %{_bindir}/django-admin test --settings=settings hyperkitty
+PYTHONPATH=`pwd` %{_bindir}/django-admin test --settings=hyperkitty.tests.settings_test hyperkitty
 
 
 %post
