@@ -125,6 +125,10 @@ class Thread(models.Model):
             last_view = LastView.objects.get(thread=self, user=user)
         except LastView.DoesNotExist:
             return True
+        except LastView.MultipleObjectsReturned:
+            last_view_duplicate, last_view = LastView.objects.filter(
+                thread=self, user=user).order_by("view_date").all()
+            last_view_duplicate.delete()
         return self.date_active.replace(tzinfo=utc) > last_view.view_date
 
 
