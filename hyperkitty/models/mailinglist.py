@@ -46,6 +46,8 @@ class ArchivePolicy(Enum):
     """
     Copy from mailman.interfaces.archiver.ArchivePolicy since we can't import
     mailman (PY3-only).
+
+    This should probably be moved to mailman.client.
     """
     never = 0
     private = 1
