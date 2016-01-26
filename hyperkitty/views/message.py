@@ -196,6 +196,8 @@ def new_message(request, mlist_fqdn):
                              form.cleaned_data["message"], headers)
             except PostingFailed, e:
                 messages.error(request, str(e))
+            except ModeratedListException, e:
+                return HttpResponse(str(e), content_type="text/plain", status=403)
             else:
                 messages.success(request, "The message has been sent successfully.")
                 redirect_url = reverse('hk_archives_with_month', kwargs={
