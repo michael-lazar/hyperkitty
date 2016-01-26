@@ -71,7 +71,9 @@ def post_to_list(request, mlist, subject, message, headers=None,
         from_email = '"%s" <%s>' % (display_name, sender)
     else:
         from_email = sender
-    subject = re.sub(r'\n\s*', ' ', subject)
+    # Unwrap and collapse spaces
+    subject = re.sub(r'\n+', ' ', subject)
+    subject = re.sub(r'\s+', ' ', subject)
 
     # Check that the user is subscribed
     try:

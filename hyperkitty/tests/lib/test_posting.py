@@ -107,9 +107,6 @@ class PostingTestCase(TestCase):
                          "secondemail@example.com")
 
     def test_unwrap_subject(self):
-        self.user.first_name = "Django"
-        self.user.last_name = "User"
-        self.user.save()
         subject = "This subject contains\n    a newline"
         try:
             posting.post_to_list(self.request, self.mlist, subject, "dummy content")
@@ -117,3 +114,12 @@ class PostingTestCase(TestCase):
             self.fail(e)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, subject.replace("\n   ", ""))
+
+    def test_unwrap_subject_2(self):
+        subject = 'This subject is wrapped with\n a newline'
+        try:
+            posting.post_to_list(self.request, self.mlist, subject, "dummy content")
+        except ValueError as e:
+            self.fail(e)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, subject.replace("\n ", " "))
