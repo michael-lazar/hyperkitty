@@ -195,6 +195,9 @@ LOGIN_URL          = 'hk_user_login'
 LOGOUT_URL         = 'hk_user_logout'
 LOGIN_REDIRECT_URL = 'hk_root'
 
+# Use the email as identifier, but truncate it because the User.username field
+# is only 30 chars long.
+BROWSERID_USERNAME_ALGO = lambda email: email[:30]
 BROWSERID_VERIFY_CLASS = "django_browserid.views.Verify"
 
 

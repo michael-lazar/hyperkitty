@@ -122,7 +122,8 @@ class AccountViewsTestCase(TestCase):
         response = self.client.get(reverse('hk_user_registration'))
         self.assertEqual(response.status_code, 200)
         response = self.client.post(reverse("hk_user_registration"),
-            {"email": "newtestuser@example.com",
+            {"username": "newtestuser",
+             "email": "newtestuser@example.com",
              "password1": "test", "password2": "test"})
         self.assertRedirects(response, reverse('hk_root'))
         response = self.client.get(reverse('hk_root'))

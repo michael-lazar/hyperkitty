@@ -26,7 +26,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 from email.message import Message
 
 from django.contrib.auth.models import User
-from django.utils.timezone import now
 from hyperkitty.lib.incoming import add_to_list
 from hyperkitty.models.thread import Thread, LastView
 from hyperkitty.tests.utils import TestCase
@@ -46,9 +45,7 @@ class LastViewTestCase(TestCase):
     def test_duplicate(self):
         # There's some sort of race condition that can lead to duplicate
         # LastView objects being created. Make sure we can handle it.
-        last_view_1 = LastView.objects.create(
-                thread=self.thread, user=self.user)
-        last_view_2 = LastView.objects.create(
-                thread=self.thread, user=self.user)
+        LastView.objects.create(thread=self.thread, user=self.user)
+        LastView.objects.create(thread=self.thread, user=self.user)
         self.assertFalse(self.thread.is_unread_by(self.user))
         self.assertEqual(LastView.objects.count(), 1)

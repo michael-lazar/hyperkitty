@@ -41,8 +41,7 @@ class RegistrationForm(UserCreationForm):
 
     class Meta: # pylint: disable=no-init
         model = User
-        fields  = ["email"]
-        exclude = ["username"]
+        fields  = ["username", "email"]
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
