@@ -140,7 +140,8 @@ def user_registration(request):
         if form.is_valid():
             user = form.save()
             user.backend = "django.contrib.auth.backends.ModelBackend"
-            logger.info("New registered user: %s", user.username)
+            logger.info("New registered user: %s (%s)",
+                        user.username, user.email)
             if user.is_active:
                 login(request, user)
                 return redirect(redirect_to)

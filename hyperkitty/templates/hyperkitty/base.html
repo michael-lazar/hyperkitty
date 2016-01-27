@@ -88,7 +88,7 @@
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'hk_user_registration' %}?next={{next|default:request.path|urlencode}}">{% trans "Sign Up" %}</a></li>
                         {% else %}
                         <li role="presentation"><a role="menuitem" tabindex="-1" class="mm_logout" href="{{ logout_url }}?next={% url 'hk_root' %}">{% trans "Logout" %}</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'hk_user_profile' %}">{{ user.username|truncatechars:"35" }}</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'hk_user_profile' %}">{{ user.email|truncatechars:"35" }}</a></li>
                         {% endif %}
                     </ul>
                 </div>
@@ -97,7 +97,7 @@
                 <ul class="nav navbar-nav navbar-right auth">
                     {% if user.is_authenticated %}
                         <li><a class="mm_logout hidden-sm" href="{{ logout_url }}?next={% url 'hk_root' %}">{% trans "Logout" %}</a></li>
-                        <li><a class="hidden-sm" href="{% url 'hk_user_profile' %}">{{ user.username|truncatechars:"35" }}</a></li>
+                        <li><a class="hidden-sm" href="{% url 'hk_user_profile' %}">{{ user.email|truncatechars:"35" }}</a></li>
                     {% else %}
                         <li><a class="mm_user {% if use_internal_auth %}hidden-sm{% endif %}" href="{{ login_url }}?next={{next|default:request.path|urlencode}}">{% trans "Login" %}</a></li>
                         {% if use_internal_auth %}

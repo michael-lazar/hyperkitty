@@ -163,7 +163,7 @@ def add_user_to_mailman(user, details, *args, **kwargs): # pylint: disable-msg=u
         try:
             mm_user.add_address(secondary_email, force_existing=True)
             logger.debug("Associated secondary address %s with %s",
-                         secondary_email, user.username)
+                         secondary_email, user.email)
         except HTTPError as e:
             logger.warning("Can't add %s to %s: %s",
-                           secondary_email, user.username, e)
+                           secondary_email, user.email, e)

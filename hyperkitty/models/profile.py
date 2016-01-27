@@ -98,15 +98,16 @@ class Profile(models.Model):
                         raise # will be caught down there
                     mm_user = mm_client.create_user(
                         self.user.email, self.user.get_full_name())
-                    logger.info("Created Mailman user for %s", self.user.username)
+                    logger.info("Created Mailman user for %s (%s)",
+                                self.user.username, self.user.email)
                 cache.set(cache_key, mm_user.user_id, None)
                 return mm_user
             else:
                 return mm_client.get_user(user_id)
         except (HTTPError, MailmanConnectionError) as e:
             logger.warning(
-                "Error getting or creating the Mailman user of %s: %s",
-                self.user.username, e)
+                "Error getting or creating the Mailman user of %s (%s): %s",
+                self.user.username, self.user.email, e)
             return None
 
     def get_mailman_user_id(self):
