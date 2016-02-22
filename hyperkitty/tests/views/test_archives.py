@@ -97,6 +97,11 @@ class ListArchivesTestCase(TestCase):
         self.assertEqual(len(response.context["threads_posted_to"]), 1)
         self.assertEqual(len(response.context["flagged_threads"]), 1)
 
+    def test_email_escaped_sender(self):
+        url = reverse('hk_list_overview', args=["list@example.com"])
+        response = self.client.get(url)
+        self.assertNotContains(response, "dummy@example.com", status_code=200)
+
 
 
 class ExportMboxTestCase(TestCase):

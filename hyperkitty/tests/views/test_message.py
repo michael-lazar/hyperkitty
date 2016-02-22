@@ -279,3 +279,45 @@ class MessageViewsTestCase(TestCase):
                       get_message_id_hash("msg2")))
         response2 = self.client.get(url2)
         self.assertContains(response2, "email-body fixed", status_code=200)
+
+    def test_email_escaped_body(self):
+        msg = Message()
+        msg["From"] = "Dummy Sender <dummy@example.com>"
+        msg["Subject"] = "Dummy Subject"
+        msg["Date"] = "Mon, 02 Feb 2015 13:00:00 +0300"
+        msg["Message-ID"] = "<msg2>"
+        msg.set_payload("Email address: email@example.com")
+        add_to_list("list@example.com", msg)
+        url = reverse('hk_message_index', args=("list@example.com",
+                      get_message_id_hash("msg2")))
+        response = self.client.get(url)
+        self.assertNotContains(response, "email@example.com", status_code=200)
+
+    def test_email_in_link_in_body(self):
+        msg = Message()
+        msg["From"] = "Dummy Sender <dummy@example.com>"
+        msg["Subject"] = "Dummy Subject"
+        msg["Date"] = "Mon, 02 Feb 2015 13:00:00 +0300"
+        msg["Message-ID"] = "<msg2>"
+        link = "http://example.com/list/email@example.com/message"
+        msg.set_payload("Email address in link: %s" % link)
+        add_to_list("list@example.com", msg)
+        url = reverse('hk_message_index', args=("list@example.com",
+                      get_message_id_hash("msg2")))
+        response = self.client.get(url)
+        self.assertContains(
+            response, '<a href="{0}" rel="nofollow">{0}</a>'.format(link),
+            status_code=200)
+
+    def test_email_escaped_sender(self):
+        msg = Message()
+        msg["From"] = "someone-else@example.com"
+        msg["Subject"] = "Dummy Subject"
+        msg["Date"] = "Mon, 02 Feb 2015 13:00:00 +0300"
+        msg["Message-ID"] = "<msg2>"
+        msg.set_payload("Dummy content")
+        add_to_list("list@example.com", msg)
+        url = reverse('hk_message_index', args=("list@example.com",
+                      get_message_id_hash("msg2")))
+        response = self.client.get(url)
+        self.assertNotContains(response, "someone-else@example.com", status_code=200)

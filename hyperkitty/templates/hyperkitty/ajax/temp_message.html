@@ -26,7 +26,7 @@
         </div>
 
         <div class="email-body {% if email.display_fixed %}fixed{% endif %}"
-         >{{ email.content|snip_quoted|wordwrap:90|urlizetrunc:76|escapeemail }}</div>
+         >{{ email.content|snip_quoted|wordwrap:90|urlizetrunc:76|escapeemaillinks }}</div>
 
         <div class="email-info">
         </div>

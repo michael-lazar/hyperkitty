@@ -6,7 +6,7 @@
 
 
 {% block title %}
-{% trans "Create a new thread" %} - {{ mlist.display_name|default:mlist.name|escapeemail }} - {{ app_name|title }}
+{% trans "Create a new thread" %} - {{ mlist.display_name|default:mlist.name }} - {{ app_name|title }}
 {% endblock %}
 
 {% block content %}
@@ -20,7 +20,7 @@
         <div class="message-header">
             <h1>
                 {% trans "Create a new thread" %}
-                <small>{% trans 'in' %} {{ mlist.display_name|default:mlist.name|escapeemail }}</small>
+                <small>{% trans 'in' %} {{ mlist.display_name|default:mlist.name }}</small>
             </h1>
         </div>
 

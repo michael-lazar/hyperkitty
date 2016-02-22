@@ -127,3 +127,65 @@ class SearchViewsTestCase(SearchEnabledTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["emails"].paginator.count, 2)
         self.assertContains(response, "Dummy message", count=2)
+
+    def test_email_escaped_body(self):
+        MailingList.objects.create(
+            name="public@example.com",
+            archive_policy=ArchivePolicy.private.value
+        )
+        mm_mlist = FakeMMList("public@example.com")
+        self.mailman_client.get_list.side_effect = lambda name: mm_mlist
+        msg = Message()
+        msg["From"] = "Dummy Sender <dummy@example.com>"
+        msg["Subject"] = "Dummy Subject"
+        msg["Date"] = "Mon, 02 Feb 2015 13:00:00 +0300"
+        msg["Message-ID"] = "<msg2>"
+        msg.set_payload("Email address: email@example.com")
+        add_to_list("public@example.com", msg)
+        for query in [{"q": "dummy"},
+                      {"q": "dummy", "mlist": "public@example.com"}]:
+            response = self.client.get(reverse("hk_search"), query)
+            self.assertNotContains(response, "email@example.com",
+                msg_prefix="With query %r" % query, status_code=200)
+
+    def test_email_in_link_in_body(self):
+        MailingList.objects.create(
+            name="public@example.com",
+            archive_policy=ArchivePolicy.private.value
+        )
+        mm_mlist = FakeMMList("public@example.com")
+        self.mailman_client.get_list.side_effect = lambda name: mm_mlist
+        msg = Message()
+        msg["From"] = "Dummy Sender <dummy@example.com>"
+        msg["Subject"] = "Dummy Subject"
+        msg["Date"] = "Mon, 02 Feb 2015 13:00:00 +0300"
+        msg["Message-ID"] = "<msg2>"
+        link = "http://example.com/list/email@example.com/message"
+        msg.set_payload("Email address in link: %s" % link)
+        add_to_list("public@example.com", msg)
+        for query in [{"q": "dummy"},
+                      {"q": "dummy", "mlist": "public@example.com"}]:
+            response = self.client.get(reverse("hk_search"), query)
+            self.assertContains(
+                response, '<a href="{0}" rel="nofollow">{0}</a>'.format(link),
+                msg_prefix="With query %r" % query, status_code=200)
+
+    def test_email_escaped_sender(self):
+        MailingList.objects.create(
+            name="public@example.com",
+            archive_policy=ArchivePolicy.private.value
+        )
+        mm_mlist = FakeMMList("public@example.com")
+        self.mailman_client.get_list.side_effect = lambda name: mm_mlist
+        msg = Message()
+        msg["From"] = "someone-else@example.com"
+        msg["Subject"] = "Dummy Subject"
+        msg["Date"] = "Mon, 02 Feb 2015 13:00:00 +0300"
+        msg["Message-ID"] = "<msg2>"
+        msg.set_payload("Dummy content")
+        add_to_list("public@example.com", msg)
+        for query in [{"q": "dummy"},
+                      {"q": "dummy", "mlist": "public@example.com"}]:
+            response = self.client.get(reverse("hk_search"), query)
+            self.assertNotContains(response, "someone-else@example.com",
+                msg_prefix="With query %r" % query, status_code=200)

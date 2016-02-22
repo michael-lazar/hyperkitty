@@ -316,3 +316,37 @@ class ThreadTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '"email-body fixed"', count=1)
         self.assertContains(response, '"email-body "', count=1)
+
+    def test_email_escaped_body(self):
+        msg = Message()
+        msg["From"] = "Dummy Sender <dummy@example.com>"
+        msg["Subject"] = "Dummy Subject"
+        msg["Date"] = "Mon, 02 Feb 2015 13:00:00 +0300"
+        msg["Message-ID"] = "<msgid2>"
+        msg["In-Reply-To"] = "<msgid>"
+        msg.set_payload("Email address: email@example.com")
+        add_to_list("list@example.com", msg)
+        url = reverse('hk_thread', args=["list@example.com", self.threadid])
+        response = self.client.get(url)
+        self.assertNotContains(response, "email@example.com", status_code=200)
+
+    def test_email_in_link_in_body(self):
+        msg = Message()
+        msg["From"] = "Dummy Sender <dummy@example.com>"
+        msg["Subject"] = "Dummy Subject"
+        msg["Date"] = "Mon, 02 Feb 2015 13:00:00 +0300"
+        msg["Message-ID"] = "<msgid2>"
+        msg["In-Reply-To"] = "<msgid>"
+        link = "http://example.com/list/email@example.com/message"
+        msg.set_payload("Email address in link: %s" % link)
+        add_to_list("list@example.com", msg)
+        url = reverse('hk_thread', args=["list@example.com", self.threadid])
+        response = self.client.get(url)
+        self.assertContains(
+            response, '<a href="{0}" rel="nofollow">{0}</a>'.format(link),
+            status_code=200)
+
+    def test_email_escaped_sender(self):
+        url = reverse('hk_thread', args=["list@example.com", self.threadid])
+        response = self.client.get(url)
+        self.assertNotContains(response, "dummy@example.com", status_code=200)

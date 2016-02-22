@@ -7,7 +7,7 @@
 
 
 {% block title %}
-{{ subject }} - {{ mlist.display_name|default:mlist.name|escapeemail }} - {{ app_name|title }}
+{{ subject }} - {{ mlist.display_name|default:mlist.name }} - {{ app_name|title }}
 {% endblock %}
 
 {% block content %}
