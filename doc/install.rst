@@ -47,7 +47,7 @@ upgrades easier.
     Detailed information on how to use different database engines can be found
     in the `Django documentation`_.
 
-.. _Django documentation: https://docs.djangoproject.com/en/1.6/ref/settings/#databases
+.. _Django documentation: https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 
 .. Setting up the databases
@@ -130,15 +130,13 @@ Customization
 =============
 
 You can add HTML snippets to every HyperKitty page by using Django's
-`TEMPLATE DIRS`_ facility (called `TEMPLATE_DIRS`_ before version 1.8)
-and overriding the following templates:
+`TEMPLATE DIRS`_ facility and overriding the following templates:
 
 - ``hyperkitty/headers.html``: the content will appear before the ``</head>`` tag
 - ``hyperkitty/top.html``: the content will appear before the ``<body>`` tag
 - ``hyperkitty/bottom.html``: the content will appear before the ``</body>`` tag
 
 .. _TEMPLATE DIRS: https://docs.djangoproject.com/en/1.8/ref/settings/#std:setting-TEMPLATES-DIRS
-.. _TEMPLATE_DIRS: https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-TEMPLATE_DIRS
 
 
 Upgrading
@@ -149,11 +147,7 @@ base and run the commands that will update the database schemas. Before
 updating any of those databases, it is recommended to shut down the webserver
 which serves HyperKitty (Apache HTTPd for example).
 
-To update the HyperKitty database, if you're using Django 1.6, run::
-
-    django-admin syncdb --migrate --pythonpath hyperkitty_standalone --settings settings
-
-If you're using Django 1.7 or later, the command is::
+To update the HyperKitty database, run::
 
     django-admin migrate --pythonpath hyperkitty_standalone --settings settings
 

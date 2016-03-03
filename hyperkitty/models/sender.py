@@ -40,9 +40,6 @@ class Sender(models.Model):
     name = models.CharField(max_length=255)
     mailman_id = models.CharField(max_length=255, null=True, db_index=True)
 
-    class Meta:
-        app_label = 'hyperkitty' # For Django < 1.7
-
     def set_mailman_id(self):
         try:
             client = get_mailman_client()

@@ -42,7 +42,6 @@ class Vote(models.Model):
 
     class Meta:
         unique_together = ("email", "user")
-        app_label = 'hyperkitty' # For Django < 1.7
 
 admin.site.register(Vote)
 

@@ -53,7 +53,6 @@ class Thread(models.Model):
 
     class Meta:
         unique_together = ("mailinglist", "thread_id")
-        app_label = 'hyperkitty' # For Django < 1.7
 
     @property
     def participants(self):
@@ -165,9 +164,6 @@ class LastView(models.Model):
     thread = models.ForeignKey("Thread", related_name="lastviews")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="lastviews")
     view_date = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        app_label = 'hyperkitty' # For Django < 1.7
 
     def __unicode__(self):
         """Unicode representation"""

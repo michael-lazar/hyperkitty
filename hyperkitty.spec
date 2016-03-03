@@ -34,7 +34,7 @@ BuildRequires:  python-robot-detection
 BuildRequires:  pytz
 BuildRequires:  django-paintstore
 BuildRequires:  django-browserid
-BuildRequires:  python-django >= 1.6
+BuildRequires:  python-django >= 1.8
 BuildRequires:  python-django-south >= 1.0.0
 BuildRequires:  python-dateutil
 BuildRequires:  python-networkx
@@ -63,7 +63,7 @@ Requires:       python-robot-detection
 Requires:       pytz
 Requires:       django-paintstore
 Requires:       django-browserid >= 0.10.1
-Requires:       python-django >= 1.6
+Requires:       python-django >= 1.8
 Requires:       python-django-south >= 1.0.0
 Requires:       python-dateutil
 Requires:       python-networkx

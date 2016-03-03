@@ -32,9 +32,6 @@ class Favorite(models.Model):
     thread = models.ForeignKey("Thread", related_name="favorites")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="favorites")
 
-    class Meta:
-        app_label = 'hyperkitty' # For Django < 1.7
-
     def __unicode__(self):
         return u"%s is a favorite of %s" % (
             unicode(self.thread), unicode(self.user))

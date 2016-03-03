@@ -78,11 +78,6 @@ class TestCase(DjangoTestCase):
         override_settings = self.override_settings.copy()
         for key, value in override_settings.items():
             self._override_setting(key, value)
-        #if DJANGO_VERSION[:2] < (1, 7):
-        #    cache.backend = get_cache("default") # in 1.7 it's a proxy
-        #else:
-        #    from django.core.cache import caches
-        #    #print("~"*40, caches.all())
         self.mailman_client = Mock()
         self.mailman_client.get_user.side_effect = mailmanclient.MailmanConnectionError()
         self.mailman_client.get_list.side_effect = mailmanclient.MailmanConnectionError()

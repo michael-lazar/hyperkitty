@@ -27,7 +27,8 @@ with open('hyperkitty/__init__.py') as fp:
 
 # Requirements
 REQUIRES = [
-    "Django>=1.6",
+    "Django>=1.8",
+    "Django<1.10",
     "django-gravatar2>=1.0.6",
     "python-social-auth>=0.2.3",
     "djangorestframework>=3.0.0",
@@ -47,12 +48,6 @@ REQUIRES = [
     "django-extensions>=1.3.7",
     "lockfile>=0.9.1",
 ]
-try:
-    import django
-    if django.VERSION[:2] < (1, 7):
-        REQUIRES.append("South>=1.0.0")
-except ImportError:
-    pass
 
 
 setup(

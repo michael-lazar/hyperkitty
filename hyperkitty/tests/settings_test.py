@@ -2,16 +2,21 @@
 Django settings for testing HyperKitty.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/1.6/topics/settings/
+https://docs.djangoproject.com/en/1.8/topics/settings/
 
 For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.6/ref/settings/
+https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 TESTING = True
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'change-this-on-your-production-server'
@@ -19,14 +24,12 @@ SECRET_KEY = 'change-this-on-your-production-server'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-TEMPLATE_DEBUG = DEBUG
-
 ADMINS = (
-     ('HyperKitty Admin', 'root@localhost'),
+     #('HyperKitty Admin', 'root@localhost'),
 )
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
-# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
+# See https://docs.djangoproject.com/en/1.8/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
 # And for BrowserID too, see
 # http://django-browserid.rtfd.org/page/user/settings.html#django.conf.settings.BROWSERID_AUDIENCES
@@ -42,16 +45,16 @@ MAILMAN_ARCHIVER_FROM = ('127.0.0.1', '::1')
 # Application definition
 
 INSTALLED_APPS = (
+    # Uncomment the next line to enable the admin:
+    'django.contrib.admin',
+    # Uncomment the next line to enable admin documentation:
+    # 'django.contrib.admindocs',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     #'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Uncomment the next line to enable the admin:
-    'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
     'hyperkitty',
     'social.apps.django_app.default',
     'rest_framework',
@@ -62,30 +65,55 @@ INSTALLED_APPS = (
     'django_browserid',
     'haystack',
     'django_extensions',
-    #"debug_toolbar",
 )
-import django
-if django.VERSION[:2] < (1, 7):
-    INSTALLED_APPS = INSTALLED_APPS + ("south",)
 
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # Uncomment the next line for simple clickjacking protection:
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     #'hyperkitty.middleware.SSLRedirect',
     'hyperkitty.middleware.TimezoneMiddleware',
 )
 
 ROOT_URLCONF = 'hyperkitty.tests.urls_test'
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.template.context_processors.csrf',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
+                'hyperkitty.context_processors.export_settings',
+                'hyperkitty.context_processors.postorius_info',
+            ],
+        },
+    },
+]
+
+#WSGI_APPLICATION = 'hyperkitty_standalone.wsgi.application'
+
 
 # Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
+# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -101,18 +129,20 @@ DATABASES = {
 
 
 # If you're behind a proxy, use the X-Forwarded-Host header
-# See https://docs.djangoproject.com/en/1.5/ref/settings/#use-x-forwarded-host
+# See https://docs.djangoproject.com/en/1.8/ref/settings/#use-x-forwarded-host
 #USE_X_FORWARDED_HOST = True
+
 # And if your proxy does your SSL encoding for you, set SECURE_PROXY_SSL_HEADER
-# see https://docs.djangoproject.com/en/1.5/ref/settings/#secure-proxy-ssl-header
+# see https://docs.djangoproject.com/en/1.8/ref/settings/#secure-proxy-ssl-header
 #SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+
 # Internationalization
-# https://docs.djangoproject.com/en/1.6/topics/i18n/
+# https://docs.djangoproject.com/en/1.8/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -122,16 +152,8 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
+# https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-# Absolute filesystem path to the directory that will hold user-uploaded files.
-# Example: "/var/www/example.com/media/"
-MEDIA_ROOT = ''
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash.
-# Examples: "http://example.com/media/", "http://media.example.com/"
-MEDIA_URL = ''
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -161,39 +183,14 @@ STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
 )
 
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.contrib.messages.context_processors.messages",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.csrf",
-    "django.core.context_processors.request",
-    "django.core.context_processors.tz",
-    "django.contrib.messages.context_processors.messages",
-    "social.apps.django_app.context_processors.backends",
-    "social.apps.django_app.context_processors.login_redirect",
-    "hyperkitty.context_processors.export_settings",
-    "hyperkitty.context_processors.postorius_info",
-)
-
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-#    BASE_DIR + '/templates',
-)
-
 # Django 1.6+ defaults to a JSON serializer, but it won't work with django-openid, see
 # https://bugs.launchpad.net/django-openid-auth/+bug/1252826
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 
 LOGIN_URL          = 'hk_user_login'
-LOGOUT_URL         = 'hk_user_logout'
 LOGIN_REDIRECT_URL = 'hk_root'
+LOGOUT_URL         = 'hk_user_logout'
 
 # Use the email as identifier, but truncate it because the User.username field
 # is only 30 chars long.
@@ -201,11 +198,20 @@ BROWSERID_USERNAME_ALGO = lambda email: email[:30]
 BROWSERID_VERIFY_CLASS = "django_browserid.views.Verify"
 
 
+# Compatibility with Bootstrap 3
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger'
+}
+
+# Django Crispy Forms
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+CRISPY_FAIL_SILENTLY = not DEBUG
+
 
 #
 # Social auth
 #
-
 AUTHENTICATION_BACKENDS = (
     #'social.backends.open_id.OpenIdAuth',
     # http://python-social-auth.readthedocs.org/en/latest/backends/google.html
@@ -216,12 +222,6 @@ AUTHENTICATION_BACKENDS = (
     #'django_browserid.auth.BrowserIDBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
-
-# http://python-social-auth.readthedocs.org/en/latest/configuration/django.html#database
-if django.VERSION[:2] < (1, 7):
-    SOUTH_MIGRATION_MODULES = {
-        'default': 'social.apps.django_app.default.south_migrations'
-    }
 
 # http://python-social-auth.readthedocs.org/en/latest/pipeline.html#authentication-pipeline
 SOCIAL_AUTH_PIPELINE = (
@@ -271,10 +271,6 @@ COMPRESS_PRECOMPILERS = ()
 # needed for debug mode
 #INTERNAL_IPS = ('127.0.0.1',)
 
-# Django Crispy Forms
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
-CRISPY_FAIL_SILENTLY = not DEBUG
-
 
 #
 # Full-text search engine
@@ -312,6 +308,3 @@ USE_INTERNAL_AUTH = False
 
 # Only display mailing-lists from the same virtual host as the webserver
 FILTER_VHOST = False
-
-# This is for development purposes
-USE_MOCKUPS = False

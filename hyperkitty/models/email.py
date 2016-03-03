@@ -31,14 +31,13 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.nonmultipart import MIMENonMultipart
 
-from dateutil.tz import tzoffset
 from django.conf import settings
 from django.core.cache.utils import make_template_fragment_key
 from django.db import models, IntegrityError
 from django.db.models.signals import (
     post_init, pre_save, post_save, pre_delete, post_delete)
 from django.dispatch import receiver
-from django.utils.timezone import now
+from django.utils.timezone import now, get_fixed_timezone
 
 from hyperkitty.lib.analysis import compute_thread_order_and_depth
 from hyperkitty.lib.cache import cache
@@ -78,7 +77,6 @@ class Email(models.Model):
 
     class Meta:
         unique_together = ("mailinglist", "message_id")
-        app_label = 'hyperkitty' # For Django < 1.7
 
 
     def get_votes(self):
@@ -178,8 +176,7 @@ class Email(models.Model):
             except UnicodeEncodeError:
                 msg[header_name] = Header(
                     header_value.encode('utf-8'), charset).encode()
-        # in Django >= 1.7, use timezone.get_fixed_timezone()
-        tz = tzoffset(None, self.timezone * 60)
+        tz = get_fixed_timezone(self.timezone * 60)
         header_date = self.date.astimezone(tz).replace(microsecond=0)
         # Date format: http://tools.ietf.org/html/rfc5322#section-3.3
         msg["Date"] = header_date.strftime("%a, %d %b %Y %H:%M:%S %z")
@@ -313,7 +310,6 @@ class Attachment(models.Model):
 
     class Meta:
         unique_together = ("email", "counter")
-        app_label = 'hyperkitty' # For Django < 1.7
 
 @receiver(pre_save, sender=Attachment)
 def Attachment_set_size(sender, **kwargs):

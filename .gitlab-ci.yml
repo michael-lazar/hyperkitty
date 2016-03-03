@@ -1,17 +1,3 @@
-django16:
-  script:
-  - tox -e django16
-  tags:
-  - sqlite
-  - gcc
-
-django17:
-  script:
-  - tox -e django17
-  tags:
-  - sqlite
-  - gcc
-
 django18:
   script:
   - tox -e django18

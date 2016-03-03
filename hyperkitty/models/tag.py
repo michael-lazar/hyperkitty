@@ -34,9 +34,6 @@ class Tagging(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     tag = models.ForeignKey("Tag")
 
-    class Meta:
-        app_label = 'hyperkitty' # For Django < 1.7
-
     def __unicode__(self):
         return 'Tag %s on %s by %s' % (unicode(self.tag),
                 unicode(self.thread), unicode(self.user))
@@ -52,7 +49,6 @@ class Tag(models.Model):
 
     class Meta:
         ordering = ["name"]
-        app_label = 'hyperkitty' # For Django < 1.7
 
     def __unicode__(self):
         return 'Tag %s' % (unicode(self.name))

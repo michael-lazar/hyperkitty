@@ -53,9 +53,6 @@ class Profile(models.Model):
     TIMEZONES = sorted([ (tz, tz) for tz in pytz.common_timezones ])
     timezone = models.CharField(max_length=100, choices=TIMEZONES, default=u"")
 
-    class Meta:
-        app_label = 'hyperkitty' # For Django < 1.7
-
     def __unicode__(self):
         return u'%s' % (unicode(self.user))
 
@@ -145,14 +142,8 @@ class Profile(models.Model):
 
 admin.site.register(Profile)
 
-@receiver(post_save)
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_profile(sender, **kwargs):
-    # Filter on the User class here instead of the decorator because the user
-    # model may not have been loaded at that time
-    # Not necessary in Django 1.7+, just filter on settings.AUTH_USER_MODEL at
-    # the decorator level
-    if sender != get_user_model():
-        return
     user = kwargs["instance"]
     if not Profile.objects.filter(user=user).exists():
         Profile.objects.create(user=user)
