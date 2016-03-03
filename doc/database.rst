@@ -2,12 +2,8 @@ Setting up the databases
 ========================
 
 The HyperKitty database is configured using the ``DATABASE`` setting in
-Django's ``settings.py`` file, as usual. If you're using Django 1.6, the
-database can be created with the following command::
-
-    django-admin syncdb --migrate --pythonpath hyperkitty_standalone --settings settings
-
-If you're using Django 1.7 or later, the command is::
+Django's ``settings.py`` file, as usual. The database can be created with the
+following command::
 
     django-admin migrate --pythonpath hyperkitty_standalone --settings settings
 
@@ -16,7 +12,8 @@ library, the search engine backend is pluggable, refer to the Haystack
 documentation on how to install and configure the fulltext search engine
 backend.
 
-HyperKitty's default configuration uses the `Whoosh`_ backend, so if you want to use that you just need to install the ``Whoosh`` Python library.
+HyperKitty's default configuration uses the `Whoosh`_ backend, so if you want
+to use that you just need to install the ``Whoosh`` Python library.
 
 .. _Whoosh: https://pythonhosted.org/Whoosh/
 

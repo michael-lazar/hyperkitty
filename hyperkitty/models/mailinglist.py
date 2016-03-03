@@ -72,9 +72,6 @@ class MailingList(models.Model):
         "archive_policy", "created_at",
     )
 
-    class Meta:
-        app_label = 'hyperkitty' # For Django < 1.7
-
     @property
     def is_private(self):
         return self.archive_policy == ArchivePolicy.private.value

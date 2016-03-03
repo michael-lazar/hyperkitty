@@ -27,12 +27,7 @@ from email import message_from_file
 from traceback import format_exc
 
 from django.utils import timezone
-try:
-    from django.utils.timezone import get_fixed_timezone
-except ImportError:
-    # Django < 1.7
-    # pylint: disable=import-error,no-name-in-module
-    from django.utils.tzinfo import FixedOffset as get_fixed_timezone
+from django.utils.timezone import get_fixed_timezone
 
 from hyperkitty.lib import utils
 from hyperkitty.tests.utils import TestCase, get_test_file

@@ -34,7 +34,6 @@ class ThreadCategory(models.Model):
 
     class Meta:
         verbose_name_plural = "Thread categories"
-        app_label = 'hyperkitty' # For Django < 1.7
 
     def __unicode__(self):
         return u'Thread category "%s"' % (unicode(self.name))

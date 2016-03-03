@@ -235,7 +235,7 @@ class Command(BaseCommand):
         # main
         list_address = options["list_address"].lower()
         ## Keep autocommit on SQLite:
-        ## https://docs.djangoproject.com/en/1.6/topics/db/transactions/#savepoints-in-sqlite
+        ## https://docs.djangoproject.com/en/1.8/topics/db/transactions/#savepoints-in-sqlite
         #if settings.DATABASES["default"]["ENGINE"] != "django.db.backends.sqlite3":
         #    transaction.set_autocommit(False)
         settings.HYPERKITTY_BATCH_MODE = True

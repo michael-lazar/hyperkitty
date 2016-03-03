@@ -25,7 +25,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from unittest import skipIf
 
-from django import VERSION as DJANGO_VERSION
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from django.test.client import RequestFactory
@@ -47,7 +46,6 @@ class SSLRedirectTestCase(TestCase):
         request = self.rf.get("/")
         self.assertFalse(self.mw._is_secure(request))
 
-    @skipIf(DJANGO_VERSION[:2] < (1, 7), "only works on Django 1.7+")
     def test_is_secure_true(self):
         request = self.rf.get("/", secure=True)
         self.assertTrue(request.is_secure(), "This test is wrong")

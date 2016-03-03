@@ -141,7 +141,7 @@
         <div class="flashmsg-wrapper">
             <!--<div class="alert alert-{{ msg.level_tag }} {{ msg.extra_tags }}">-->
             <div class="alert {{ msg.tags }}
-                {% if msg.level == 25 %} {# "success" level. For Django >= 1.7, use DEFAULT_MESSAGE_LEVELS #}
+                {% if msg.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
                 ">
                 {% else %}
                 alert-dismissible">
