@@ -40,10 +40,6 @@ from hyperkitty.lib.view_helpers import (
 from hyperkitty.lib.paginator import paginate
 
 
-if settings.USE_MOCKUPS:
-    from hyperkitty.lib.mockup import generate_top_author
-
-
 
 @check_mlist_private
 def archives(request, mlist_fqdn, year=None, month=None, day=None):
@@ -136,7 +132,8 @@ def overview(request, mlist_fqdn=None):
 
     # top authors are the ones that have the most kudos.  How do we determine
     # that?  Most likes for their post?
-    if settings.USE_MOCKUPS:
+    if getattr(settings, 'USE_MOCKUPS', False):
+        from hyperkitty.lib.mockup import generate_top_author
         authors = generate_top_author()
         authors = sorted(authors, key=lambda author: author.kudos)
         authors.reverse()

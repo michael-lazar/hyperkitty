@@ -29,7 +29,7 @@ from hyperkitty import VERSION
 def export_settings(request):
     exports = ["APP_NAME", "USE_MOCKUPS", "USE_INTERNAL_AUTH"]
     extra_context = dict(
-        (name.lower(), getattr(settings, name)) for name in exports)
+        (name.lower(), getattr(settings, name, None)) for name in exports)
     extra_context["HYPERKITTY_VERSION"] = VERSION
     extra_context["login_url"]  = resolve_url(settings.LOGIN_URL)
     extra_context["logout_url"] = resolve_url(settings.LOGOUT_URL)
