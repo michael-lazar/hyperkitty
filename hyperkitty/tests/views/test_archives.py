@@ -189,6 +189,17 @@ class ExportMboxTestCase(TestCase):
         self.assertEqual(
             [ m["Message-ID"] for m in mbox ], ["<msg>", "<msg2>"])
 
+    def test_message(self):
+        msg = Message()
+        msg["From"] = "dummy@example.com"
+        msg["Message-ID"] = "<msg2>"
+        msg["In-Reply-To"] = "<msg>"
+        msg.set_payload("Dummy message")
+        msg_id = add_to_list("list@example.com", msg)
+        mbox = self._get_mbox(qs="message=%s" % msg_id)
+        self.assertEqual(len(mbox), 1)
+        self.assertEqual([ m["Message-ID"] for m in mbox ], ["<msg2>"])
+
 
 class PrivateArchivesTestCase(TestCase):
 

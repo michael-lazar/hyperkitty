@@ -268,6 +268,8 @@ def export_mbox(request, mlist_fqdn, filename):
         query = query.filter(date__lt=end_date)
     if "thread" in request.GET:
         query = query.filter(thread__thread_id=request.GET["thread"])
+    if "message" in request.GET:
+        query = query.filter(message_id_hash=request.GET["message"])
     def stream_mbox(query):
         # Use the gzip format: http://www.zlib.net/manual.html#Advanced
         compressor = zlib.compressobj(6, zlib.DEFLATED, zlib.MAX_WBITS | 16)

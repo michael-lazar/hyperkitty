@@ -32,6 +32,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import SuspiciousOperation
 from django.template import RequestContext, loader
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import gettext as _
 
 from hyperkitty.lib.mailman import ModeratedListException
 from hyperkitty.lib.posting import post_to_list, PostingFailed, reply_subject
@@ -55,6 +56,17 @@ def index(request, mlist_fqdn, message_id_hash):
     else:
         message.myvote = None
 
+    # Export button
+    export = {
+        "url": "%s?message=%s" % (
+            reverse("hk_list_export_mbox", kwargs={
+                    "mlist_fqdn": mlist.name,
+                    "filename": "%s-%s" % (mlist.name, message.message_id_hash)}),
+            message.message_id_hash),
+        "message": _("Download"),
+        "title": _("This message in gzipped mbox format"),
+    }
+
     context = {
         'mlist' : mlist,
         'message': message,
@@ -62,6 +74,7 @@ def index(request, mlist_fqdn, message_id_hash):
         'months_list': get_months(mlist),
         'month': message.date,
         'reply_form': get_posting_form(ReplyForm, request, mlist),
+        'export': export,
     }
     return render(request, "hyperkitty/message.html", context)
 
