@@ -27,10 +27,8 @@ import shutil
 import tempfile
 from unittest import SkipTest
 
-import haystack
 import mailmanclient
 from mock import Mock, patch
-from django import VERSION as DJANGO_VERSION
 from django.test import RequestFactory, TestCase as DjangoTestCase
 from django.conf import settings
 from django.contrib.messages.storage.cookie import CookieStorage
@@ -110,8 +108,6 @@ class SearchEnabledTestCase(TestCase):
         except ImportError:
             raise SkipTest("The Whoosh library is not available")
         super(SearchEnabledTestCase, self)._pre_setup()
-        if DJANGO_VERSION < (1, 7):
-            haystack.connections.reload("default")
         call_command('rebuild_index', interactive=False, verbosity=0)
 
     def _post_teardown(self):

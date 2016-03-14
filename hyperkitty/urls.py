@@ -20,17 +20,12 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from django import VERSION as DJANGO_VERSION
 from django.conf.urls import include, url
 from django.views.generic.base import TemplateView
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib.auth.views import logout as logout_view
-
-# Uncomment the next two lines to enable the admin:
 from django.contrib import admin
-if DJANGO_VERSION[:2] < (1, 7):
-    admin.autodiscover()
 
 from hyperkitty import api
 from hyperkitty.views import (
