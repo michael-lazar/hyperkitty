@@ -38,6 +38,10 @@ class SearchIndexTestCase(SearchEnabledTestCase):
         # Disable automatic update
         haystack.signal_processor.teardown()
 
+    def tearDown(self):
+        # Restore automatic update
+        haystack.signal_processor.setup()
+
     def _add_message(self, msgid="msg"):
         msg = Message()
         msg["From"] = "Dummy Sender <dummy@example.com>"
