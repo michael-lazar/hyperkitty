@@ -25,12 +25,13 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 from django.conf import settings
 from django.db import models
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_delete
 from django.contrib import admin
 from django.dispatch import receiver
 from django.utils.timezone import now, utc
 
 from hyperkitty.lib.cache import cache
+from hyperkitty.lib.signals import new_thread
 from .common import get_votes
 from .sender import Sender
 
@@ -143,14 +144,15 @@ class Thread(models.Model):
 #        instance.starting_email = instance.emails.order_by("date").first()
 
 
-@receiver([post_save, post_delete], sender=Thread)
-def refresh_thread_count_cache(sender, **kwargs):
+@receiver(new_thread)
+def on_thread_added(sender, **kwargs):
+    thread = kwargs["thread"]
+    thread.mailinglist.on_thread_added(thread)
+
+@receiver(post_delete, sender=Thread)
+def on_thread_deleted(sender, **kwargs):
     thread = kwargs["instance"]
-    cache.delete("MailingList:%s:recent_threads" % thread.mailinglist_id)
-    # don't warm up the cache in batch mode (mass import)
-    if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
-        # pylint: disable=pointless-statement
-        thread.mailinglist.recent_threads
+    thread.mailinglist.on_thread_deleted(thread)
 
 
 #@receiver(new_thread)

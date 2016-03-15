@@ -28,6 +28,7 @@ from enum import Enum
 from urllib2 import HTTPError
 
 import dateutil.parser
+from django.conf import settings
 from django.db import models
 from django.utils.timezone import now, utc
 from mailmanclient import MailmanConnectionError
@@ -121,10 +122,34 @@ class MailingList(models.Model):
         thread_ids = cache.get(cache_key)
         if thread_ids is None:
             threads = self.get_threads_between(begin_date, end_date)
-            cache.set(cache_key, [t.id for t in threads], 3600 * 6) # 6 hours
+            cache.set(cache_key, [t.id for t in threads], 3600 * 12) # 12 hours
         else:
             threads = Thread.objects.filter(id__in=thread_ids)
         return threads
+
+    def _recent_threads_cache_rebuild(self):
+        begin_date, end_date = self.get_recent_dates()
+        cache_key = "MailingList:%s:recent_threads" % self.name
+        cache.delete(cache_key)
+        # don't warm up the cache in batch mode (mass import)
+        if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
+            thread_ids = self.get_threads_between(
+                begin_date, end_date).values_list("id", flat=True)
+            cache.set(cache_key, list(thread_ids), 3600 * 12) # 12 hours
+
+    def on_thread_added(self, thread):
+        cache_key = "MailingList:%s:recent_threads" % self.name
+        recent_thread_ids = cache.get(cache_key)
+        if recent_thread_ids is not None and len(recent_thread_ids) >= 1000:
+            # It's a high-volume list, just append to the cache
+            recent_thread_ids.append(thread.id)
+            cache.set(cache_key, recent_thread_ids, 3600 * 12) # 12 hours
+        else:
+            # Low-volume list, rebuild the cache
+            self._recent_threads_cache_rebuild()
+
+    def on_thread_deleted(self, thread):
+        self._recent_threads_cache_rebuild()
 
     def get_participants_count_for_month(self, year, month):
         def _get_value():

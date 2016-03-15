@@ -38,6 +38,7 @@ from django.core.urlresolvers import reverse
 
 from hyperkitty.models import (MailingList, ArchivePolicy, Sender, Thread,
     Favorite, Email)
+from hyperkitty.lib.cache import cache
 from hyperkitty.lib.incoming import add_to_list
 from hyperkitty.lib.mailman import FakeMMList, FakeMMMember
 from hyperkitty.tests.utils import TestCase
@@ -96,6 +97,17 @@ class ListArchivesTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["threads_posted_to"]), 1)
         self.assertEqual(len(response.context["flagged_threads"]), 1)
+
+    def test_overview_cleaned_cache(self):
+        # Test the overview page with a clean cache (different code path for
+        # MailingList.recent_threads)
+        cache.delete("MailingList:list@example.com:recent_threads")
+        response = self.client.get(reverse('hk_list_overview', args=["list@example.com"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["view_name"], "overview")
+        self.assertEqual(len(response.context["top_threads"]), 1)
+        self.assertEqual(len(response.context["most_active_threads"]), 1)
+        self.assertEqual(len(response.context["pop_threads"]), 0)
 
     def test_email_escaped_sender(self):
         url = reverse('hk_list_overview', args=["list@example.com"])
