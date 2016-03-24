@@ -100,6 +100,17 @@ class EmailTestCase(TestCase):
             payload[1].get_payload(decode=True),
             "<html><body>Dummy message</body></html>")
 
+    def test_as_message_timezone(self):
+        msg_in = Message()
+        msg_in["From"] = "dummy@example.com"
+        msg_in["Message-ID"] = "<msg>"
+        msg_in["Date"] = "Fri, 02 Nov 2012 16:07:54 +0400"
+        msg_in.set_payload("Dummy message")
+        add_to_list("list@example.com", msg_in)
+        email = Email.objects.get(message_id="msg")
+        msg = email.as_message()
+        self.assertEqual(msg["Date"], msg_in["Date"])
+
 
 class EmailSetParentTestCase(TestCase):
     # pylint: disable=unbalanced-tuple-unpacking

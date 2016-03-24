@@ -176,7 +176,7 @@ class Email(models.Model):
             except UnicodeEncodeError:
                 msg[header_name] = Header(
                     header_value.encode('utf-8'), charset).encode()
-        tz = get_fixed_timezone(self.timezone * 60)
+        tz = get_fixed_timezone(self.timezone)
         header_date = self.date.astimezone(tz).replace(microsecond=0)
         # Date format: http://tools.ietf.org/html/rfc5322#section-3.3
         msg["Date"] = header_date.strftime("%a, %d %b %Y %H:%M:%S %z")

@@ -117,6 +117,7 @@ def date_with_senders_timezone(email):
     """
     Rebuild the date of an email taking the sender's timezone into account.
     """
+    # tzoffset requires seconds
     tz = tzoffset(None, email.timezone * 60)
     return email.date.astimezone(tz)
 
