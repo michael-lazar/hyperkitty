@@ -50,7 +50,8 @@ class MailmanSubscribeTestCase(TestCase):
     def test_subscribe_not_subscribed(self):
         self.ml.settings["subscription_policy"] = "open"
         self.ml.get_member.side_effect = ValueError
-        cache.set("User:%s:subscriptions" % self.user.id, "test-value")
+        cache.set("User:%s:subscriptions" % self.user.id,
+                  "test-value", version=2)
         class Prefs(dict):
             save = Mock()
         member = Mock()
@@ -62,8 +63,9 @@ class MailmanSubscribeTestCase(TestCase):
             'test@example.com', ' ', pre_verified=True, pre_confirmed=True)
         self.assertEqual(member.preferences["delivery_status"], "by_user")
         self.assertTrue(member.preferences.save.called)
-        self.assertEqual(cache.get("User:%s:subscriptions" % self.user.id),
-                         None)
+        self.assertEqual(
+            cache.get("User:%s:subscriptions" % self.user.id, version=2),
+            None)
 
     def test_subscribe_moderate(self):
         self.ml.get_member.side_effect = ValueError # User is not subscribed
@@ -98,7 +100,8 @@ class MailmanSubscribeTestCase(TestCase):
         # confirmation, Mailman will reply with a 202 code, and mailman.client
         # will return the response content (a dict) instead of a Member
         # instance. Make sure we can handle that.
-        cache.set("User:%s:subscriptions" % self.user.id, "test-value")
+        cache.set("User:%s:subscriptions" % self.user.id,
+                  "test-value", version=2)
         self.ml.settings["subscription_policy"] = "open"
         self.ml.get_member.side_effect = ValueError
         response_dict = {'token_owner': 'subscriber', 'http_etag': '"deadbeef"',
@@ -111,8 +114,9 @@ class MailmanSubscribeTestCase(TestCase):
         self.assertTrue(self.ml.get_member.called)
         # There must be no exception even if the response is not a Member.
         # Cache was not cleared because the subscription was not done
-        self.assertEqual(cache.get("User:%s:subscriptions" % self.user.id),
-                         "test-value")
+        self.assertEqual(
+            cache.get("User:%s:subscriptions" % self.user.id, version=2),
+            "test-value")
 
     def test_subscribe_different_address(self):
         self.ml.settings["subscription_policy"] = "open"

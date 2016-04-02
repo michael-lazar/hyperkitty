@@ -194,28 +194,30 @@ def subscriptions(request):
     profile = request.user.hyperkitty_profile
     mm_user_id = profile.get_mailman_user_id()
     subs = []
-    for mlist_name in profile.get_subscriptions().keys():
+    for mlist_id in profile.get_subscriptions():
         try:
-            mlist = MailingList.objects.get(name=mlist_name)
+            mlist = MailingList.objects.get(list_id=mlist_id)
+            list_name = mlist.name
         except MailingList.DoesNotExist:
             mlist = None # no archived email yet
+            list_name = mlist_id
         posts_count = likes = dislikes = 0
         first_post = all_posts_url = None
         if mlist is not None:
-            posts_count = profile.emails.filter(mailinglist__name=mlist_name).count()
-            likes, dislikes = profile.get_votes_in_list(mlist_name)
+            posts_count = profile.emails.filter(mailinglist__name=mlist.name).count()
+            likes, dislikes = profile.get_votes_in_list(mlist.name)
             first_post = profile.get_first_post(mlist)
             if mm_user_id is not None:
                 all_posts_url = "%s?list=%s" % (
                     reverse("hk_user_posts", args=[mm_user_id]),
-                    mlist_name)
+                    mlist.name)
         likestatus = "neutral"
         if likes - dislikes >= 10:
             likestatus = "likealot"
         elif likes - dislikes > 0:
             likestatus = "like"
         subs.append({
-            "list_name": mlist_name,
+            "list_name": mlist.name if mlist else mlist_id,
             "mlist": mlist,
             "posts_count": posts_count,
             "first_post": first_post,

@@ -101,7 +101,7 @@ class PostingTestCase(TestCase):
 
     def test_sender_subscribed(self):
         self.mm_user.subscriptions = [
-            FakeMMMember(self.mlist.name, "secondemail@example.com"),
+            FakeMMMember(self.mlist.list_id, "secondemail@example.com"),
         ]
         self.assertEqual(posting.get_sender(self.request, self.mlist),
                          "secondemail@example.com")

@@ -234,7 +234,7 @@ class PrivateArchivesTestCase(TestCase):
         self.mm_user.user_id = "dummy"
         self.mailman_client.get_user.side_effect = lambda name: self.mm_user
         self.mm_user.subscriptions = [
-            FakeMMMember("list@example.com", self.user.email),
+            FakeMMMember("list.example.com", self.user.email),
         ]
         self.mm_user.addresses = ['test@example.com']
 

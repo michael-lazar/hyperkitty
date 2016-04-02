@@ -41,8 +41,8 @@ def get_sender(request, mlist):
     address = request.user.email
     # Try to get the email used to susbscribe to the list
     subscriptions = request.user.hyperkitty_profile.get_subscriptions()
-    if mlist.name in subscriptions:
-        address = subscriptions[mlist.name]
+    if mlist.list_id in subscriptions:
+        address = subscriptions[mlist.list_id]
     return address
 
 def get_from(request, address):

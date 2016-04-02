@@ -119,20 +119,16 @@ class Profile(models.Model):
             mm_user = self.get_mailman_user()
             if mm_user is None:
                 return {}
-            mm_client = get_mailman_client()
-            subscriptions = {}
-            for member in mm_user.subscriptions:
-                mlist_name = mm_client.get_list(member.list_id).fqdn_listname
-                ## de-duplicate subscriptions
-                #if mlist_name in [ s["list_name"] for s in sub_names ]:
-                #    continue
-                subscriptions[mlist_name] = member.address
+            subscriptions = dict([
+                (member.list_id, member.address)
+                for member in mm_user.subscriptions
+                ])
             return subscriptions
         # TODO: how should this be invalidated? Subscribe to a signal in
         # mailman when a new subscription occurs? Or store in the session?
         return cache.get_or_set(
             "User:%s:subscriptions" % self.id,
-            _get_value, 10) # 10 seconds
+            _get_value, 60, version=2) # 1 minute
         # TODO: increase the cache duration when we have Mailman signals
 
     def get_first_post(self, mlist):

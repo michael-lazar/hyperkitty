@@ -35,14 +35,14 @@ class CacheProxy:
     def __getattr__(self, name):
         return getattr(self.backend, name)
 
-    def get_or_set(self, key, fn, timeout=MISSING):
-        value = self.backend.get(key)
+    def get_or_set(self, key, fn, timeout=MISSING, **kw):
+        value = self.backend.get(key, **kw)
         if value is None:
             value = fn()
             if timeout is MISSING:
-                self.backend.set(key, value)
+                self.backend.set(key, value, **kw)
             else:
-                self.backend.set(key, value, timeout)
+                self.backend.set(key, value, timeout, **kw)
         return value
 
 cache = CacheProxy()

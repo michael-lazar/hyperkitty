@@ -282,7 +282,7 @@ class SubscriptionsTestCase(TestCase):
     def test_get_subscriptions(self):
         mlist = MailingList.objects.create(name="test@example.com")
         self.mm_user.subscriptions = [
-            FakeMMMember("test@example.com", self.user.email),
+            FakeMMMember("test.example.com", self.user.email),
         ]
         self.client.login(username='testuser', password='testPass')
         response = self.client.get(reverse("hk_user_subscriptions"))
@@ -290,8 +290,8 @@ class SubscriptionsTestCase(TestCase):
             [{
                 'first_post': None, 'posts_count': 0,
                 'likes': 0, 'dislikes': 0, 'likestatus': 'neutral',
-                'list_name': "test@example.com",
                 'mlist': mlist,
+                'list_name': "test@example.com",
                 'all_posts_url': "%s?list=test@example.com"
                         % reverse("hk_user_posts", args=[self.mm_user.user_id]),
             }])

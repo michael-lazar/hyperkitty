@@ -158,7 +158,7 @@ def is_mlist_authorized(request, mlist):
         # that creates it for new users, but HyperKitty may be added to an
         # existing Django project with existing users.
         profile = Profile.objects.create(user=request.user)
-    if mlist.name in profile.get_subscriptions().keys():
+    if mlist.list_id in profile.get_subscriptions():
         return True
     else:
         return False

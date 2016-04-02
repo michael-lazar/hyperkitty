@@ -81,7 +81,7 @@ class SearchViewsTestCase(SearchEnabledTestCase):
         mm_mlist.settings["archive_policy"] = "private"
         self.mailman_client.get_list.side_effect = lambda name: mm_mlist
         self.mm_user.subscriptions = [
-            FakeMMMember("private@example.com", self.user.email),
+            FakeMMMember("private.example.com", self.user.email),
         ]
         self._send_message(mlist)
         response = self.client.get(reverse("hk_search"),
@@ -115,7 +115,7 @@ class SearchViewsTestCase(SearchEnabledTestCase):
         self.mailman_client.get_list.side_effect = lambda name: mailman_lists[name]
         # Subscribe the user to one of the private lists
         self.mm_user.subscriptions = [
-            FakeMMMember("private-sub@example.com", self.user.email),
+            FakeMMMember("private-sub.example.com", self.user.email),
         ]
         # Populate the lists with messages
         self._send_message(mlist_public)

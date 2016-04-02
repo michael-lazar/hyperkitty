@@ -55,7 +55,7 @@ class ProfileTestCase(TestCase):
         mm_user = Mock()
         self.mailman_client.get_user.side_effect = lambda name: mm_user
         mm_user.user_id = uuid.uuid1().int
-        fake_member = FakeMMMember("test@example.com", "dummy@example.com")
+        fake_member = FakeMMMember("test.example.com", "dummy@example.com")
         mm_user.subscriptions = [fake_member,]
         MailingList.objects.create(name="test@example.com")
         try:
@@ -64,7 +64,7 @@ class ProfileTestCase(TestCase):
             #print_exc()
             self.fail("Subscriptions should be available even if "
                       "the user has never voted yet\n%s" % format_exc())
-        self.assertEqual(subs, {"test@example.com": "dummy@example.com"})
+        self.assertEqual(subs, {"test.example.com": "dummy@example.com"})
 
     def test_votes_in_list(self):
         # Count the number of votes in a list

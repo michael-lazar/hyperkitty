@@ -81,7 +81,7 @@ def subscribe(list_address, user, email=None, display_name=None):
         member.preferences["delivery_status"] = "by_user"
         member.preferences.save()
         subscribed_now = True
-        cache.delete("User:%s:subscriptions" % user.id)
+        cache.delete("User:%s:subscriptions" % user.id, version=2)
         logger.info("Subscribing %s to %s on first post",
                     email, list_address)
 
