@@ -24,7 +24,7 @@ from __future__ import absolute_import, unicode_literals
 from urllib2 import HTTPError
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, NoReverseMatch
 from django.core.exceptions import SuspiciousOperation
 from django.contrib.auth import login, get_backends
 from django.contrib.auth.decorators import login_required
@@ -116,6 +116,10 @@ def user_profile(request):
         'gravatar_url': gravatar_url,
         'gravatar_shortname': gravatar_shortname,
     }
+    try:
+        context['profile_url'] = reverse('user_profile')
+    except NoReverseMatch:
+        pass
     return render(request, "hyperkitty/user_profile.html", context)
 
 
