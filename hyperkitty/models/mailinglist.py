@@ -30,6 +30,8 @@ from urllib2 import HTTPError
 import dateutil.parser
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.utils.timezone import now, utc
 from mailmanclient import MailmanConnectionError
 
@@ -60,6 +62,7 @@ class MailingList(models.Model):
     An archived mailing-list.
     """
     name = models.CharField(max_length=254, primary_key=True)
+    list_id = models.CharField(max_length=254, null=True, unique=True)
     display_name = models.CharField(max_length=255)
     description = models.TextField()
     subject_prefix = models.CharField(max_length=255)
@@ -70,7 +73,7 @@ class MailingList(models.Model):
 
     MAILMAN_ATTRIBUTES = (
         "display_name", "description", "subject_prefix",
-        "archive_policy", "created_at",
+        "archive_policy", "created_at", "list_id",
     )
 
     @property
@@ -211,3 +214,11 @@ class MailingList(models.Model):
                 value = converters[propname](value)
             setattr(self, propname, value)
         self.save()
+
+
+@receiver(pre_save, sender=MailingList)
+def MailingList_set_list_id(sender, **kwargs):
+    """Set the default list_id"""
+    ml = kwargs["instance"]
+    if ml.list_id is None:
+        ml.list_id = ml.name.replace("@", ".")

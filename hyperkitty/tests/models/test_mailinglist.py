@@ -47,9 +47,11 @@ class MailingListTestCase(TestCase):
         self.ml.subject_prefix = "original-value"
         self.ml.created_at = datetime(2000, 1, 1, 0, 0, 0, tzinfo=utc)
         self.ml.archive_policy = ArchivePolicy.public.value
+        self.ml.list_id = "original.value"
         self.ml.save()
 
         self.mailman_ml.display_name = "new-value"
+        self.mailman_ml.list_id = "new.value"
         self.mailman_ml.settings["description"] = "new-value"
         self.mailman_ml.settings["subject_prefix"] = "new-value"
         self.mailman_ml.settings["archive_policy"] = "private"
@@ -62,6 +64,7 @@ class MailingListTestCase(TestCase):
         self.assertEqual(self.ml.subject_prefix, "new-value")
         self.assertEqual(self.ml.created_at, new_date)
         self.assertEqual(self.ml.archive_policy, ArchivePolicy.private.value)
+        self.assertEqual(self.ml.list_id, "new.value")
 
     def test_update_from_mailman_naive(self):
         self.ml.created_at = datetime(2000, 1, 1, 0, 0, 0, tzinfo=utc)

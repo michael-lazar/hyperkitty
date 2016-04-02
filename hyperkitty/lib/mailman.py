@@ -91,6 +91,7 @@ class FakeMMList:
     def __init__(self, name):
         self.fqdn_listname = name
         self.display_name = name.partition("@")[0]
+        self.list_id = name.replace("@", ".")
         self.settings = {
             "description": "",
             "subject_prefix": "[%s] " % self.display_name,
