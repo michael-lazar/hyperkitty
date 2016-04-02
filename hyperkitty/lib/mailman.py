@@ -161,7 +161,9 @@ def add_user_to_mailman(user, details, *args, **kwargs): # pylint: disable-msg=u
         return
     if secondary_email not in [unicode(a) for a in mm_user.addresses]:
         try:
-            mm_user.add_address(secondary_email, force_existing=True)
+            mm_address = mm_user.add_address(secondary_email, force_existing=True)
+            # The address has been verified by the social auth provider.
+            mm_address.verify()
             logger.debug("Associated secondary address %s with %s",
                          secondary_email, user.email)
         except HTTPError as e:

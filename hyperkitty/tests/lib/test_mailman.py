@@ -22,6 +22,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 from django.contrib.auth.models import User
+from django.test import override_settings
 from mock import Mock
 
 from hyperkitty.lib import mailman
@@ -164,3 +165,29 @@ class MailmanSyncTestCase(TestCase):
             Sender.objects.filter(mailman_id="from-mailman").count(), 10)
         self.assertEqual(
             Sender.objects.filter(mailman_id="already-set").count(), 10)
+
+
+class AddUserToMailmanTestCase(TestCase):
+
+    def setUp(self):
+        self.ml = mailman.FakeMMList("list@example.com")
+        self.mailman_client.get_list.side_effect = lambda n: self.ml
+        self.ml.get_member = Mock()
+        self.ml.subscribe = Mock()
+        self.user = User.objects.create_user(
+            'testuser', 'test@example.com', 'testPass')
+
+    @override_settings(CACHES = {
+        'default': {'BACKEND': 'django.core.cache.backends.dummy.DummyCache'}
+    })
+    def test_address_verified(self):
+        mm_user = Mock()
+        mm_user.addresses = []
+        self.mailman_client.get_user.side_effect = lambda e: mm_user
+        mm_addr = Mock()
+        mm_user.add_address.side_effect = lambda a, **kw: mm_addr
+        details = {"secondary_email": "secondary@example.com"}
+        mailman.add_user_to_mailman(self.user, details)
+        mm_user.add_address.assert_called_with(
+            "secondary@example.com", force_existing=True)
+        mm_addr.verify.assert_called_with()
