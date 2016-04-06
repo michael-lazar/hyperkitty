@@ -197,10 +197,8 @@ def subscriptions(request):
     for mlist_id in profile.get_subscriptions():
         try:
             mlist = MailingList.objects.get(list_id=mlist_id)
-            list_name = mlist.name
         except MailingList.DoesNotExist:
             mlist = None # no archived email yet
-            list_name = mlist_id
         posts_count = likes = dislikes = 0
         first_post = all_posts_url = None
         if mlist is not None:

@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 
 
-def populate_list_id(apps, schema_editor):
+def populate_list_id(apps, schema_editor): # pylint: disable-msg=unused-argument
     MailingList = apps.get_model("hyperkitty", "MailingList")
     for ml in MailingList.objects.filter(list_id=None):
         ml.list_id = ml.name.replace("@", ".")
