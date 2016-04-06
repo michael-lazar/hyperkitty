@@ -171,6 +171,9 @@ class MailmanSyncTestCase(TestCase):
             Sender.objects.filter(mailman_id="already-set").count(), 10)
 
 
+@override_settings(CACHES = {
+    'default': {'BACKEND': 'django.core.cache.backends.dummy.DummyCache'}
+})
 class AddUserToMailmanTestCase(TestCase):
 
     def setUp(self):
@@ -180,18 +183,27 @@ class AddUserToMailmanTestCase(TestCase):
         self.ml.subscribe = Mock()
         self.user = User.objects.create_user(
             'testuser', 'test@example.com', 'testPass')
+        self.mm_user = Mock()
+        self.mm_user.addresses = []
+        self.mailman_client.get_user.side_effect = lambda e: self.mm_user
+        self.mm_addresses = {}
 
-    @override_settings(CACHES = {
-        'default': {'BACKEND': 'django.core.cache.backends.dummy.DummyCache'}
-    })
-    def test_address_verified(self):
-        mm_user = Mock()
-        mm_user.addresses = []
-        self.mailman_client.get_user.side_effect = lambda e: mm_user
-        mm_addr = Mock()
-        mm_user.add_address.side_effect = lambda a, **kw: mm_addr
+    def _get_or_add_address(self, email, **kw): # pylint: disable-msg=unused-argument
+        try:
+            mm_addr = self.mm_addresses[email]
+        except KeyError:
+            mm_addr = Mock()
+            mm_addr.email = email
+            mm_addr.verified_on = None
+            self.mm_addresses[email] = mm_addr
+        return mm_addr
+
+    def test_addresses_verified(self):
+        self.mailman_client.get_address.side_effect = self._get_or_add_address
+        self.mm_user.add_address.side_effect = self._get_or_add_address
         details = {"secondary_email": "secondary@example.com"}
         mailman.add_user_to_mailman(self.user, details)
-        mm_user.add_address.assert_called_with(
+        self.mm_addresses['test@example.com'].verify.assert_called_with()
+        self.mm_user.add_address.assert_called_with(
             "secondary@example.com", force_existing=True)
-        mm_addr.verify.assert_called_with()
+        self.mm_addresses['secondary@example.com'].verify.assert_called_with()

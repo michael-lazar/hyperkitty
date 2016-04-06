@@ -156,6 +156,17 @@ def add_user_to_mailman(user, details, *args, **kwargs): # pylint: disable-msg=u
     mm_user = profile.get_mailman_user()
     if mm_user is None:
         return
+    mm_client = get_mailman_client()
+    # Set the primary email as verified
+    try:
+        mm_address = mm_client.get_address(user.email)
+    except HTTPError as e:
+        logger.warning("Can't set primary email %s as verified: %s",
+                       user.email, e)
+    else:
+        if mm_address.verified_on is None:
+            mm_address.verify()
+    # Set the secondary email as verified
     try:
         secondary_email = details["secondary_email"]
     except KeyError:

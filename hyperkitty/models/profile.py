@@ -94,6 +94,8 @@ class Profile(models.Model):
                         raise # will be caught down there
                     mm_user = mm_client.create_user(
                         self.user.email, self.user.get_full_name())
+                    # XXX The email is not set as verified, because we don't
+                    # know if the registration that was used verified it.
                     logger.info("Created Mailman user for %s (%s)",
                                 self.user.username, self.user.email)
                 cache.set(cache_key, mm_user.user_id, None)
