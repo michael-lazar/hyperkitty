@@ -73,4 +73,11 @@ def update_index(remove=False):
     update_cmd.workers = 0
     update_cmd.commit = True
     update_cmd.remove = remove
+    try:
+        from haystack.management.commands.update_index import \
+            DEFAULT_MAX_RETRIES
+    except ImportError:
+        pass
+    else:
+        update_cmd.max_retries = DEFAULT_MAX_RETRIES
     update_cmd.update_backend("hyperkitty", "default")
