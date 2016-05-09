@@ -117,6 +117,7 @@ def user_profile(request):
         'gravatar_shortname': gravatar_shortname,
     }
     try:
+        # Try to get Postorius' profile url
         context['profile_url'] = reverse('user_profile')
     except NoReverseMatch:
         pass
