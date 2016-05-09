@@ -171,7 +171,9 @@ def add_user_to_mailman(user, details, *args, **kwargs): # pylint: disable-msg=u
         secondary_email = details["secondary_email"]
     except KeyError:
         return
-    if secondary_email not in [unicode(a) for a in mm_user.addresses]:
+    existing_address = [addr for addr in mm_user.addresses
+                        if unicode(addr) == secondary_email]
+    if not existing_address:
         try:
             mm_address = mm_user.add_address(secondary_email, force_existing=True)
             # The address has been verified by the social auth provider.
@@ -181,3 +183,7 @@ def add_user_to_mailman(user, details, *args, **kwargs): # pylint: disable-msg=u
         except HTTPError as e:
             logger.warning("Can't add %s to %s: %s",
                            secondary_email, user.email, e)
+    elif existing_address[0].verified_on is None:
+        # The address is registered but not verified, we assume that the social
+        # auth provider verifies the addresses, so set it as verified.
+        existing_address[0].verify()

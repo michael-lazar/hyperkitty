@@ -207,3 +207,17 @@ class AddUserToMailmanTestCase(TestCase):
         self.mm_user.add_address.assert_called_with(
             "secondary@example.com", force_existing=True)
         self.mm_addresses['secondary@example.com'].verify.assert_called_with()
+
+    def test_existing_address_but_not_verified(self):
+        # The secondary address exists but is not verified
+        self.mailman_client.get_address.side_effect = self._get_or_add_address
+        secondary_address = Mock()
+        secondary_address.email = "secondary@example.com"
+        secondary_address.verified_on = None
+        secondary_address.__unicode__ = lambda self: self.email
+        self.mm_user.addresses.append(secondary_address)
+        details = {"secondary_email": "secondary@example.com"}
+        mailman.add_user_to_mailman(self.user, details)
+        # The secondary address must only have been verified.
+        self.assertFalse(self.mm_user.add_address.called)
+        secondary_address.verify.assert_called_with()
