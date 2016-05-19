@@ -27,13 +27,10 @@ Setup your django project
 =========================
 
 You now have installed the necessary packages but you still need to setup the
-Django site (project).
+Django site (project). Example files are provided in the ``example_project``
+subdirectory.
 
-First, get the project directory from the source code management system::
-
-    git clone https://gitlab.com/mailman/hyperkitty_standalone.git
-
-Second, change the database setting in ``hyperkitty_standalone/settings.py`` to
+Change the database setting in ``example_project/settings.py`` to
 your preferred database. Edit this file to reflect the correct database
 credentials, the configuration variable is ``DATABASES`` (at the top of the
 file).
@@ -63,25 +60,24 @@ Running HyperKitty on Apache with mod_wsgi
     If you are using SQLite, the ``.db`` file as well as its folder need to be
     writable by the web server.
 
-Edit ``hyperkitty_standalone/hyperkitty.apache.conf`` to point to your source
-code location.
+Edit ``example_project/apache.conf`` to point to your source code location.
 
 Add following line to your apache/httpd configuration file::
 
-    Include "/{path-to-hyperkitty_standalone}/hyperkitty.apache.conf"
+    Include "/{path-to-example_project}/apache.conf"
 
 And reload Apache. We're almost ready. But you need to collect the static files
 from HyperKitty (which resides somewhere on your pythonpath) to be able to
 serve them from the site directory. All you have to do is run::
 
-    django-admin collectstatic --pythonpath hyperkitty_standalone --settings settings
-    django-admin compress --pythonpath hyperkitty_standalone --settings settings
+    django-admin collectstatic --pythonpath example_project --settings settings
+    django-admin compress --pythonpath example_project --settings settings
 
 .. note::
     Your ``django-admin`` command may be called ``django-admin.py`` depending
     on your installation method.
 
-These static files will be collected in the ``hyperkitty_standalone/static``
+These static files will be collected in the ``example_project/static``
 directory and served by Apache. You should now be all set. Try accessing
 HyperKitty in your web browser.
 
@@ -96,7 +92,7 @@ then add the following lines to ``mailman.cfg``::
     [archiver.hyperkitty]
     class: mailman_hyperkitty.Archiver
     enable: yes
-    configuration: /path/to/hyperkitty_standalone/hyperkitty.cfg
+    configuration: /path/to/example_project/hyperkitty.cfg
 
 An `example of the hyperkitty.cfg file`_ is shipped with the `mailman-hyperkitty`_ package.
 You must set the URL to your HyperKitty installation in that file.
@@ -120,7 +116,7 @@ with some data that may be useful, for example a set of thread categories to
 assign to your mailing-list threads. This can be done by running the following
 command::
 
-    django-admin loaddata --pythonpath hyperkitty_standalone --settings settings first_start
+    django-admin loaddata --pythonpath example_project --settings settings first_start
 
 Thread categories can be edited and added from the Django administration
 interface (append ``/admin`` to your base URL).
@@ -149,7 +145,7 @@ which serves HyperKitty (Apache HTTPd for example).
 
 To update the HyperKitty database, run::
 
-    django-admin migrate --pythonpath hyperkitty_standalone --settings settings
+    django-admin migrate --pythonpath example_project --settings settings
 
 After this command complete, your database will be updated, you can start
 your webserver again.
@@ -159,7 +155,7 @@ Maintenance
 ===========
 
 There are a few tasks in HyperKitty that need to be run at regular intervals.
-The ``hyperkitty_standalone`` directory contains an example ``crontab`` file
+The ``example_project`` directory contains an example ``crontab`` file
 that you can put in your ``/etc/cron.d`` directory.
 
 

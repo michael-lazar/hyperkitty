@@ -5,7 +5,7 @@ The HyperKitty database is configured using the ``DATABASE`` setting in
 Django's ``settings.py`` file, as usual. The database can be created with the
 following command::
 
-    django-admin migrate --pythonpath hyperkitty_standalone --settings settings
+    django-admin migrate --pythonpath example_project --settings settings
 
 HyperKitty also uses a fulltext search engine. Thanks to the Django-Haystack
 library, the search engine backend is pluggable, refer to the Haystack
@@ -29,7 +29,7 @@ locally and you can use them directly.
 
 The command's syntax is::
 
-    django-admin hyperkitty_import --pythonpath hyperkitty_standalone --settings settings -l ADDRESS mbox_file [mbox_file ...]
+    django-admin hyperkitty_import --pythonpath example_project --settings settings -l ADDRESS mbox_file [mbox_file ...]
 
 where:
 
@@ -42,7 +42,7 @@ If the previous archives aren't available locally, you need to download them
 from your current Mailman 2.1 installation. The ``mailman2_download``
 management command can help you do that, its syntax is::
 
-    django-admin mailman2_download --pythonpath hyperkitty_standalone --settings settings -u URL -l LIST_NAME [-d destdir]
+    django-admin mailman2_download --pythonpath example_project --settings settings -u URL -l LIST_NAME [-d destdir]
 
 where:
 
@@ -55,7 +55,7 @@ where:
 After importing your existing archives, you must add them to the fulltext
 search engine with the following command::
 
-    django-admin update_index --pythonpath hyperkitty_standalone --settings settings
+    django-admin update_index --pythonpath example_project --settings settings
 
 Refer to `the command's documentation`_ for available switches.
 

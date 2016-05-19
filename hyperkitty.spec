@@ -10,13 +10,6 @@ License:        GPLv3
 URL:            https://gitlab.com/mailman/hyperkitty
 Source0:        http://pypi.python.org/packages/source/H/%{pypi_name}/%{pypi_name}-%{version}%{?prerel:dev}.tar.gz
 
-# To get SOURCE1:
-#   git clone https://gitlab.com/mailman/hyperkitty_standalone.git
-#   make sdist -C hyperkitty_standalone
-#   mv hyperkitty_standalone/dist/hyperkitty_standalone-%{version}.tar.gz .
-Source1:        hyperkitty_standalone-%{version}%{?prerel:dev}.tar.gz
-
-
 BuildArch:      noarch
 
 BuildRequires:  python-devel
@@ -99,17 +92,16 @@ This is the SELinux module for %{name}, install it if you are using SELinux.
 
 
 %prep
-%setup -q -n %{pypi_name}-%{version}%{?prerel:dev} -a 1
+%setup -q -n %{pypi_name}-%{version}%{?prerel:dev}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
-mv hyperkitty_standalone-%{version}%{?prerel:dev} hyperkitty_standalone
 # remove shebang on manage.py
-sed -i -e '1d' hyperkitty_standalone/manage.py
+sed -i -e '1d' example_project/manage.py
 # remove executable permissions on wsgi.py
-chmod -x hyperkitty_standalone/wsgi.py
-# remove __init__.py in hyperkitty_standalone to prevent it from being
+chmod -x example_project/wsgi.py
+# remove __init__.py in example_project to prevent it from being
 # installed (find_package won't find it). It's empty anyway.
-rm -f hyperkitty_standalone/__init__.py
+rm -f example_project/__init__.py
 
 # SELinux
 mkdir SELinux
@@ -143,17 +135,17 @@ rm -rf %{buildroot}
 
 # Install the Django files
 mkdir -p %{buildroot}%{_sysconfdir}/%{name}/sites/default
-cp -p hyperkitty_standalone/{manage,settings,urls,wsgi}.py \
+cp -p example_project/{manage,settings,urls,wsgi}.py \
     %{buildroot}%{_sysconfdir}/%{name}/sites/default/
-touch --reference hyperkitty_standalone/manage.py \
+touch --reference example_project/manage.py \
     %{buildroot}%{_sysconfdir}/%{name}/sites/default/__init__.py
 # Apache HTTPd config file
 mkdir -p %{buildroot}/%{_sysconfdir}/httpd/conf.d/
-sed -e 's,/path/to/hyperkitty_standalone/static,%{_localstatedir}/lib/%{name}/sites/default/static,g' \
-    -e 's,/path/to/hyperkitty_standalone,%{_sysconfdir}/%{name}/sites/default,g' \
-     hyperkitty_standalone/hyperkitty.apache.conf \
+sed -e 's,/path/to/project/static,%{_localstatedir}/lib/%{name}/sites/default/static,g' \
+    -e 's,/path/to/project,%{_sysconfdir}/%{name}/sites/default,g' \
+     example_project/hyperkitty.apache.conf \
      > %{buildroot}/%{_sysconfdir}/httpd/conf.d/hyperkitty.conf
-touch --reference hyperkitty_standalone/hyperkitty.apache.conf \
+touch --reference example_project/hyperkitty.apache.conf \
     %{buildroot}/%{_sysconfdir}/httpd/conf.d/hyperkitty.conf
 # SQLite databases directory, static files and fulltext_index
 mkdir -p %{buildroot}%{_localstatedir}/lib/%{name}/sites/default/static
@@ -162,14 +154,14 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/%{name}/sites/default/fulltext_index
 sed -i -e 's,/path/to/rw,%{_localstatedir}/lib/%{name}/sites/default/db,g' \
        -e 's,^BASE_DIR = .*$,BASE_DIR = "%{_localstatedir}/lib/%{name}/sites/default",g' \
     %{buildroot}%{_sysconfdir}/%{name}/sites/default/settings.py
-touch --reference hyperkitty_standalone/settings.py \
+touch --reference example_project/settings.py \
     %{buildroot}%{_sysconfdir}/%{name}/sites/default/settings.py
 # Cron jobs
 mkdir -p %{buildroot}%{_sysconfdir}/cron.d
-sed -e 's,/path/to/hyperkitty_standalone,%{_sysconfdir}/%{name}/sites/default,g' \
-    hyperkitty_standalone/crontab \
+sed -e 's,/path/to/project,%{_sysconfdir}/%{name}/sites/default,g' \
+    example_project/crontab \
     > %{buildroot}%{_sysconfdir}/cron.d/%{name}
-touch --reference hyperkitty_standalone/crontab \
+touch --reference example_project/crontab \
     %{buildroot}%{_sysconfdir}/cron.d/%{name}
 
 # SELinux
