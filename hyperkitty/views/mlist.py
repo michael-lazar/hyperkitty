@@ -112,7 +112,6 @@ def _thread_list(request, mlist, threads, template_name='hyperkitty/thread_list.
         'mlist' : mlist,
         'threads': threads,
         'months_list': get_months(mlist),
-        'per_page_options': [10, 50, 100, 200],
     }
     if extra_context is not None:
         context.update(extra_context)

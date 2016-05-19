@@ -33,6 +33,7 @@ def export_settings(request):
     extra_context["HYPERKITTY_VERSION"] = VERSION
     extra_context["login_url"]  = resolve_url(settings.LOGIN_URL)
     extra_context["logout_url"] = resolve_url(settings.LOGOUT_URL)
+    extra_context["paginator_per_page_options"] = [10, 50, 100, 200]
     return extra_context
 
 
