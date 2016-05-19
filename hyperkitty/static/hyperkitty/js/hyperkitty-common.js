@@ -331,6 +331,19 @@ function setup_send_as(baseElem) {
 }
 
 
+function setup_paginator(baseElem) {
+    if (!baseElem) {
+        baseElem = document;
+    }
+    $(baseElem).find(".paginator a.jump-to-page").click(function(e) {
+        e.preventDefault();
+        $(baseElem).find(".paginator form.jump-to-page").slideToggle("fast");
+    });
+    $(baseElem).find(".paginator form.jump-to-page select").change(function() {
+        $(this).closest("form").submit();
+    });
+}
+
 
 
 /*
@@ -341,4 +354,5 @@ $(document).ready(function() {
     setup_vote();
     setup_disabled_tooltips();
     setup_flash_messages();
+    setup_paginator();
 });
