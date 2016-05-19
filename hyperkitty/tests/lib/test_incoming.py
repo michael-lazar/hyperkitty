@@ -438,6 +438,7 @@ class TestAddToList(TestCase):
         # The recent threads cache must be cleared when a new message arrives
         mlist = MailingList.objects.create(name="example-list")
         cache.set("MailingList:example-list:recent_threads", "test-value")
+        cache.set("MailingList:example-list:recent_threads_count", "test-value")
         msg = Message()
         msg["From"] = "dummy@example.com"
         msg["Subject"] = "Fake Subject"
@@ -449,6 +450,8 @@ class TestAddToList(TestCase):
             cache.get("MailingList:example-list:recent_threads"), [thread.id])
         self.assertEqual(
             [t.thread_id for t in mlist.recent_threads], [m_hash])
+        self.assertEqual(
+            cache.get("MailingList:example-list:recent_threads_count"), 1)
 
     def test_recent_threads_cache_high_volume(self):
         # On high volume lists, the recent threads cache is just appended to
@@ -457,6 +460,8 @@ class TestAddToList(TestCase):
         MailingList.objects.create(name="example-list")
         existing = list(range(1000))
         cache.set("MailingList:example-list:recent_threads", existing)
+        cache.set("MailingList:example-list:recent_threads_count",
+                  len(existing))
         msg = Message()
         msg["From"] = "dummy@example.com"
         msg["Subject"] = "Fake Subject"
@@ -465,4 +470,8 @@ class TestAddToList(TestCase):
         m_hash = add_to_list("example-list", msg)
         thread = Thread.objects.get(thread_id=m_hash)
         self.assertEqual(
-            cache.get("MailingList:example-list:recent_threads"), existing + [thread.id])
+            cache.get("MailingList:example-list:recent_threads"),
+            existing + [thread.id])
+        self.assertEqual(
+            cache.get("MailingList:example-list:recent_threads_count"),
+            len(existing) + 1)

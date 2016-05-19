@@ -25,15 +25,43 @@ from django.shortcuts import render
 from django.conf import settings
 from django.http import HttpResponse
 
+from hyperkitty.lib.paginator import paginate
 from hyperkitty.lib.view_helpers import show_mlist, is_mlist_authorized
 from hyperkitty.models import MailingList
 
 
 def index(request):
-    lists = [
+    mlists = [
         ml for ml in MailingList.objects.all()
         if not settings.FILTER_VHOST or show_mlist(ml, request) ]
-    for mlist in lists:
+
+    # Sorting
+    sort_mode = request.GET.get('sort')
+    if not sort_mode:
+        sort_mode = "popular"
+    if sort_mode == "name":
+        mlists.sort(key=lambda ml: ml.name)
+    elif sort_mode == "active":
+        # Don't show private lists when sorted by activity, to avoid disclosing
+        # info about the private list's activity
+        mlists = [ ml for ml in mlists if ml.is_private == False ]
+        mlists.sort(key=lambda l: l.recent_threads_count, reverse=True)
+    elif sort_mode == "popular":
+        # Don't show private lists when sorted by popularity, to avoid disclosing
+        # info about the private list's popularity
+        mlists = [ l for l in mlists if l.is_private == False ]
+        mlists.sort(key=lambda l: l.recent_participants_count, reverse=True)
+    elif sort_mode == "creation":
+        mlists.sort(key=lambda l: l.created_at, reverse=True)
+    else:
+        return HttpResponse("Wrong search parameter",
+                            content_type="text/plain", status=500)
+
+    mlists = paginate(mlists, request.GET.get('page'),
+                      results_per_page=request.GET.get('count'))
+
+    # Permissions
+    for mlist in mlists:
         if not mlist.is_private:
             mlist.can_view = True
         else:
@@ -41,36 +69,10 @@ def index(request):
                 mlist.can_view = True
             else:
                 mlist.can_view = False
-        if mlist.can_view:
-            mlist.recent_threads_count = mlist.recent_threads.count()
-        else:
-            mlist.recent_threads_count = None
-
-    # sorting
-    sort_mode = request.GET.get('sort')
-    if not sort_mode:
-        sort_mode = "popular"
-    if sort_mode == "name":
-        lists.sort(key=lambda l: l.name)
-    elif sort_mode == "active":
-        # Don't show private lists when sorted by activity, to avoid disclosing
-        # info about the private list's activity
-        lists = [ l for l in lists if l.is_private == False ]
-        lists.sort(key=lambda l: l.recent_threads_count, reverse=True)
-    elif sort_mode == "popular":
-        # Don't show private lists when sorted by popularity, to avoid disclosing
-        # info about the private list's popularity
-        lists = [ l for l in lists if l.is_private == False ]
-        lists.sort(key=lambda l: l.recent_participants_count, reverse=True)
-    elif sort_mode == "creation":
-        lists.sort(key=lambda l: l.created_at, reverse=True)
-    else:
-        return HttpResponse("Wrong search parameter",
-                            content_type="text/plain", status=500)
 
     context = {
         'view_name': 'all_lists',
-        'all_lists': lists,
+        'all_lists': mlists,
         'sort_mode': sort_mode,
         }
     return render(request, "hyperkitty/index.html", context)

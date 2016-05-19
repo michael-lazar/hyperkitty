@@ -130,15 +130,27 @@ class MailingList(models.Model):
             threads = Thread.objects.filter(id__in=thread_ids)
         return threads
 
+    @property
+    def recent_threads_count(self):
+        begin_date, end_date = self.get_recent_dates()
+        cache_key = "MailingList:%s:recent_threads_count" % self.name
+        result = cache.get(cache_key)
+        if result is None:
+            result = self.get_threads_between(begin_date, end_date).count()
+            cache.set(cache_key, result, 3600 * 12) # 12 hours
+        return result
+
     def _recent_threads_cache_rebuild(self):
         begin_date, end_date = self.get_recent_dates()
         cache_key = "MailingList:%s:recent_threads" % self.name
         cache.delete(cache_key)
+        cache.delete("%s_count" % cache_key)
         # don't warm up the cache in batch mode (mass import)
         if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
-            thread_ids = self.get_threads_between(
-                begin_date, end_date).values_list("id", flat=True)
-            cache.set(cache_key, list(thread_ids), 3600 * 12) # 12 hours
+            thread_ids = list(self.get_threads_between(
+                begin_date, end_date).values_list("id", flat=True))
+            cache.set(cache_key, thread_ids, 3600 * 12) # 12 hours
+            cache.set("%s_count" % cache_key, len(thread_ids), 3600 * 12)
 
     def on_thread_added(self, thread):
         cache_key = "MailingList:%s:recent_threads" % self.name
@@ -147,6 +159,8 @@ class MailingList(models.Model):
             # It's a high-volume list, just append to the cache
             recent_thread_ids.append(thread.id)
             cache.set(cache_key, recent_thread_ids, 3600 * 12) # 12 hours
+            cache.set("%s_count" % cache_key,
+                      len(recent_thread_ids), 3600 * 12) # 12 hours
         else:
             # Low-volume list, rebuild the cache
             self._recent_threads_cache_rebuild()
