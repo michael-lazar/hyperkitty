@@ -23,8 +23,18 @@
 # pylint: disable=unused-argument
 
 from django.conf import settings
+from django.core.urlresolvers import reverse, NoReverseMatch
 from django.shortcuts import resolve_url
 from hyperkitty import VERSION
+
+
+def common(request):
+    extra_context = {}
+    extra_context.update(export_settings(request))
+    extra_context.update(postorius_info(request))
+    extra_context["paginator_per_page_options"] = [10, 50, 100, 200]
+    return extra_context
+
 
 def export_settings(request):
     exports = ["APP_NAME", "USE_MOCKUPS", "USE_INTERNAL_AUTH"]
@@ -33,11 +43,8 @@ def export_settings(request):
     extra_context["HYPERKITTY_VERSION"] = VERSION
     extra_context["login_url"]  = resolve_url(settings.LOGIN_URL)
     extra_context["logout_url"] = resolve_url(settings.LOGOUT_URL)
-    extra_context["paginator_per_page_options"] = [10, 50, 100, 200]
     return extra_context
 
-
-from django.core.urlresolvers import reverse, NoReverseMatch
 
 def postorius_info(request):
     postorius_url = False
