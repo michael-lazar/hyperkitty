@@ -32,6 +32,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.utils import formats, timezone
 from django.utils.dateformat import format as date_format
 from django.utils.translation import gettext as _
+from django.views.decorators.cache import cache_page
 
 from hyperkitty.models import Favorite, MailingList
 from hyperkitty.lib.view_helpers import (
@@ -222,6 +223,7 @@ def overview(request, mlist_fqdn=None):
 
 
 @check_mlist_private
+@cache_page(3600 * 12) # cache for 12 hours
 def recent_activity(request, mlist_fqdn):
     """Return the number of emails posted in the last 30 days"""
     # pylint: disable=unused-argument
