@@ -21,6 +21,9 @@
 
 from __future__ import absolute_import, unicode_literals
 
+import json
+
+from django.db.models import Q
 from django.shortcuts import render
 from django.conf import settings
 from django.http import HttpResponse
@@ -76,3 +79,19 @@ def index(request):
         'sort_mode': sort_mode,
         }
     return render(request, "hyperkitty/index.html", context)
+
+
+def find_list(request):
+    term = request.GET.get('term')
+    result = []
+    if term:
+        query = MailingList.objects.filter(
+            Q(name__icontains=term) | Q(display_name__icontains=term)
+            ).order_by("name").values("name", "display_name")
+        for line in query[:20]:
+            result.append({
+                "value": line["name"],
+                "label": line["display_name"] or line["name"],
+            })
+    return HttpResponse(
+        json.dumps(result), content_type='application/javascript')

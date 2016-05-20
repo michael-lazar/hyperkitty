@@ -53,20 +53,8 @@ function setup_index(url_template) {
             var cls = $(this).val();
             hide_by_class[cls] = $(this).prop("checked");
         });
-        var filter = null;
-        if ($(".filter-lists input[type=text]").length !== 0) {
-            // The field does not exist if there are only a few lists
-            filter = $.trim($(".filter-lists input[type=text]").val().toLowerCase());
-        }
         $("table.lists tr.list").each(function() {
-            var list_name = $.trim($(this).find("a.list-name").text());
-            var list_addr = $(this).attr("data-list-name");
             var must_hide = false;
-            // name filter
-            if (filter && list_name.indexOf(filter) === -1
-                       && list_addr.indexOf(filter) === -1) {
-                must_hide = true;
-            }
             // class filter
             for (cls in hide_by_class) {
                 if ($(this).hasClass(cls) && hide_by_class[cls]) {
@@ -82,16 +70,23 @@ function setup_index(url_template) {
         });
     }
     $(".hide-switches input").click(filter_lists);
-    var _filter_timeout = null;
-    $(".filter-lists input").change(function() {
-        clearTimeout(_filter_timeout)
-        // reset status according to the "hide" checkboxes
-        window.setTimeout(filter_lists, 500);
-    }).keyup(function() {
-        // fire the above change event after every letter
-        $(this).change();
-    }).focus();
     filter_lists(); // Filter on page load
+    var find_field = $(".filter-lists input[name='search']");
+    find_field.autocomplete({
+        minLength: 3,
+        source: "find-list",
+        select: function(event, ui) {
+            find_field.val(ui.item.value);
+            find_field.closest("form").submit();
+        },
+    });
+    find_field.closest("form").submit(function(e) {
+        e.preventDefault();
+        var url_tpl = $(this).find("input[name='url-tpl']").val(),
+            list_name = $(this).find("input[name='search']").val(),
+            url = url_tpl.replace('PLACEHOLDER@PLACEHOLDER', list_name);
+        window.location = url;
+    });
 
     // Back to top link
     setup_back_to_top_link(220); // set offset to 220 for link to appear

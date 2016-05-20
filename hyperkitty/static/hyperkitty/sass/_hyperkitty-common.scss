@@ -244,6 +244,10 @@ div#months-list {
 .ui-autocomplete-loading {
     background: white url('../img/ajax-loader.gif') right center no-repeat;
 }
+.ui-widget.ui-autocomplete {
+    font-family: inherit;
+    font-size: 0.95em;
+}
 
 
 //=== Categories ===/

@@ -37,6 +37,7 @@ from hyperkitty.views import (
 urlpatterns = [
     # Index
     url(r'^$', index.index, name='hk_root'),
+    url(r'^find-list$', index.find_list, name='hk_find_list'),
 
     # Account (logged-in user)
     url(r'^accounts/login/$', accounts.login_view, {'template_name': 'hyperkitty/login.html'}, name='hk_user_login'),

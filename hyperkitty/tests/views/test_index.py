@@ -22,6 +22,7 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
+import json
 from email.message import Message
 
 from django.core.urlresolvers import reverse
@@ -52,3 +53,35 @@ class PrivateListTestCase(TestCase):
         self._do_test("active")
     def test_sort_popular(self):
         self._do_test("popular")
+
+class FindTestCase(TestCase):
+
+    def setUp(self):
+        MailingList.objects.create(name="list-one@example.com")
+        MailingList.objects.create(name="list-two@example.com",
+                                   display_name="List Two")
+
+    def test_find(self):
+        response = self.client.get("%s?term=one" % reverse("hk_find_list"))
+        self.assertEqual(
+            json.loads(response.content),
+            [{'label': 'list-one@example.com', 'value': 'list-one@example.com'}]
+            )
+
+    def test_name(self):
+        response = self.client.get("%s?term=example" % reverse("hk_find_list"))
+        self.assertEqual(
+            json.loads(response.content),
+            [{'label': 'list-one@example.com', 'value': 'list-one@example.com'},
+             {'label': 'List Two', 'value': 'list-two@example.com'}]
+            )
+
+    def test_display_name(self):
+        ml = MailingList.objects.get(name="list-one@example.com")
+        ml.display_name = "Test Value"
+        ml.save()
+        response = self.client.get("%s?term=value" % reverse("hk_find_list"))
+        self.assertEqual(
+            json.loads(response.content),
+            [{'label': 'Test Value', 'value': 'list-one@example.com'}]
+            )
