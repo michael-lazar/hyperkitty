@@ -8,6 +8,7 @@ graft hyperkitty/tests/testdata
 prune hyperkitty/static/hyperkitty/.sass-cache
 include doc/conf.py doc/Makefile doc/*.rst
 # example project
+recursive-include example_project *.py *.conf *.rst crontab
 exclude example_project/settings_local.py
 exclude example_project/hyperkitty.db
 prune example_project/static

@@ -28,7 +28,6 @@ BuildRequires:  pytz
 BuildRequires:  django-paintstore
 BuildRequires:  django-browserid
 BuildRequires:  python-django >= 1.8
-BuildRequires:  python-django-south >= 1.0.0
 BuildRequires:  python-dateutil
 BuildRequires:  python-networkx
 BuildRequires:  python-enum34
@@ -57,7 +56,6 @@ Requires:       pytz
 Requires:       django-paintstore
 Requires:       django-browserid >= 0.10.1
 Requires:       python-django >= 1.8
-Requires:       python-django-south >= 1.0.0
 Requires:       python-dateutil
 Requires:       python-networkx
 Requires:       python-enum34
@@ -143,9 +141,9 @@ touch --reference example_project/manage.py \
 mkdir -p %{buildroot}/%{_sysconfdir}/httpd/conf.d/
 sed -e 's,/path/to/project/static,%{_localstatedir}/lib/%{name}/sites/default/static,g' \
     -e 's,/path/to/project,%{_sysconfdir}/%{name}/sites/default,g' \
-     example_project/hyperkitty.apache.conf \
+     example_project/apache.conf \
      > %{buildroot}/%{_sysconfdir}/httpd/conf.d/hyperkitty.conf
-touch --reference example_project/hyperkitty.apache.conf \
+touch --reference example_project/apache.conf \
     %{buildroot}/%{_sysconfdir}/httpd/conf.d/hyperkitty.conf
 # SQLite databases directory, static files and fulltext_index
 mkdir -p %{buildroot}%{_localstatedir}/lib/%{name}/sites/default/static
@@ -175,7 +173,7 @@ done
 
 
 %check
-PYTHONPATH=`pwd` %{_bindir}/django-admin test --settings=hyperkitty.tests.settings_test hyperkitty
+PYTHONPATH=`pwd` %{__python} example_project/manage.py test --settings=hyperkitty.tests.settings_test hyperkitty
 
 
 %post
