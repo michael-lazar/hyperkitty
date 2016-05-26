@@ -48,7 +48,7 @@ class CommandTestCase(TestCase):
         msg2["From"] = "dummy@example.com"
         msg2["Message-ID"] = "<msg2>"
         msg2["Date"] = "2015-02-01 12:00:00"
-        msg2.set_payload("msg1")
+        msg2.set_payload("msg2")
         mbox = mailbox.mbox(os.path.join(self.tmpdir, "test.mbox"))
         mbox.add(msg2)
         # do the import
@@ -209,3 +209,29 @@ class CommandTestCase(TestCase):
         self.assertEqual(
             email.archived_date,
             datetime(2008, 7, 21, 11, 44, 51, tzinfo=utc))
+
+    def test_impacted_threads_batch(self):
+        # Fix GL issue #86
+        mbox = mailbox.mbox(os.path.join(self.tmpdir, "test.mbox"))
+        for i in range(250):
+            msg = Message()
+            msg["From"] = "dummy@example.com"
+            msg["Message-ID"] = "<msg%d>" % i
+            msg["Date"] = "2015-01-01 12:00:00"
+            msg.set_payload("msg%d" % i)
+            mbox.add(msg)
+        # do the import
+        output = StringIO()
+        with patch("hyperkitty.management.commands.hyperkitty_import.compute_thread_order_and_depth") as mock_compute:
+            kw = self.common_cmd_args.copy()
+            kw["stdout"] = kw["stderr"] = output
+            self.command.execute(os.path.join(self.tmpdir, "test.mbox"), **kw)
+        #print(mock_compute.call_args_list)
+        called_thread_ids = set([
+            call[0][0].starting_email.message_id
+            for call in mock_compute.call_args_list
+            ])
+        self.assertEqual(
+            called_thread_ids,
+            set([("msg%d" % i) for i in range(250)]))
+        #print(output.getvalue())

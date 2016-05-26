@@ -271,11 +271,16 @@ class Command(BaseCommand):
         #timeit("start")
         if options["verbosity"] >= 1:
             self.stdout.write("Computing thread structure")
-        for thread in Thread.objects.filter(
-            id__in=importer.impacted_thread_ids):
-            #timeit("before")
-            compute_thread_order_and_depth(thread)
-            #timeit("after")
+        # Work on batches of thread ids to avoid creating a huge SQL request
+        # (it's an IN statement)
+        thread_ids = list(importer.impacted_thread_ids)
+        while thread_ids:
+            thread_ids_batch = thread_ids[:100]
+            thread_ids = thread_ids[100:]
+            for thread in Thread.objects.filter(id__in=thread_ids_batch):
+                #timeit("before")
+                compute_thread_order_and_depth(thread)
+                #timeit("after")
         #showtimes()
         if not options["no_sync_mailman"]:
             if options["verbosity"] >= 1:
