@@ -205,7 +205,7 @@ class AddUserToMailmanTestCase(TestCase):
         mailman.add_user_to_mailman(self.user, details)
         self.mm_addresses['test@example.com'].verify.assert_called_with()
         self.mm_user.add_address.assert_called_with(
-            "secondary@example.com", force_existing=True)
+            "secondary@example.com", absorb_existing=True)
         self.mm_addresses['secondary@example.com'].verify.assert_called_with()
 
     def test_existing_address_but_not_verified(self):

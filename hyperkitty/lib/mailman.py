@@ -175,7 +175,7 @@ def add_user_to_mailman(user, details, *args, **kwargs): # pylint: disable-msg=u
                         if unicode(addr) == secondary_email]
     if not existing_address:
         try:
-            mm_address = mm_user.add_address(secondary_email, force_existing=True)
+            mm_address = mm_user.add_address(secondary_email, absorb_existing=True)
             # The address has been verified by the social auth provider.
             mm_address.verify()
             logger.debug("Associated secondary address %s with %s",
