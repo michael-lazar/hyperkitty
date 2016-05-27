@@ -32,9 +32,9 @@ from cStringIO import StringIO
 
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 
-from hyperkitty.models import Email
+from hyperkitty.models import Email, MailingList
 from hyperkitty.lib.compat import get_list_by_name, month_name_to_num
 
 
@@ -49,10 +49,10 @@ def summary(request, list_name=None):
 def arch_month(request, list_name, year, month_name, summary_type="thread"):
     mlist = get_list_by_name(list_name, request.get_host())
     return redirect(reverse('hk_archives_with_month', kwargs={
-            'mlist_fqdn': mlist.name,
-            'year': year,
-            'month': str(month_name_to_num(month_name)).rjust(2, b"0"),
-            }))
+        'mlist_fqdn': mlist.name,
+        'year': year,
+        'month': str(month_name_to_num(month_name)).rjust(2, b"0"),
+        }))
 
 
 def arch_month_mbox(request, list_name, year, month_name):
@@ -107,6 +107,21 @@ def message(request, list_name, year, month_name, msg_num):
     except IndexError:
         raise Http404("No such message in this mailing-list.")
     return redirect(reverse('hk_message_index', kwargs={
-            'mlist_fqdn': mlist.name,
-            'message_id_hash': msg.message_id_hash,
-            }))
+        'mlist_fqdn': mlist.name,
+        'message_id_hash': msg.message_id_hash,
+        }))
+
+
+def redirect_list_id(request, list_id):
+    mlist = get_object_or_404(MailingList, list_id=list_id)
+    url = request.path.replace(list_id, mlist.name, 1)
+    if request.GET:
+        url = "%s?%s" % (url, request.GET.urlencode())
+    return redirect(url)
+
+
+def redirect_lists(request):
+    url = request.path.replace("/lists/", "/list/", 1)
+    if request.GET:
+        url = "%s?%s" % (url, request.GET.urlencode())
+    return redirect(url)

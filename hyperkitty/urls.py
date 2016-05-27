@@ -167,6 +167,10 @@ urlpatterns = [
     url(r'^list/(?P<list_name>[^@]+)@[^/]+/(?P<year>\d\d\d\d)-(?P<month_name>\w+)/?$', compat.arch_month),
     #url(r'^list/(?P<list_name>[^@]+)@[^/]+/(?P<year>\d\d\d\d)-(?P<month_name>\w+)/(?P<msg_num>\d+)\.html$', compat.message),
 
+    # URL compatibility with previous versions
+    url(r'^list/(?P<list_id>[^@/]+)/', compat.redirect_list_id),
+    url(r'^lists/', compat.redirect_lists),
+
 ]
 #) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += staticfiles_urlpatterns()
