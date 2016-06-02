@@ -5,7 +5,7 @@
 
 
 {% block title %}
-{{ list_title }} - {{ mlist.display_name|default:mlist.name }} - {{ app_name|title }}
+{{ list_title }} - {{ mlist.display_name|default:mlist.name }} - {{ block.super }}
 {% endblock %}
 
 {% block content %}

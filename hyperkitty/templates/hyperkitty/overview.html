@@ -7,7 +7,7 @@
 
 
 {% block title %}
-{{ mlist.display_name|default:mlist.name }} - {{ app_name|title }}
+{{ mlist.display_name|default:mlist.name }} - {{ block.super }}
 {% endblock %}
 
 

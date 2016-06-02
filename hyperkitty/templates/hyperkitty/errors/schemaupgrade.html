@@ -4,7 +4,7 @@
 
 {% block title %}
 {% trans "Error: the database schema needs an upgrade" %}
-    - {{ app_name|title }}
+    - {{ block.super }}
 {% endblock %}
 
 {% block content %}

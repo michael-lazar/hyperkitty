@@ -5,7 +5,7 @@
 
 
 {% block title %}
-{% trans "Error: private list" %} - {{ mlist.display_name|default:mlist.name }} - {{ app_name|title }}
+{% trans "Error: private list" %} - {{ mlist.display_name|default:mlist.name }} - {{ block.super }}
 {% endblock %}
 
 {% block content %}

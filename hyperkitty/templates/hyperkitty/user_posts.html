@@ -5,7 +5,7 @@
 
 
 {% block title %}
-{% trans "Messages by" %} {{ fullname }}{% if mlist %} - {{ mlist.display_name|default:mlist.name }} {% endif %} - {{ app_name|title }}
+{% trans "Messages by" %} {{ fullname }}{% if mlist %} - {{ mlist.display_name|default:mlist.name }} {% endif %} - {{ block.super }}
 {% endblock %}
 
 {% block content %}

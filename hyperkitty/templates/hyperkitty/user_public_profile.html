@@ -5,7 +5,7 @@
 
 
 {% block title %}
-{% trans 'User Profile' %} {% trans "for" %} {{ fullname }} - {{ app_name|title }}
+{% trans 'User Profile' %} {% trans "for" %} {{ fullname }} - {{ block.super }}
 {% endblock %}
 
 {% block content %}

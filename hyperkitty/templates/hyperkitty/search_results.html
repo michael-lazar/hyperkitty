@@ -5,7 +5,7 @@
 
 
 {% block title %}
-{% trans "Search results for" %} "{{ query }}"{% if mlist %} - {{ mlist.display_name|default:mlist.name }} {% endif %} - {{ app_name|title }}
+{% trans "Search results for" %} "{{ query }}"{% if mlist %} - {{ mlist.display_name|default:mlist.name }} {% endif %} - {{ block.super }}
 {% endblock %}
 
 {% block content %}
