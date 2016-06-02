@@ -37,7 +37,7 @@ def common(request):
 
 
 def export_settings(request):
-    exports = ["USE_MOCKUPS", "USE_INTERNAL_AUTH"]
+    exports = ["USE_MOCKUPS"]
     extra_context = dict(
         (name.lower(), getattr(settings, name, None)) for name in exports)
     extra_context["HYPERKITTY_VERSION"] = VERSION

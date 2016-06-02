@@ -31,7 +31,6 @@ from traceback import format_exc
 from mock import Mock
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test.utils import override_settings
 
 from hyperkitty.lib.utils import get_message_id_hash
 from hyperkitty.lib.incoming import add_to_list
@@ -103,7 +102,6 @@ class AccountViewsTestCase(TestCase):
         self.assertContains(response, "This is you.", count=1)
         self.assertContains(response, "Edit your private profile", count=1)
 
-    @override_settings(USE_INTERNAL_AUTH=True)
     def test_registration_redirect(self):
         self.client.login(username='testuser', password='testPass')
         # If the user if already logged in, redirect to index page...
@@ -117,7 +115,6 @@ class AccountViewsTestCase(TestCase):
         response = self.client.get(reverse('hk_user_registration'))
         self.assertEqual(response.status_code, 200)
 
-    @override_settings(USE_INTERNAL_AUTH=True)
     def test_registration(self):
         response = self.client.get(reverse('hk_user_registration'))
         self.assertEqual(response.status_code, 200)

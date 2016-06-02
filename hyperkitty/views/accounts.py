@@ -26,7 +26,6 @@ from urllib2 import HTTPError
 
 from django.conf import settings
 from django.core.urlresolvers import reverse, NoReverseMatch
-from django.core.exceptions import SuspiciousOperation
 from django.contrib.auth import login, get_backends
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import login as django_login_view
@@ -125,8 +124,6 @@ def user_profile(request):
 
 
 def user_registration(request):
-    if not settings.USE_INTERNAL_AUTH:
-        raise SuspiciousOperation
     try:
         redirect_to = request.GET["next"]
     except KeyError:

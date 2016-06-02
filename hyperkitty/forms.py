@@ -69,7 +69,9 @@ class InternalAuthenticationForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(InternalAuthenticationForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.form_class = 'form-horizontal'
+        # The <form> tag will be added manually to insert the 'next' URL in the
+        # action property.
+        self.helper.form_tag = False
         self.helper.label_class = \
             'col-sm-5 col-md-offset-1 col-md-4 col-lg-offset-3 col-lg-2'
         self.helper.field_class = 'col-sm-6 col-md-5 col-lg-4 col-xl-3'

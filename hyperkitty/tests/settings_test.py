@@ -220,34 +220,10 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 
 
 #
-# Social auth
+# Auth
 #
 AUTHENTICATION_BACKENDS = (
-    # 'social.backends.open_id.OpenIdAuth',
-    # http://python-social-auth.readthedocs.org/en/latest/backends/google.html
-    # 'social.backends.google.GoogleOpenId',
-    # 'social.backends.google.GoogleOAuth2',
-    # 'social.backends.twitter.TwitterOAuth',
-    # 'social.backends.yahoo.YahooOpenId',
-    # 'django_browserid.auth.BrowserIDBackend',
     'django.contrib.auth.backends.ModelBackend',
-)
-
-# http://python-social-auth.readthedocs.org/en/latest/pipeline.html#authentication-pipeline
-SOCIAL_AUTH_PIPELINE = (
-    'social.pipeline.social_auth.social_details',
-    'social.pipeline.social_auth.social_uid',
-    'social.pipeline.social_auth.auth_allowed',
-    'social.pipeline.social_auth.social_user',
-    'social.pipeline.user.get_username',
-    # Associates the current social details with another user account with
-    # a similar email address. Disabled by default, enable with care:
-    # http://python-social-auth.readthedocs.org/en/latest/use_cases.html#associate-users-by-email
-    # 'social.pipeline.social_auth.associate_by_email',
-    'social.pipeline.user.create_user',
-    'social.pipeline.social_auth.associate_user',
-    'social.pipeline.social_auth.load_extra_data',
-    'social.pipeline.user.user_details',
 )
 
 
@@ -341,10 +317,6 @@ LOGGING = {
 #
 # HyperKitty-specific
 #
-
-# Allow authentication with the internal user database?
-# By default, only a login through Persona or your email provider is allowed.
-USE_INTERNAL_AUTH = False
 
 # Only display mailing-lists from the same virtual host as the webserver
 FILTER_VHOST = False

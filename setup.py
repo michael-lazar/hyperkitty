@@ -24,7 +24,6 @@ REQUIRES = [
     "Django>=1.8",
     "django_mailman3>=1.0.0",
     "django-gravatar2>=1.0.6",
-    "python-social-auth>=0.2.3",
     "djangorestframework>=3.0.0",
     "django-crispy-forms>=1.4.0",
     "rjsmin>=1.0.6",
@@ -33,7 +32,6 @@ REQUIRES = [
     "pytz>=2012",
     "django-paintstore>=0.1.2",
     "django-compressor>=1.3",
-    "django-browserid>=0.11.1",
     "mailmanclient>=1.0.0b1",
     "python-dateutil < 2.0",  # python-dateutil 2.0+ is for Python 3
     "networkx>=1.9.1",
@@ -41,6 +39,7 @@ REQUIRES = [
     "django-haystack>=2.5.0",
     "django-extensions>=1.3.7",
     "lockfile>=0.9.1",
+    "django-allauth",
 ]
 
 

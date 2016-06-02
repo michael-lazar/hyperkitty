@@ -73,7 +73,6 @@
 
                 <!-- show dropdown for smaller viewports b/c login name/email may be too long -->
                 <!-- only show this extra button/dropdown if we're in small screen sizes -->
-                {% if user.is_authenticated or use_internal_auth %}
                 <div class="nav navbar-nav navbar-right auth dropdown navbar-form hidden-tn hidden-xs hidden-md hidden-lg">
                     <button type="button" class="btn dropdown-toggle" id="loginDropdownMenu" data-toggle="dropdown">
                         <span class="fa fa-bars"></span>
@@ -84,26 +83,23 @@
                             <a role="menuitem" tabindex="-1" class="postorius" href="{{ postorius_installed }}">{% trans 'Manage lists' %}</a>
                         </li>
                         {% endif %}
-                        {% if use_internal_auth %}
-                        <li role="presentation"><a role="menuitem" tabindex="-1" class="mm_user" href="{{ login_url }}?next={{next|default:request.path|urlencode}}">{% trans "Login" %}</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'hk_user_registration' %}?next={{next|default:request.path|urlencode}}">{% trans "Sign Up" %}</a></li>
-                        {% else %}
-                        <li role="presentation"><a role="menuitem" tabindex="-1" class="mm_logout" href="{{ logout_url }}?next={% url 'hk_root' %}">{% trans "Logout" %}</a></li>
+                        {% if user.is_authenticated %}
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ logout_url }}?next={% url 'hk_root' %}">{% trans "Logout" %}</a></li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'hk_user_profile' %}">{{ user.email|truncatechars:"35" }}</a></li>
+                        {% else %}
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ login_url }}?next={{next|default:request.path|urlencode}}">{% trans "Login" %}</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'account_signup' %}?next={{next|default:request.path|urlencode}}">{% trans "Sign Up" %}</a></li>
                         {% endif %}
                     </ul>
                 </div>
-                {% endif %}
                 <!-- show regular list items for larger viewports (no dropdown)-->
-                <ul class="nav navbar-nav navbar-right auth">
+                <ul class="nav navbar-nav navbar-right hidden-sm auth">
                     {% if user.is_authenticated %}
-                        <li><a class="mm_logout hidden-sm" href="{{ logout_url }}?next={% url 'hk_root' %}">{% trans "Logout" %}</a></li>
-                        <li><a class="hidden-sm" href="{% url 'hk_user_profile' %}">{{ user.email|truncatechars:"35" }}</a></li>
+                        <li><a href="{{ logout_url }}?next={% url 'hk_root' %}">{% trans "Logout" %}</a></li>
+                        <li><a href="{% url 'hk_user_profile' %}">{{ user.email|truncatechars:"35" }}</a></li>
                     {% else %}
-                        <li><a class="mm_user {% if use_internal_auth %}hidden-sm{% endif %}" href="{{ login_url }}?next={{next|default:request.path|urlencode}}">{% trans "Login" %}</a></li>
-                        {% if use_internal_auth %}
-                        <li><a class="hidden-sm" href="{% url 'hk_user_registration' %}?next={{next|default:request.path|urlencode}}">{% trans "Sign Up" %}</a></li>
-                        {% endif %}
+                        <li><a href="{{ login_url }}?next={{next|default:request.path|urlencode}}">{% trans "Login" %}</a></li>
+                        <li><a href="{% url 'account_signup' %}?next={{next|default:request.path|urlencode}}">{% trans "Sign Up" %}</a></li>
                     {% endif %}
                 </ul>
 

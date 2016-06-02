@@ -21,12 +21,11 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from django.conf.urls import include, url
+from django.conf.urls import url
 from django.views.generic.base import TemplateView
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib.auth.views import logout as logout_view
-from django.contrib import admin
 
 from hyperkitty.api import (
     mailinglist as api_mailinglist, email as api_email,
@@ -143,11 +142,6 @@ urlpatterns = [
     url(r'^api/tags/$', api_tag.TagList.as_view(), name="hk_api_tag_list"),
     #url(r'^', include(restrouter.urls)),
     #url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-
-    # Admin
-    url(r'^admin/', include(admin.site.urls)),
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Robots.txt
     url(r'^robots\.txt$', TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
