@@ -135,11 +135,6 @@ urlpatterns = [
     #url(r'^', include(restrouter.urls)),
     #url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
-    # Errors
-    url(r'^error/schemaupgrade$',
-        TemplateView.as_view(template_name="hyperkitty/errors/schemaupgrade.html"),
-        name="hk_error_schemaupgrade"),
-
     # Admin
     url(r'^admin/', include(admin.site.urls)),
     # Uncomment the admin/doc line below to enable admin documentation:
