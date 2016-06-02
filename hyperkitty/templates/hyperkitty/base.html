@@ -7,7 +7,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="ROBOTS" content="INDEX, FOLLOW" />
-        <title>{% block title %}{{ app_name|title }}{% endblock %}</title>
+        <title>{% block title %}{{ site_name|title }}{% endblock %}</title>
         <meta name="author" content="" />
         <meta name="dc.language" content="en" />
         <link rel="shortcut icon" href="{% static 'hyperkitty/img/favicon.ico' %}" />
@@ -34,7 +34,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" id="archives-name" href="{% url 'hk_root' %}">{{ app_name|title }}</a>
+                <a class="navbar-brand" id="archives-name" href="{% url 'hk_root' %}">{{ site_name|title }}</a>
             </div> <!-- /navbar-header -->
 
             <div class="navbar-collapse collapse"> <!--part of navbar that's collapsed on small screens-->

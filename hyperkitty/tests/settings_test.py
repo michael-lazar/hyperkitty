@@ -342,8 +342,6 @@ LOGGING = {
 # HyperKitty-specific
 #
 
-APP_NAME = 'List Archives'
-
 # Allow authentication with the internal user database?
 # By default, only a login through Persona or your email provider is allowed.
 USE_INTERNAL_AUTH = False

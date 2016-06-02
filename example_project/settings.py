@@ -24,6 +24,8 @@ ADMINS = (
      ('HyperKitty Admin', 'root@localhost'),
 )
 
+SITE_ID = 1
+
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.8/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = [
@@ -60,7 +62,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    # 'django.contrib.sites',
+    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'social.apps.django_app.default',
@@ -411,8 +413,6 @@ if DEBUG == True:
 #
 # HyperKitty-specific
 #
-
-APP_NAME = 'List Archives'
 
 # Allow authentication with the internal user database?
 # By default, only a login through Persona or your email provider is allowed.

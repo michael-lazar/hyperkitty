@@ -21,6 +21,7 @@
 #
 
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.shortcuts import resolve_url
 from hyperkitty import VERSION
@@ -31,11 +32,12 @@ def common(request):
     extra_context.update(export_settings(request))
     extra_context.update(postorius_info(request))
     extra_context["paginator_per_page_options"] = [10, 50, 100, 200]
+    extra_context["site_name"] = get_current_site(request).name
     return extra_context
 
 
 def export_settings(request):
-    exports = ["APP_NAME", "USE_MOCKUPS", "USE_INTERNAL_AUTH"]
+    exports = ["USE_MOCKUPS", "USE_INTERNAL_AUTH"]
     extra_context = dict(
         (name.lower(), getattr(settings, name, None)) for name in exports)
     extra_context["HYPERKITTY_VERSION"] = VERSION
