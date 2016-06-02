@@ -6,7 +6,7 @@
 {% load staticfiles %}
 
 
-{% block title %}
+{% block head_title %}
 {{ mlist.display_name|default:mlist.name }} - {{ block.super }}
 {% endblock %}
 
