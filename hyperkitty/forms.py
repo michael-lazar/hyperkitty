@@ -23,59 +23,12 @@
 from __future__ import absolute_import
 
 from django import forms
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit
+from crispy_forms.layout import Layout
 
 from hyperkitty.models.profile import Profile
-
-
-class RegistrationForm(UserCreationForm):
-
-    email = forms.EmailField(required=True)
-
-    class Meta:
-        model = User
-        fields = ["username", "email"]
-
-    def __init__(self, *args, **kwargs):
-        super(RegistrationForm, self).__init__(*args, **kwargs)
-        self.error_messages["duplicate_email"] = _(
-            "A user with that email already exists.")
-        self.helper = FormHelper()
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = (
-            'col-sm-5 col-md-offset-1 col-md-4 col-lg-offset-3 col-lg-2')
-        self.helper.field_class = 'col-sm-6 col-md-5 col-lg-4 col-xl-3'
-        self.helper.add_input(Submit('submit', _('Register')))
-
-    def clean_email(self):
-        email = self.cleaned_data["email"]
-        try:
-            User.objects.get(email=email)
-        except User.DoesNotExist:
-            return email
-        raise forms.ValidationError(
-            self.error_messages['duplicate_email'],
-            code='duplicate_email',
-        )
-
-
-class InternalAuthenticationForm(AuthenticationForm):
-
-    def __init__(self, *args, **kwargs):
-        super(InternalAuthenticationForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        # The <form> tag will be added manually to insert the 'next' URL in the
-        # action property.
-        self.helper.form_tag = False
-        self.helper.label_class = \
-            'col-sm-5 col-md-offset-1 col-md-4 col-lg-offset-3 col-lg-2'
-        self.helper.field_class = 'col-sm-6 col-md-5 col-lg-4 col-xl-3'
-        self.helper.add_input(Submit('submit', _('Login')))
 
 
 class UserProfileForm(forms.Form):

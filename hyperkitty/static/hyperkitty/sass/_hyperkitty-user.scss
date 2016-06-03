@@ -35,6 +35,18 @@
     }
 }
 
+.socialaccount_ballot {
+    ul.socialaccount_providers {
+        @extend .list-inline;
+    }
+    .login-or {
+        clear: both;
+        margin: 1em 0;
+        font-size: 120%;
+        font-weight: bold;
+    }
+}
+
 
 //=== User profile page ==/
 .user-profile {

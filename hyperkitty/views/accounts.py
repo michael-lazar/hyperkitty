@@ -24,24 +24,20 @@ from __future__ import absolute_import, unicode_literals
 
 from urllib2 import HTTPError
 
-from django.conf import settings
-from django.core.urlresolvers import reverse, NoReverseMatch
-from django.contrib.auth import login, get_backends
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import login as django_login_view
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from django.utils.http import is_safe_url
-from django.utils.timezone import get_current_timezone
-from django.http import Http404, HttpResponse
-from social.backends.base import BaseAuth as SocialAuthBackend
 import dateutil.parser
 import mailmanclient
 
+from django.conf import settings
+from django.core.urlresolvers import reverse, NoReverseMatch
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import Http404, HttpResponse
+from django.shortcuts import render, redirect
+from django.utils.timezone import get_current_timezone
+
 from hyperkitty.models import (
     Favorite, LastView, MailingList, Sender, Email, Vote, Profile)
-from hyperkitty.forms import (
-    InternalAuthenticationForm, RegistrationForm, UserProfileForm)
+from hyperkitty.forms import UserProfileForm
 from hyperkitty.lib.view_helpers import is_mlist_authorized
 from hyperkitty.lib.paginator import paginate
 from hyperkitty.lib.mailman import get_mailman_client
@@ -49,21 +45,6 @@ from hyperkitty.lib.mailman import get_mailman_client
 
 import logging
 logger = logging.getLogger(__name__)
-
-
-def login_view(request, *args, **kwargs):
-    if "extra_context" not in kwargs:
-        kwargs["extra_context"] = {}
-    if "backends" not in kwargs["extra_context"]:
-        kwargs["extra_context"]["social_backends"] = []
-    # Note: sorry but I really find the .setdefault() method non-obvious and
-    # harder to re-read that the lines above.
-    for backend in get_backends():
-        if not isinstance(backend, SocialAuthBackend):
-            continue  # It should be checked using duck-typing instead
-        kwargs["extra_context"]["social_backends"].append(backend.name)
-    kwargs["authentication_form"] = InternalAuthenticationForm
-    return django_login_view(request, *args, **kwargs)
 
 
 @login_required
@@ -121,40 +102,6 @@ def user_profile(request):
     except NoReverseMatch:
         pass
     return render(request, "hyperkitty/user_profile.html", context)
-
-
-def user_registration(request):
-    try:
-        redirect_to = request.GET["next"]
-    except KeyError:
-        try:
-            redirect_to = request.POST["next"]
-        except KeyError:
-            redirect_to = reverse("hk_root")
-    if not is_safe_url(url=redirect_to, host=request.get_host()):
-        redirect_to = settings.LOGIN_REDIRECT_URL
-    if request.user.is_authenticated():
-        # Already registered, redirect back to index page
-        return redirect(redirect_to)
-
-    if request.POST:
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            user.backend = "django.contrib.auth.backends.ModelBackend"
-            logger.info("New registered user: %s (%s)",
-                        user.username, user.email)
-            if user.is_active:
-                login(request, user)
-                return redirect(redirect_to)
-    else:
-        form = RegistrationForm()
-
-    context = {
-        'form': form,
-        'next': redirect_to,
-    }
-    return render(request, 'hyperkitty/register.html', context)
 
 
 @login_required

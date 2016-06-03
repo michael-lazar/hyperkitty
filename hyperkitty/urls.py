@@ -43,15 +43,13 @@ urlpatterns = [
     url(r'^find-list$', index.find_list, name='hk_find_list'),
 
     # Account (logged-in user)
-    url(r'^accounts/login/$', accounts.login_view,
-        {'template_name': 'hyperkitty/login.html'}, name='hk_user_login'),
-    url(r'^accounts/logout/$', logout_view, {'next_page': '/'}, name='hk_user_logout'),
-    url(r'^accounts/profile/$', accounts.user_profile, name='hk_user_profile'),
-    url(r'^accounts/profile/favorites$', accounts.favorites, name='hk_user_favorites'),
-    url(r'^accounts/profile/last_views$', accounts.last_views, name='hk_user_last_views'),
-    url(r'^accounts/profile/votes$', accounts.votes, name='hk_user_votes'),
-    url(r'^accounts/profile/subscriptions$', accounts.subscriptions, name='hk_user_subscriptions'),
-    url(r'^accounts/register/$', accounts.user_registration, name='hk_user_registration'),
+    url(r'^profile/$', accounts.user_profile, name='hk_user_profile'),
+    url(r'^profile/favorites$', accounts.favorites, name='hk_user_favorites'),
+    url(r'^profile/last_views$', accounts.last_views,
+        name='hk_user_last_views'),
+    url(r'^profile/votes$', accounts.votes, name='hk_user_votes'),
+    url(r'^profile/subscriptions$', accounts.subscriptions,
+        name='hk_user_subscriptions'),
 
     # Users
     url(r'^users/$', users.users, name='hk_users_overview'),
