@@ -95,13 +95,14 @@ def user_profile(request):
         'other_addresses': other_addresses,
         'gravatar_url': gravatar_url,
         'gravatar_shortname': gravatar_shortname,
+        'subpage': 'account',
     }
     try:
         # Try to get Postorius' profile url
         context['profile_url'] = reverse('user_profile')
     except NoReverseMatch:
         pass
-    return render(request, "hyperkitty/user_profile.html", context)
+    return render(request, "hyperkitty/user_profile/account.html", context)
 
 
 @login_required
@@ -110,8 +111,9 @@ def favorites(request):
     favs = Favorite.objects.filter(
         user=request.user).order_by("-thread__date_active")
     favs = paginate(favs, request.GET.get('favpage'))
-    return render(request, 'hyperkitty/ajax/favorites.html', {
+    return render(request, 'hyperkitty/user_profile/favorites.html', {
                 "favorites": favs,
+                "subpage": "favorites",
             })
 
 
@@ -121,8 +123,9 @@ def last_views(request):
     lviews = LastView.objects.filter(
         user=request.user).order_by("-view_date")
     lviews = paginate(lviews, request.GET.get('lvpage'))
-    return render(request, 'hyperkitty/ajax/last_views.html', {
+    return render(request, 'hyperkitty/user_profile/last_views.html', {
                 "last_views": lviews,
+                "subpage": "last_views",
             })
 
 
@@ -130,8 +133,9 @@ def last_views(request):
 def votes(request):
     all_votes = paginate(
         request.user.votes.all(), request.GET.get('vpage'))
-    return render(request, 'hyperkitty/ajax/votes.html', {
+    return render(request, 'hyperkitty/user_profile/votes.html', {
                 "votes": all_votes,
+                "subpage": "votes",
             })
 
 
@@ -171,8 +175,9 @@ def subscriptions(request):
             "likestatus": likestatus,
             "all_posts_url": all_posts_url,
         })
-    return render(request, 'hyperkitty/ajax/user_subscriptions.html', {
+    return render(request, 'hyperkitty/user_profile/subscriptions.html', {
                 "subscriptions": subs,
+                "subpage": "subscriptions",
             })
 
 

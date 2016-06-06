@@ -64,19 +64,17 @@
         }
     }
 
-    .tab-pane {
-        padding-top: 1em;
-    }
-
-    .ajaxloader {
-        margin-top: 0;
-        margin-left: 0;
-        position: absolute;
+    .user-profile-content {
+        padding-top: 2em;
     }
 
     tr.list-address {
         font-weight: bold;
         background: $rowBorderColor;
+    }
+
+    ul.socialaccount_providers {
+        margin-left: 1.5em;
     }
 }
 
@@ -88,6 +86,10 @@ table.user-data {
     }
     tr.gravatar td {
         vertical-align: middle;
+    }
+    tr:first-child > td,
+    tr:first-child > th {
+        border-top: 0;
     }
 }
 

@@ -1,5 +1,9 @@
+{% extends "hyperkitty/user_profile/base.html" %}
 {% load i18n %}
 {% load hk_generic %}
+
+
+{% block user_profile_content %}
 
     {% if votes %}
         <table class="table table-bordered table-condensed hidden-sm hidden-md hidden-lg">
@@ -77,3 +81,5 @@
     {% else %}
         <p>{% trans "No vote yet." %}</p>
     {% endif %}
+
+{% endblock %}
