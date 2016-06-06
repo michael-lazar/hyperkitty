@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
+# Copyright (C) 2015-2016 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
 #
@@ -21,5 +21,12 @@
 
 from __future__ import absolute_import, unicode_literals
 
-VERSION = "1.0.4"
-default_app_config = 'hyperkitty.apps.HyperKittyConfig'
+from django.apps import AppConfig
+
+
+class HyperKittyConfig(AppConfig):
+    name = 'hyperkitty'
+    verbose_name = "HyperKitty"
+
+    def ready(self):
+        import hyperkitty.signals  # flake8: noqa
