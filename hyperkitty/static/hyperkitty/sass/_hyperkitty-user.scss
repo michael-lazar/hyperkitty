@@ -35,10 +35,12 @@
     }
 }
 
+
+ul.socialaccount_providers {
+    @extend .list-inline;
+}
+
 .socialaccount_ballot {
-    ul.socialaccount_providers {
-        @extend .list-inline;
-    }
     .login-or {
         clear: both;
         margin: 1em 0;
@@ -71,10 +73,6 @@
     tr.list-address {
         font-weight: bold;
         background: $rowBorderColor;
-    }
-
-    ul.socialaccount_providers {
-        margin-left: 1.5em;
     }
 }
 
