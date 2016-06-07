@@ -194,7 +194,8 @@ def sync_with_mailman(overwrite=False):
 
 def add_address_to_mailman_user(user, address):
     """Associate a verified address with a Mailman user."""
-    logger.debug("Associating address %s with user %s", address, user.username)
+    logger.debug("Associating address %s with user %s in Mailman",
+                 address, user.username)
     from hyperkitty.models import Profile
     try:
         profile = Profile.objects.get(user_id=user.id)

@@ -22,6 +22,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.dispatch import receiver
+from allauth.account.models import EmailAddress
 from allauth.account.signals import email_confirmed, user_signed_up
 from allauth.socialaccount.signals import social_account_added
 from hyperkitty.lib.mailman import add_address_to_mailman_user
@@ -81,5 +82,12 @@ def on_social_account_added(sender, **kwargs):
     logger.debug("Social account %s added for user %s",
                  sociallogin.account, sociallogin.user.username)
     for address in sociallogin.email_addresses:
+        if EmailAddress.objects.filter(email=address.email).exists():
+            # TODO: should we do something if it belongs so another user?
+            continue
+        logger.debug("Adding email address %s to user %s",
+                     address.email, sociallogin.user.username)
+        address.user = sociallogin.user
+        address.save()
         if address.verified:
-            add_address_to_mailman_user(sociallogin.user, address)
+            add_address_to_mailman_user(sociallogin.user, address.email)
