@@ -25,13 +25,14 @@ from __future__ import absolute_import, unicode_literals, print_function
 from urllib2 import HTTPError
 
 
+import pytz
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from mailmanclient import MailmanConnectionError
-import pytz
+from allauth.account.models import EmailAddress
 
 from hyperkitty.lib.cache import cache
 from hyperkitty.lib.mailman import get_mailman_client
@@ -60,15 +61,10 @@ class Profile(models.Model):
 
     @property
     def addresses(self):
-        addresses = set([self.user.email])
-        mm_user = self.get_mailman_user()
-        if mm_user:
-            # TODO: caching?
-            # (mailman client returns str, must convert to deduplicate)
-            addresses.update([unicode(a) for a in mm_user.addresses])
-        addresses = list(addresses)
-        addresses.sort()
-        return addresses
+        return list(EmailAddress.objects.filter(
+            user=self.user).filter(
+            verified=True).order_by("email").values_list(
+            "email", flat=True))
 
     def get_votes_in_list(self, list_name):
         # TODO: Caching ?
