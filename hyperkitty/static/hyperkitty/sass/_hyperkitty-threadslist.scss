@@ -31,10 +31,14 @@
  */
 
 #thread-list .thread {
-    border: none;
-    margin-top: 3em;
+
+    @extend .bordered-vertical;
+
+    padding-top: 1em;
+    padding-bottom: 1em;
 
     .thread-title {
+		font-size: 110%;
         font-weight: bold;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -46,9 +50,7 @@
     }
 
     .thread-date {
-        font-style: italic;
-        font-size: 70%;
-        color: $maroon;
+        color: $grey;
         margin-left: 1em;
     }
 
@@ -67,6 +69,10 @@
         .thread-category {
             font-size: 110%;
             padding-bottom: 0.25em;
+        }
+        
+        .thread-fav {
+			text-align: right;
         }
 
         .likestatus + span {
@@ -126,24 +132,18 @@
     .sender {
         width: 80px;
     }
-    .thread-content {
-        // sender width + 15px of "row" + some space
-        margin-left: 100px;
-    }
 }
 
 // Large viewports (x > 1200)
+/*
 @media (min-width: $screen-lg-min) {
     #thread-list .thread .thread-info {
         .sender {
             width: 100px;
         }
-        .thread-content {
-            // sender width + 15px of "row" + some space
-            margin-left: 130px;
-        }
     }
 }
+*/
 
 
 
@@ -152,29 +152,13 @@
  */
 
 .expander {
-    background-image: linear-gradient(bottom, rgb(236,236,236) 11%, rgb(255,255,255) 100%);
-    background-image: -o-linear-gradient(bottom, rgb(236,236,236) 11%, rgb(255,255,255) 100%);
-    background-image: -moz-linear-gradient(bottom, rgb(236,236,236) 11%, rgb(255,255,255) 100%);
-    background-image: -webkit-linear-gradient(bottom, rgb(236,236,236) 11%, rgb(255,255,255) 100%);
-    background-image: -ms-linear-gradient(bottom, rgb(236,236,236) 11%, rgb(255,255,255) 100%);
 
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.11, rgb(236,236,236)),
-        color-stop(1, rgb(255,255,255))
-    );
-    border-style: solid;
-    border-width: 1px;
-    border-color: rgb(236,236,236);
-    -webkit-border-radius: 5px 5px 5px 5px;
-    -moz-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
-    padding: 1em;
+    padding-top: 1em;
+    padding-bottom: 1em;
     display: block;
     vertical-align: top;
-
+    margin-bottom: 1em;
+    
     white-space: pre-wrap;
     word-wrap: break-word;
 }

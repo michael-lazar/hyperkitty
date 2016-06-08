@@ -324,7 +324,7 @@ HAYSTACK_CONNECTIONS = {
         # but requires another library.
         # http://django-haystack.readthedocs.io/en/v2.4.1/installing_search_engines.html#xapian
         # Example configuration for Xapian:
-        #'ENGINE': 'xapian_backend.XapianEngine',
+        #'ENGINE': 'xapian_backend.XapianEngine'
     },
 }
 
