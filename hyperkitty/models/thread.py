@@ -25,7 +25,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 from django.conf import settings
 from django.db import models
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete, pre_save
 from django.contrib import admin
 from django.dispatch import receiver
 from django.utils.timezone import now, utc
@@ -131,28 +131,37 @@ class Thread(models.Model):
             last_view_duplicate.delete()
         return self.date_active.replace(tzinfo=utc) > last_view.view_date
 
+    def find_starting_email(self):
+        # Find and set the staring email if it was not specified
+        from .email import Email # circular import
+        if self.starting_email is not None:
+            return
+        try:
+            self.starting_email = self.emails.get(parent_id__isnull=True)
+        except Email.DoesNotExist:
+            self.starting_email = self.emails.order_by("date").first()
 
-#@receiver(pre_save, sender=Thread)
-#def Thread_find_starting_email(sender, **kwargs):
-#    """Find and set the staring email if it was not specified"""
-#    instance = kwargs["instance"]
-#    if instance.starting_email is not None:
-#        return
-#    try:
-#        instance.starting_email = instance.emails.get(parent_id__isnull=True)
-#    except Email.DoesNotExist:
-#        instance.starting_email = instance.emails.order_by("date").first()
+    def on_pre_save(self):
+        self.find_starting_email()
 
+    def on_new_thread(self):
+        self.mailinglist.on_thread_added(self)
+
+    def on_post_delete(self):
+        self.mailinglist.on_thread_deleted(self)
+
+
+@receiver(pre_save, sender=Thread)
+def on_pre_save(sender, **kwargs):
+    kwargs["instance"].on_pre_save()
 
 @receiver(new_thread)
-def on_thread_added(sender, **kwargs):
-    thread = kwargs["thread"]
-    thread.mailinglist.on_thread_added(thread)
+def on_new_thread(sender, **kwargs):
+    kwargs["thread"].on_new_thread()
 
 @receiver(post_delete, sender=Thread)
-def on_thread_deleted(sender, **kwargs):
-    thread = kwargs["instance"]
-    thread.mailinglist.on_thread_deleted(thread)
+def on_post_delete(sender, **kwargs):
+    kwargs["instance"].on_post_delete()
 
 
 #@receiver(new_thread)

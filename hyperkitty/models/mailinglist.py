@@ -229,10 +229,12 @@ class MailingList(models.Model):
             setattr(self, propname, value)
         self.save()
 
+    def on_pre_save(self):
+        # Set the default list_id
+        if self.list_id is None:
+            self.list_id = self.name.replace("@", ".")
+
 
 @receiver(pre_save, sender=MailingList)
 def MailingList_set_list_id(sender, **kwargs):
-    """Set the default list_id"""
-    ml = kwargs["instance"]
-    if ml.list_id is None:
-        ml.list_id = ml.name.replace("@", ".")
+    kwargs["instance"].on_pre_save()

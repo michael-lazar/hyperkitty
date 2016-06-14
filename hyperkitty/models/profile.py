@@ -144,4 +144,3 @@ def create_profile(sender, **kwargs):
     user = kwargs["instance"]
     if not Profile.objects.filter(user=user).exists():
         Profile.objects.create(user=user)
-

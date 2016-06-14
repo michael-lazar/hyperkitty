@@ -43,13 +43,24 @@ class Vote(models.Model):
     class Meta:
         unique_together = ("email", "user")
 
+    def _clean_cache(self):
+        """Delete cached vote values for Email and Thread instance"""
+        cache.delete("Thread:%s:votes" % self.email.thread_id)
+        # re-populate the cache?
+        cache.delete("Email:%s:votes" % self.email_id)
+
+    def on_pre_save(self):
+        self._clean_cache()
+
+    def on_pre_delete(self):
+        self._clean_cache()
+
 admin.site.register(Vote)
 
-@receiver([pre_save, pre_delete], sender=Vote)
-def Vote_clean_cache(sender, **kwargs):
-    """Delete cached vote values for Email and Thread instance"""
-    vote = kwargs["instance"]
-    cache.delete("Thread:%s:votes" % vote.email.thread_id)
-    # re-populate the cache?
-    cache.delete("Email:%s:votes" % vote.email_id)
+@receiver(pre_save, sender=Vote)
+def on_pre_save(sender, **kwargs):
+    kwargs["instance"].on_pre_save()
 
+@receiver(pre_delete, sender=Vote)
+def on_pre_delete(sender, **kwargs):
+    kwargs["instance"].on_pre_delete()

@@ -207,95 +207,108 @@ class Email(models.Model):
     def display_fixed(self):
         return "@@" in self.content
 
+    def _set_message_id_hash(self):
+        from hyperkitty.lib.utils import get_message_id_hash # circular import
+        if not self.message_id_hash:
+            self.message_id_hash = get_message_id_hash(self.message_id)
 
-@receiver([post_init, pre_save], sender=Email)
-def Email_set_message_id_hash(sender, **kwargs):
-    from hyperkitty.lib.utils import get_message_id_hash # circular import
-    email = kwargs["instance"]
-    if not email.message_id_hash:
-        email.message_id_hash = get_message_id_hash(email.message_id)
+    def _refresh_count_cache(self):
+        cache.delete("Thread:%s:emails_count" % self.thread_id)
+        cache.delete("Thread:%s:participants_count" % self.thread_id)
+        cache.delete("MailingList:%s:recent_participants_count"
+                     % self.mailinglist_id)
+        cache.delete("MailingList:%s:top_posters" % self.mailinglist_id)
+        cache.delete(make_template_fragment_key(
+            "thread_participants", [self.thread_id]))
+        cache.delete("MailingList:%s:p_count_for:%s:%s"
+                     % (self.mailinglist_id, self.date.year, self.date.month))
+        # don't warm up the cache in batch mode (mass import)
+        if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
+            # pylint: disable=pointless-statement
+            try:
+                self.thread.emails_count
+                self.thread.participants_count
+                self.mailinglist.recent_participants_count
+                self.mailinglist.top_posters
+                self.mailinglist.get_participants_count_for_month(
+                    self.date.year, self.date.month)
+            except (Thread.DoesNotExist, MailingList.DoesNotExist):
+                pass # it's post_delete, those may have been deleted too
+
+    def on_post_init(self):
+        self._set_message_id_hash()
+
+    def on_pre_save(self):
+        self._set_message_id_hash()
+        # Make sure there is only one email with parent_id == None in a thread
+        if self.parent_id != None:
+            return
+        starters = Email.objects.filter(
+                thread=self.thread, parent_id__isnull=True
+            ).values_list("id", flat=True)
+        if len(starters) > 0 and list(starters) != [self.id]:
+            # pylint: disable=nonstandard-exception
+            raise IntegrityError("There can be only one email with "
+                                 "parent_id==None in the same thread")
+
+    def on_post_save(self):
+        # refresh the count cache
+        self._refresh_count_cache()
+
+    def on_pre_delete(self):
+        # Reset parent_id
+        children = self.children.order_by("date")
+        if not children:
+            return
+        if self.parent is None:
+            # temporarily set the email's parent_id to not None, to allow the next
+            # email to be the starting email (there's a check on_save for duplicate
+            # thread starters)
+            self.parent = self
+            self.save(update_fields=["parent"])
+            starter = children[0]
+            starter.parent = None
+            starter.save()
+            children.all().update(parent=starter)
+        else:
+            children.update(parent=self.parent)
+
+    def on_post_delete(self):
+        # refresh the count cache
+        self._refresh_count_cache()
+        # update_or_clean_thread
+        try:
+            thread = Thread.objects.get(id=self.thread_id)
+        except Thread.DoesNotExist:
+            return
+        if thread.emails.count() == 0:
+            thread.delete()
+        else:
+            if thread.starting_email is None:
+                thread.find_starting_email()
+                thread.save()
+            compute_thread_order_and_depth(thread)
+
+
+@receiver(post_init, sender=Email)
+def Email_on_post_init(sender, **kwargs):
+    kwargs["instance"].on_post_init()
 
 @receiver(pre_save, sender=Email)
-def Email_check_parent_id(sender, **kwargs):
-    """Make sure there is only one email with parent_id == None in a thread"""
-    instance = kwargs["instance"]
-    if instance.parent_id != None:
-        return
-    starters = Email.objects.filter(
-            thread=instance.thread, parent_id__isnull=True
-        ).values_list("id", flat=True)
-    if len(starters) > 0 and list(starters) != [instance.id]:
-        # pylint: disable=nonstandard-exception
-        raise IntegrityError("There can be only one email with "
-                             "parent_id==None in the same thread")
+def Email_on_pre_save(sender, **kwargs):
+    kwargs["instance"].on_pre_save()
+
+@receiver(post_save, sender=Email)
+def Email_on_post_save(sender, **kwargs):
+    kwargs["instance"].on_post_save()
 
 @receiver(pre_delete, sender=Email)
-def Email_reset_parent_id(sender, **kwargs):
-    email = kwargs["instance"]
-    if email.parent_id is None:
-        # not sure this is really useful. Does email.thread return the same
-        # instance each time?
-        email.thread._starting_email_cache = None # pylint: disable=protected-access
-    children = email.children.order_by("date")
-    if not children:
-        return
-    if email.parent is None:
-        # temporarily set the email's parent_id to not None, to allow the next
-        # email to be the starting email (there's a check on_save for duplicate
-        # thread starters)
-        email.parent = email
-        email.save(update_fields=["parent"])
-        starter = children[0]
-        starter.parent = None
-        starter.save()
-        children.all().update(parent=starter)
-    else:
-        children.update(parent=email.parent)
+def Email_on_pre_delete(sender, **kwargs):
+    kwargs["instance"].on_pre_delete()
 
 @receiver(post_delete, sender=Email)
-def Email_update_or_clean_thread(sender, **kwargs):
-    email = kwargs["instance"]
-    try:
-        thread = Thread.objects.get(id=email.thread_id)
-    except Thread.DoesNotExist:
-        return
-    if thread.emails.count() == 0:
-        thread.delete()
-    else:
-        compute_thread_order_and_depth(thread)
-
-
-@receiver([post_save, post_delete], sender=Email)
-def Email_refresh_count_cache(sender, **kwargs):
-    email = kwargs["instance"]
-    cache.delete("Thread:%s:emails_count" % email.thread_id)
-    cache.delete("Thread:%s:participants_count" % email.thread_id)
-    cache.delete("MailingList:%s:recent_participants_count"
-                 % email.mailinglist_id)
-    cache.delete("MailingList:%s:top_posters" % email.mailinglist_id)
-    cache.delete(make_template_fragment_key(
-        "thread_participants", [email.thread_id]))
-    cache.delete("MailingList:%s:p_count_for:%s:%s"
-                 % (email.mailinglist_id, email.date.year, email.date.month))
-    # don't warm up the cache in batch mode (mass import)
-    if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
-        # pylint: disable=pointless-statement
-        try:
-            email.thread.emails_count
-            email.thread.participants_count
-            email.mailinglist.recent_participants_count
-            email.mailinglist.top_posters
-            email.mailinglist.get_participants_count_for_month(
-                email.date.year, email.date.month)
-        except (Thread.DoesNotExist, MailingList.DoesNotExist):
-            pass # it's post_delete, those may have been deleted too
-
-
-@receiver(pre_delete, sender=Email)
-def Email_invalidate_thread_starting_email_cache(sender, **kwargs):
-    email = kwargs["instance"]
-    if email.thread.starting_email == email:
-        email.thread._starting_email_cache = None # pylint: disable=protected-access
+def Email_on_post_delete(sender, **kwargs):
+    kwargs["instance"].on_post_delete()
 
 
 
@@ -311,8 +324,10 @@ class Attachment(models.Model):
     class Meta:
         unique_together = ("email", "counter")
 
-@receiver(pre_save, sender=Attachment)
-def Attachment_set_size(sender, **kwargs):
-    instance = kwargs["instance"]
-    instance.size = len(instance.content)
+    def on_pre_save(self):
+        # set the size
+        self.size = len(self.content)
 
+@receiver(pre_save, sender=Attachment)
+def Attachment_on_pre_save(sender, **kwargs):
+    kwargs["instance"].on_pre_save()
