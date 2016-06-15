@@ -137,21 +137,9 @@ ul.list-stats {
     li+li {
         padding-left: 0.75em;
     }
-}
-.participant:before {
-    content: "\e609";
-    color: #BFBFBF;
-    font-size: 1.14em;
-    line-height: 1em;
-}
-.discussion:before {
-    content: "\e607";
-    color: #BFBFBF;
-    font-size: 1.14em;
-    line-height: 1em;
-}
-.fa-envelope {
-    color: #BFBFBF;
+    .fa {
+        color: #BFBFBF;
+    }
 }
 
 

@@ -163,6 +163,9 @@ $headerNavPadding: 7px;
        .list-name {
             color: $subheadingColor;
         }
+        ul.list-stats .fa {
+            color: $subheadingColor;
+        }
     }
 
     // 'new' label in front of list name

@@ -28,25 +28,25 @@
     </p>
 
     {% if postorius_installed %}
-    <p>
+    <p class="postorius">
       <a class="btn btn-default btn-sm" href="{{ postorius_installed }}/{{ mlist.name }}">
-        <i class="fa fa-inbox"></i>
+        <i class="fa fa-fw fa-inbox"></i>
         Manage subscription</a>
     </p>
     {% endif %}
 
-    <p>
+    <p class="thread-overview-details">
     <div>
-        <i class="icomoon discussion"></i>
+        <i class="fa fa-fw fa-comment"></i>
         {{ num_comments }} {% trans "comments" %}
     </div>
     <div>
-        <i class="icomoon participant"></i>
+        <i class="fa fa-fw fa-user"></i>
         {{ thread.participants_count }} {% trans "participants" %}
     </div>
     {% if user.is_authenticated %}
     <div>
-        <i class="fa fa-envelope"></i> {{ unread_count }} {% trans "unread" %}
+        <i class="fa fa-fw fa-envelope"></i> {{ unread_count }} {% trans "unread" %}
         <span class="hidden-sm"> {% trans "messages" %}</span>
     </div>
     {% endif %}
@@ -58,14 +58,14 @@
         <input type="hidden" name="action" value="{{ fav_action }}" />
         <p>
             <a href="#AddFav" class="notsaved{% if not user.is_authenticated %} disabled" title="{% trans 'You must be logged-in to have favorites.' %}{% endif %}">
-                <i class="fa fa-star"></i>{% trans "Add to favorites" %}</a>
+                <i class="fa fa-fw fa-star"></i>{% trans "Add to favorites" %}</a>
             <a href="#RmFav" class="saved">
-                <i class="fa fa-star"></i>{% trans "Remove from favorites" %}</a>
+                <i class="fa fa-fw fa-star"></i>{% trans "Remove from favorites" %}</a>
         </p>
     </form>
 
     {% if user.is_staff or user.is_superuser %}
-    <p><i class="fa fa-plug"></i>
+    <p><i class="fa fa-fw fa-plug"></i>
        <a href="{% url 'hk_thread_reattach' mlist_fqdn=mlist.name threadid=thread.thread_id %}"
           >{% trans "Reattach this thread" %}</a>
     </p>
