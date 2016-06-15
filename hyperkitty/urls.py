@@ -79,6 +79,8 @@ urlpatterns = [
         message.reply, name='hk_message_reply'),
     url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/message/new$',
         message.new_message, name='hk_message_new'),
+    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/message/delete$',
+        message.delete, name='hk_message_delete'),
 
     # Thread
     url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/thread/(?P<threadid>\w+)/$',
@@ -97,6 +99,8 @@ urlpatterns = [
         thread.reattach, name='hk_thread_reattach'),
     url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/thread/(?P<threadid>\w+)/reattach-suggest$',
         thread.reattach_suggest, name='hk_thread_reattach_suggest'),
+    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/thread/(?P<threadid>\w+)/delete$',
+        message.delete, name='hk_thread_delete'),
 
 
     # Search

@@ -64,10 +64,14 @@
         </p>
     </form>
 
-    {% if user.is_staff %}
-    <p><i class="icon-resize-small"></i>
+    {% if user.is_staff or user.is_superuser %}
+    <p><i class="fa fa-plug"></i>
        <a href="{% url 'hk_thread_reattach' mlist_fqdn=mlist.name threadid=thread.thread_id %}"
           >{% trans "Reattach this thread" %}</a>
+    </p>
+    <p><i class="fa fa-fw fa-trash"></i>
+       <a href="{% url 'hk_thread_delete' mlist_fqdn=mlist.name threadid=thread.thread_id %}"
+          >{% trans "Delete this thread" %}</a>
     </p>
     {% endif %}
 

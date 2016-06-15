@@ -19,7 +19,7 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, unicode_literals, print_function
 
 import urllib
 import datetime
@@ -38,8 +38,13 @@ from hyperkitty.lib.mailman import ModeratedListException
 from hyperkitty.lib.posting import post_to_list, PostingFailed, reply_subject
 from hyperkitty.lib.view_helpers import (
     get_months, check_mlist_private, get_posting_form)
-from hyperkitty.models import MailingList, Email, Attachment
-from hyperkitty.forms import PostForm, ReplyForm
+from hyperkitty.models.email import Email, Attachment
+from hyperkitty.models.mailinglist import MailingList
+from hyperkitty.models.thread import Thread
+from hyperkitty.forms import PostForm, ReplyForm, MessageDeleteForm
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 @check_mlist_private
@@ -225,3 +230,83 @@ def new_message(request, mlist_fqdn):
         'months_list': get_months(mlist),
     }
     return render(request, "hyperkitty/message_new.html", context)
+
+
+@login_required
+@check_mlist_private
+def delete(request, mlist_fqdn, threadid=None):
+    """Delete messages. """
+    if not request.user.is_staff and not request.user.is_superuser:
+        return HttpResponse('You must be a staff member to delete a message',
+                            content_type="text/plain", status=403)
+    mlist = get_object_or_404(MailingList, name=mlist_fqdn)
+    if threadid is not None:
+        thread = get_object_or_404(Thread, thread_id=threadid)
+    else:
+        thread = None
+
+    form_queryset = Email.objects.filter(mailinglist=mlist)
+    if thread is not None:
+        form_queryset = form_queryset.filter(thread=thread)
+
+    if request.method == 'POST':
+        form = MessageDeleteForm(request.POST)
+        form.fields["email"].queryset = form_queryset
+        if form.is_valid():
+            thread_ids = []
+            for email in sorted(form.cleaned_data["email"], reverse=True):
+                email.refresh_from_db()
+                thread_id = email.thread.pk
+                try:
+                    email.delete()
+                except Exception as e:
+                    form.add_error("email",
+                        _("Could not delete message %(msg_id_hash)s: %(error)s")
+                        % {"msg_id_hash": email.message_id_hash, "error": e})
+                    continue
+                logger.info("Deleted email %s (%s)", email.pk, email.message_id)
+                thread_ids.append(thread_id)
+            if thread_ids:
+                messages.success(
+                    request, _("Successfully deleted %(count)s messages.")
+                             % {"count": len(thread_ids)})
+            if not form.has_error("email"):
+                if len(set(thread_ids)) == 1:
+                    try:
+                        thread = Thread.objects.get(pk=thread_ids[0])
+                        return redirect(reverse('hk_thread', kwargs={
+                            "mlist_fqdn": mlist_fqdn,
+                            "threadid": thread.thread_id}))
+                    except Thread.DoesNotExist:
+                        pass
+                return redirect(reverse('hk_list_overview', kwargs={
+                    "mlist_fqdn": mlist_fqdn}))
+    else:
+        if "msgid" in request.GET:
+            initial = [int(value) for value in request.GET.get_list("msgid")]
+        else:
+            initial = form_queryset.order_by(
+                "-date").values_list("pk", flat=True)
+        form = MessageDeleteForm(initial={"email": initial})
+        form.fields["email"].queryset = form_queryset
+    context = {
+        "mlist": mlist,
+        "form": form,
+        #'months_list': get_months(mlist),
+    }
+    if thread is not None:
+        context.update({
+            "thread": thread,
+            "form_action": reverse("hk_thread_delete", kwargs={
+                "mlist_fqdn": mlist_fqdn, "threadid": thread.thread_id}),
+            "cancel_url": reverse("hk_thread", kwargs={
+                "mlist_fqdn": mlist_fqdn, "threadid": thread.thread_id}),
+            })
+    else:
+        context.update({
+            "form_action": reverse("hk_message_delete", kwargs={
+                "mlist_fqdn": mlist_fqdn}),
+            "cancel_url": reverse("hk_list_overview", kwargs={
+                "mlist_fqdn": mlist_fqdn}),
+            })
+    return render(request, "hyperkitty/message_delete.html", context)

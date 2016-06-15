@@ -35,7 +35,7 @@ def compute_thread_order_and_depth(thread):
         obj = graph.node[msgid]["obj"]
         obj.thread_depth = thread_pos["d"]
         obj.thread_order = thread_pos["o"]
-        obj.save()
+        obj.save(update_fields=["thread_depth", "thread_order"])
         thread_pos["d"] += 1
         thread_pos["o"] += 1
         for succ in sorted(graph.successors(msgid),

@@ -35,7 +35,9 @@ from django_gravatar.helpers import get_gravatar_url
 
 from hyperkitty.lib.utils import get_message_id_hash
 from hyperkitty.lib.incoming import add_to_list
-from hyperkitty.models import Email, MailingList
+from hyperkitty.models.email import Email
+from hyperkitty.models.mailinglist import MailingList
+from hyperkitty.models.thread import Thread
 from hyperkitty.tests.utils import TestCase, get_flash_messages
 
 
@@ -321,3 +323,86 @@ class MessageViewsTestCase(TestCase):
                       get_message_id_hash("msg2")))
         response = self.client.get(url)
         self.assertNotContains(response, "someone-else@example.com", status_code=200)
+
+    def test_delete_forbidden(self):
+        msg = Email.objects.get(message_id="msg")
+        url = reverse('hk_message_delete', args=["list@example.com"])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_delete_single_message(self):
+        self.user.is_staff = True
+        self.user.save()
+        msg = Email.objects.get(message_id="msg")
+        thread_id = msg.thread.pk
+        url = reverse('hk_message_delete', args=["list@example.com"])
+        response = self.client.post(url, {"email": msg.pk})
+        self.assertRedirects(
+            response, reverse('hk_list_overview', kwargs={
+                "mlist_fqdn": "list@example.com"}))
+        # Flash message
+        messages = get_flash_messages(response)
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0].tags, "success")
+        # The message and the thread must be deleted.
+        self.assertFalse(Email.objects.filter(message_id="msg").exists())
+        self.assertFalse(Thread.objects.filter(pk=thread_id).exists())
+
+    def test_delete_single_in_thread(self):
+        # Delete an email in a thread that contains other emails
+        self.user.is_staff = True
+        self.user.save()
+        msg = Email.objects.get(message_id="msg")
+        msg2 = Message()
+        msg2["From"] = "dummy@example.com"
+        msg2["Message-ID"] = "<msg2>"
+        msg2["In-Reply-To"] = "<msg>"
+        msg2.set_payload("Dummy message")
+        add_to_list("list@example.com", msg2)
+        msg2 = Email.objects.get(message_id="msg2")
+        thread_id = msg.thread.thread_id
+        url = reverse('hk_message_delete', args=["list@example.com"])
+        response = self.client.post(url, {"email": msg.pk})
+        self.assertRedirects(
+            response, reverse('hk_thread', kwargs={
+                "mlist_fqdn": "list@example.com",
+                "threadid": thread_id}))
+        # Flash message
+        messages = get_flash_messages(response)
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0].tags, "success")
+        # The message must be deleted, but not the other message or the thread.
+        self.assertFalse(Email.objects.filter(message_id="msg").exists())
+        self.assertTrue(Email.objects.filter(message_id="msg2").exists())
+        thread = Thread.objects.get(thread_id=thread_id)
+        self.assertIsNotNone(thread)
+        # msg2 must now be the thread starter.
+        msg2.refresh_from_db()
+        self.assertIsNone(msg2.parent_id)
+        self.assertEqual(thread.starting_email.message_id, "msg2")
+
+    def test_delete_all_messages_in_thread(self):
+        self.user.is_staff = True
+        self.user.save()
+        msg = Email.objects.get(message_id="msg")
+        msg2 = Message()
+        msg2["From"] = "dummy@example.com"
+        msg2["Message-ID"] = "<msg2>"
+        msg2["In-Reply-To"] = "<msg>"
+        msg2.set_payload("Dummy message")
+        add_to_list("list@example.com", msg2)
+        msg2 = Email.objects.get(message_id="msg2")
+        thread_id = msg.thread.pk
+        url = reverse('hk_message_delete', args=["list@example.com"])
+        response = self.client.post(url, {"email": [msg.pk, msg2.pk]})
+        self.assertRedirects(
+            response, reverse('hk_list_overview', kwargs={
+                "mlist_fqdn": "list@example.com"}))
+        # Flash message
+        messages = get_flash_messages(response)
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0].tags, "success")
+        # Alls messages and the thread must be deleted.
+        self.assertFalse(Email.objects.filter(message_id="msg").exists())
+        self.assertFalse(Email.objects.filter(message_id="msg2").exists())
+        self.assertFalse(Thread.objects.filter(pk=thread_id).exists())
