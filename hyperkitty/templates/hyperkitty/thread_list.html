@@ -73,8 +73,8 @@
 $(document).ready(function() {
     $('span.expander').expander({
         slicePoint: 100,
-        userCollapseText : '<br /><br /><a class="btn btn-default btn-xs btn-expander"><i class="fa fa-ellipsis-h" aria-label="View less"></i></a>',
-        expandText : '<br /><a class="btn btn-default btn-xs btn-expander"><i class="fa fa-ellipsis-h" aria-label="View more"></i></a>',
+        userCollapseText : '<br /><br /><a class="btn-expander"><i class="fa fa-minus-square-o" aria-label="View less"></i> View less</a>',
+        expandText : '<br /><a class="btn-expander"><i class="fa fa-plus-square-o" aria-label="View more"></i> View more</a>',
         beforeExpand: function() {
             $(this).removeClass("collapsed");
             $(this).addClass("expanded");
