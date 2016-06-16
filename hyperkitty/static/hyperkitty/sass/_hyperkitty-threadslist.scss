@@ -38,7 +38,6 @@
     padding-bottom: 1em;
 
     .thread-title {
-		font-size: 110%;
         font-weight: bold;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -49,14 +48,12 @@
         }
     }
 
-    .thread-date {
-        color: $grey;
-        margin-left: 1em;
-    }
-
     .thread-info {
         padding-top: 0.25em;
 
+        .likeform {
+            display: inline;
+        }
         .sender {
             word-wrap: break-word;
             float: left;
@@ -104,22 +101,6 @@
         }
     }
 }
-// for extra-small viewports, the like form appears on the right
-@media (min-width: $screen-xs-min) and (max-width: $screen-xs-max) {
-    #thread-list .thread-info {
-        .likeform {
-            float: right;
-        }
-    }
-}
-// for small, medium and large viewports, thread stats appears on a single line, so align properly
-@media (min-width: $screen-sm-min) and (max-width: $screen-lg-max) {
-    #thread-list .thread-info {
-        .list-stats {
-            text-align: right;
-        }
-    }
-}
 
 
 
@@ -153,18 +134,22 @@
 
 .expander {
 
-    padding-top: 1em;
-    padding-bottom: 1em;
     display: block;
     vertical-align: top;
-    margin-bottom: 1em;
     
     white-space: pre-wrap;
     word-wrap: break-word;
 }
 
-.thread-email .expander.collapsed {
-    white-space: normal;
+.thread-email {
+
+	.list-stats {
+		margin-top: 1.5em;
+	}
+
+	.expander.collapsed {
+		white-space: normal;
+	}
 }
 
 //=== search result thread list ==/
