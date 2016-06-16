@@ -73,9 +73,8 @@
 $(document).ready(function() {
     $('span.expander').expander({
         slicePoint: 100,
-        /* FIXME: the \n's below don't actually work. (mizmo) */
-        userCollapseText : '&nbsp;[View Less]',
-        expandText : '&nbsp;[...]',
+        userCollapseText : '<br /><br /><a class="btn btn-default btn-xs btn-expander"><i class="fa fa-ellipsis-h" aria-label="View less"></i></a>',
+        expandText : '<br /><a class="btn btn-default btn-xs btn-expander"><i class="fa fa-ellipsis-h" aria-label="View more"></i></a>',
         beforeExpand: function() {
             $(this).removeClass("collapsed");
             $(this).addClass("expanded");
