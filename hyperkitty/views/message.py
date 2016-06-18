@@ -234,7 +234,7 @@ def new_message(request, mlist_fqdn):
 
 @login_required
 @check_mlist_private
-def delete(request, mlist_fqdn, threadid=None):
+def delete(request, mlist_fqdn, threadid=None, message_id_hash=None):
     """Delete messages. """
     if not request.user.is_staff and not request.user.is_superuser:
         return HttpResponse('You must be a staff member to delete a message',
@@ -242,12 +242,19 @@ def delete(request, mlist_fqdn, threadid=None):
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
     if threadid is not None:
         thread = get_object_or_404(Thread, thread_id=threadid)
-    else:
+        message = None
+    elif message_id_hash is not None:
+        message = get_object_or_404(Email,
+            mailinglist=mlist, message_id_hash=message_id_hash)
         thread = None
+    else:
+        raise SuspiciousOperation
 
     form_queryset = Email.objects.filter(mailinglist=mlist)
     if thread is not None:
         form_queryset = form_queryset.filter(thread=thread)
+    elif message is not None:
+        form_queryset = form_queryset.filter(pk=message.pk)
 
     if request.method == 'POST':
         form = MessageDeleteForm(request.POST)
@@ -278,15 +285,13 @@ def delete(request, mlist_fqdn, threadid=None):
                             "mlist_fqdn": mlist_fqdn,
                             "threadid": thread.thread_id}))
                     except Thread.DoesNotExist:
+                        # The thread has been deleted to in cascade, go back to
+                        # the list.
                         pass
                 return redirect(reverse('hk_list_overview', kwargs={
                     "mlist_fqdn": mlist_fqdn}))
     else:
-        if "msgid" in request.GET:
-            initial = [int(value) for value in request.GET.get_list("msgid")]
-        else:
-            initial = form_queryset.order_by(
-                "-date").values_list("pk", flat=True)
+        initial = form_queryset.values_list("pk", flat=True)
         form = MessageDeleteForm(initial={"email": initial})
         form.fields["email"].queryset = form_queryset
     context = {
@@ -302,11 +307,14 @@ def delete(request, mlist_fqdn, threadid=None):
             "cancel_url": reverse("hk_thread", kwargs={
                 "mlist_fqdn": mlist_fqdn, "threadid": thread.thread_id}),
             })
-    else:
+    elif message is not None:
         context.update({
+            "message": message,
             "form_action": reverse("hk_message_delete", kwargs={
-                "mlist_fqdn": mlist_fqdn}),
-            "cancel_url": reverse("hk_list_overview", kwargs={
-                "mlist_fqdn": mlist_fqdn}),
+                "mlist_fqdn": mlist_fqdn,
+                "message_id_hash": message.message_id_hash}),
+            "cancel_url": reverse("hk_message_index", kwargs={
+                "mlist_fqdn": mlist_fqdn,
+                "message_id_hash": message.message_id_hash}),
             })
     return render(request, "hyperkitty/message_delete.html", context)

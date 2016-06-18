@@ -77,10 +77,10 @@ urlpatterns = [
         message.vote, name='hk_message_vote'),
     url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/message/(?P<message_id_hash>\w+)/reply$',
         message.reply, name='hk_message_reply'),
+    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/message/(?P<message_id_hash>\w+)/delete$',
+        message.delete, name='hk_message_delete'),
     url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/message/new$',
         message.new_message, name='hk_message_new'),
-    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/message/delete$',
-        message.delete, name='hk_message_delete'),
 
     # Thread
     url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/thread/(?P<threadid>\w+)/$',

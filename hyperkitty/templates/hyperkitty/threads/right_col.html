@@ -65,14 +65,18 @@
     </form>
 
     {% if user.is_staff or user.is_superuser %}
-    <p><i class="fa fa-fw fa-plug"></i>
-       <a href="{% url 'hk_thread_reattach' mlist_fqdn=mlist.name threadid=thread.thread_id %}"
-          >{% trans "Reattach this thread" %}</a>
-    </p>
-    <p><i class="fa fa-fw fa-trash"></i>
-       <a href="{% url 'hk_thread_delete' mlist_fqdn=mlist.name threadid=thread.thread_id %}"
-          >{% trans "Delete this thread" %}</a>
-    </p>
+    <div class="panel panel-danger">
+        <div class="panel-body">
+            <div><i class="fa fa-fw fa-plug"></i>
+               <a href="{% url 'hk_thread_reattach' mlist_fqdn=mlist.name threadid=thread.thread_id %}"
+                  >{% trans "Reattach this thread" %}</a>
+            </div>
+            <div><i class="fa fa-fw fa-trash"></i>
+               <a href="{% url 'hk_thread_delete' mlist_fqdn=mlist.name threadid=thread.thread_id %}"
+                  >{% trans "Delete this thread" %}</a>
+            </div>
+        </div>
+    </div>
     {% endif %}
 
     <div id="tags">

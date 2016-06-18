@@ -246,6 +246,19 @@ $oddEmailColor: rgb(238, 238, 238);
     font-size: 70%;
 }
 
+
+#thread-overview-info, #message-overview-info {
+    a {
+        color: #999;
+    }
+    .fa {
+        color: #BFBFBF;
+    }
+    .postorius .fa {
+        color: black;
+    }
+}
+
 #thread-overview-info {
     #thread-date-info {
         padding-bottom: 8px;

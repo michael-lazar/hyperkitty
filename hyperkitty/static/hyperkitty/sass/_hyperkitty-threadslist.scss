@@ -90,19 +90,6 @@
 
 }
 
-
-#thread-overview-info {
-    a {
-        color: #999;
-    }
-    .fa {
-        color: #BFBFBF;
-    }
-    .postorius .fa {
-        color: black;
-    }
-}
-
 // for viewports larger than XS, add more spacing
 @media (min-width: $screen-xs-min) {
     #thread-list  {

@@ -325,8 +325,8 @@ class MessageViewsTestCase(TestCase):
         self.assertNotContains(response, "someone-else@example.com", status_code=200)
 
     def test_delete_forbidden(self):
-        msg = Email.objects.get(message_id="msg")
-        url = reverse('hk_message_delete', args=["list@example.com"])
+        url = reverse('hk_message_delete', args=("list@example.com",
+                      get_message_id_hash("msg")))
         response = self.client.post(url)
         self.assertEqual(response.status_code, 403)
 
@@ -335,7 +335,8 @@ class MessageViewsTestCase(TestCase):
         self.user.save()
         msg = Email.objects.get(message_id="msg")
         thread_id = msg.thread.pk
-        url = reverse('hk_message_delete', args=["list@example.com"])
+        url = reverse('hk_message_delete',
+                      args=("list@example.com", msg.message_id_hash))
         response = self.client.post(url, {"email": msg.pk})
         self.assertRedirects(
             response, reverse('hk_list_overview', kwargs={
@@ -361,7 +362,8 @@ class MessageViewsTestCase(TestCase):
         add_to_list("list@example.com", msg2)
         msg2 = Email.objects.get(message_id="msg2")
         thread_id = msg.thread.thread_id
-        url = reverse('hk_message_delete', args=["list@example.com"])
+        url = reverse('hk_message_delete',
+                      args=("list@example.com", msg.message_id_hash))
         response = self.client.post(url, {"email": msg.pk})
         self.assertRedirects(
             response, reverse('hk_thread', kwargs={
@@ -393,7 +395,8 @@ class MessageViewsTestCase(TestCase):
         add_to_list("list@example.com", msg2)
         msg2 = Email.objects.get(message_id="msg2")
         thread_id = msg.thread.pk
-        url = reverse('hk_message_delete', args=["list@example.com"])
+        url = reverse('hk_thread_delete',
+                      args=("list@example.com", msg.thread.thread_id))
         response = self.client.post(url, {"email": [msg.pk, msg2.pk]})
         self.assertRedirects(
             response, reverse('hk_list_overview', kwargs={
