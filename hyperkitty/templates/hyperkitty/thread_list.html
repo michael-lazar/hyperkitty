@@ -35,12 +35,12 @@
             <ul class="list-unstyled list-stats thread-list-info col-tn-6 col-xs-8">
                 {% if participants_count %}
                 <li>
-                    <i class="icomoon participant"></i>
+                    <i class="fa fa-user"></i>
                     {{ participants_count }} {% trans "participants" %}
                 </li>
                 {% endif %}
                 <li>
-                    <i class="icomoon discussion"></i>
+                    <i class="fa fa-comment"></i>
                     {{ threads.paginator.count }} {% trans "discussions" %}
                 </li>
             </ul>

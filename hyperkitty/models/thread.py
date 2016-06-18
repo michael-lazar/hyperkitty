@@ -48,9 +48,10 @@ class Thread(models.Model):
     mailinglist = models.ForeignKey("MailingList", related_name="threads")
     thread_id = models.CharField(max_length=255, db_index=True)
     date_active = models.DateTimeField(db_index=True, default=now)
-    category = models.ForeignKey("ThreadCategory", related_name="threads", null=True)
+    category = models.ForeignKey("ThreadCategory",
+        related_name="threads", null=True, on_delete=models.SET_NULL)
     starting_email = models.OneToOneField("Email",
-        related_name="started_thread", null=True)
+        related_name="started_thread", null=True, on_delete=models.SET_NULL)
 
     class Meta:
         unique_together = ("mailinglist", "thread_id")

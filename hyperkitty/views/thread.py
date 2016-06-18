@@ -344,7 +344,7 @@ def set_category(request, mlist_fqdn, threadid):
 
 @check_mlist_private
 def reattach(request, mlist_fqdn, threadid):
-    if not request.user.is_staff:
+    if not request.user.is_staff and not request.user.is_superuser:
         return HttpResponse('You must be a staff member to reattach a thread',
                             content_type="text/plain", status=403)
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)

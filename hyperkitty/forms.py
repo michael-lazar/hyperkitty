@@ -30,7 +30,7 @@ from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 
-from hyperkitty.models import Profile
+from hyperkitty.models.profile import Profile
 
 # pylint: disable=too-few-public-methods
 
@@ -169,3 +169,9 @@ class PostForm(forms.Form):
 
 class CategoryForm(forms.Form):
     category = forms.ChoiceField(label="", required=False)
+
+
+class MessageDeleteForm(forms.Form):
+    email = forms.ModelMultipleChoiceField(
+        queryset=None, widget=forms.ModelMultipleChoiceField.hidden_widget,
+        )

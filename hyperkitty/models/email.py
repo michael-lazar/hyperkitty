@@ -268,7 +268,7 @@ class Email(models.Model):
             self.save(update_fields=["parent"])
             starter = children[0]
             starter.parent = None
-            starter.save()
+            starter.save(update_fields=["parent"])
             children.all().update(parent=starter)
         else:
             children.update(parent=self.parent)
@@ -286,7 +286,7 @@ class Email(models.Model):
         else:
             if thread.starting_email is None:
                 thread.find_starting_email()
-                thread.save()
+                thread.save(update_fields=["starting_email"])
             compute_thread_order_and_depth(thread)
 
 

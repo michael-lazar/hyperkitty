@@ -246,6 +246,19 @@ $oddEmailColor: rgb(238, 238, 238);
     font-size: 70%;
 }
 
+
+#thread-overview-info, #message-overview-info {
+    a {
+        color: #999;
+    }
+    .fa {
+        color: #BFBFBF;
+    }
+    .postorius .fa {
+        color: black;
+    }
+}
+
 #thread-overview-info {
     #thread-date-info {
         padding-bottom: 8px;
@@ -261,7 +274,6 @@ $oddEmailColor: rgb(238, 238, 238);
         margin-bottom: 0;
     }
     .favorite a {
-        color: #999;
         i {
             margin-right: 0.3em;
         }
