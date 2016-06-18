@@ -203,7 +203,9 @@ def multiply(num1, num2):
 @register.assignment_tag(takes_context=True)
 def is_message_new(context, refdate):
     user = context["user"]
-    last_view = context.get("last_view")
+    if "last_view" not in context:
+        return False # viewing a single message
+    last_view = context["last_view"]
     refdate = refdate.replace(tzinfo=utc)
     return (user.is_authenticated() and
             (not last_view or refdate > last_view)
