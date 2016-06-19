@@ -48,10 +48,11 @@ def get_months(mlist):
         lambda: mlist.emails.order_by("date"
             ).values_list("date", flat=True).first(),
         None)
-    if not date_first:
-        return {}
-    archives = {}
     now = datetime.datetime.now()
+    if not date_first:
+        # No messages on this list, return the current month.
+        return {now.year: [now.month]}
+    archives = {}
     year = date_first.year
     month = date_first.month
     while year < now.year:

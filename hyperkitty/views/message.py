@@ -25,6 +25,7 @@ import urllib
 import datetime
 import json
 
+from django.db import DatabaseError
 from django.http import HttpResponse, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
@@ -266,7 +267,7 @@ def delete(request, mlist_fqdn, threadid=None, message_id_hash=None):
                 thread_id = email.thread.pk
                 try:
                     email.delete()
-                except Exception as e:
+                except DatabaseError as e:
                     form.add_error("email",
                         _("Could not delete message %(msg_id_hash)s: %(error)s")
                         % {"msg_id_hash": email.message_id_hash, "error": e})

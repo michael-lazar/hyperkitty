@@ -170,6 +170,24 @@ class MailmanSyncTestCase(TestCase):
         self.assertEqual(
             Sender.objects.filter(mailman_id="already-set").count(), 10)
 
+    def test_get_new_lists_from_mailman(self):
+        mlists = [
+            mailman.FakeMMList("list-1@example.com"),
+            mailman.FakeMMList("list-2@example.com"),
+            mailman.FakeMMList("list-3@example.com"),
+            ]
+        mlists[1].settings["archive_policy"] = "never"
+        self.mailman_client.lists = mlists
+        MailingList.objects.create(name="list-1@example.com")
+        mailman.get_new_lists_from_mailman()
+        # Only the third list should have been created.
+        self.assertFalse(
+            MailingList.objects.filter(name="list-2@example.com").exists())
+        self.assertTrue(
+            MailingList.objects.filter(name="list-3@example.com").exists())
+        # Calls to MailingList.update_from_mailman()
+        self.assertEqual(self.mailman_client.get_list.call_count, 1)
+
 
 @override_settings(CACHES = {
     'default': {'BACKEND': 'django.core.cache.backends.dummy.DummyCache'}
