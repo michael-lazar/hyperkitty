@@ -32,7 +32,7 @@ from hyperkitty.lib.mailman import get_new_lists_from_mailman
 
 class Job(BaseJob):
     help = "Import new lists from Mailman"
-    when = "minutely"
+    when = "hourly"
 
     def execute(self):
         get_new_lists_from_mailman()
