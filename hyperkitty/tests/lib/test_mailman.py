@@ -172,21 +172,25 @@ class MailmanSyncTestCase(TestCase):
 
     def test_get_new_lists_from_mailman(self):
         mlists = [
-            mailman.FakeMMList("list-1@example.com"),
-            mailman.FakeMMList("list-2@example.com"),
-            mailman.FakeMMList("list-3@example.com"),
+            mailman.FakeMMList("list-%02d@example.com" % i)
+            for i in range(1, 23)
             ]
         mlists[1].settings["archive_policy"] = "never"
-        self.mailman_client.lists = mlists
-        MailingList.objects.create(name="list-1@example.com")
+        def _make_page(count, page):
+            return mailman.FakeMMPage(mlists, count, page)
+        self.mailman_client.get_list_page.side_effect = _make_page
+        MailingList.objects.create(name="list-01@example.com")
         mailman.get_new_lists_from_mailman()
+        self.assertEqual(self.mailman_client.get_list_page.call_count, 3)
         # Only the third list should have been created.
         self.assertFalse(
-            MailingList.objects.filter(name="list-2@example.com").exists())
-        self.assertTrue(
-            MailingList.objects.filter(name="list-3@example.com").exists())
+            MailingList.objects.filter(name="list-02@example.com").exists())
+        for i in range(3, 23):
+            self.assertTrue(
+                MailingList.objects.filter(
+                    name="list-%02d@example.com" % i).exists())
         # Calls to MailingList.update_from_mailman()
-        self.assertEqual(self.mailman_client.get_list.call_count, 1)
+        self.assertEqual(self.mailman_client.get_list.call_count, 20)
 
 
 @override_settings(CACHES = {

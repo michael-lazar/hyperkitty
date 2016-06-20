@@ -104,24 +104,46 @@ class FakeMMMember:
         self.list_id = list_id
         self.address = address
 
+class FakeMMPage():
+    def __init__(self, entries=[], count=20, page=1):
+        self.entries = entries
+        self._count = count
+        self._page = page
+    def __iter__(self):
+        first = (self._page - 1) * self._count
+        last = self._page * self._count
+        for entry in self.entries[first:last]:
+            yield entry
+    @property
+    def has_previous(self):
+        return self._page > 1
+    @property
+    def has_next(self):
+        return self._count * self._page < len(self.entries)
+
 
 def get_new_lists_from_mailman():
     from hyperkitty.models import MailingList
     mmclient = get_mailman_client()
-    try:
-        mm_lists = mmclient.lists
-    except MailmanConnectionError:
-        return
-    except HTTPError:
-        return # can't update at this time
-    for mm_list in mm_lists:
-        if MailingList.objects.filter(name=mm_list.fqdn_listname).exists():
-            continue
-        if mm_list.settings["archive_policy"] == "never":
-            continue # Should we display those lists anyway?
-        logger.info("Imported the new list %s from Mailman", mm_list.fqdn_listname)
-        mlist = MailingList.objects.create(name=mm_list.fqdn_listname)
-        mlist.update_from_mailman()
+    page_num = 0
+    while page_num < 10000: # Just for security
+        page_num += 1
+        try:
+            mlist_page = mmclient.get_list_page(count=10, page=page_num)
+        except MailmanConnectionError:
+            break
+        except HTTPError:
+            break # can't update at this time
+        for mm_list in mlist_page:
+            if MailingList.objects.filter(name=mm_list.fqdn_listname).exists():
+                continue
+            if mm_list.settings["archive_policy"] == "never":
+                continue # Should we display those lists anyway?
+            logger.info("Imported the new list %s from Mailman", mm_list.fqdn_listname)
+            mlist = MailingList.objects.create(name=mm_list.fqdn_listname)
+            mlist.update_from_mailman()
+        if not mlist_page.has_next:
+            break
 
 def sync_with_mailman(overwrite=False):
     from hyperkitty.models import MailingList, Sender
