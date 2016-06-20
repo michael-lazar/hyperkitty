@@ -15,21 +15,29 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'change-this-on-your-production-server'
+SECRET_KEY = 'you-must-absolutely-change-this!!!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 ADMINS = (
-     ('HyperKitty Admin', 'root@localhost'),
+     ('Mailman Admin', 'root@your-domain.org'),
 )
+SERVER_EMAIL = 'root@your-domain.org'
+
+SITE_ID = 1
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.8/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "lists.your-domain.org",
+    "localhost", # Archiving API from Mailman
+]
 # And for BrowserID too, see
 # http://django-browserid.rtfd.org/page/user/settings.html#django.conf.settings.BROWSERID_AUDIENCES
-BROWSERID_AUDIENCES = [ "http://localhost", "http://localhost:8000" ]
+BROWSERID_AUDIENCES = [
+    "https://lists.your-domain.org",
+]
 
 # Mailman API credentials
 MAILMAN_REST_API_URL = 'http://localhost:8001'
@@ -42,6 +50,7 @@ MAILMAN_ARCHIVER_FROM = ('127.0.0.1', '::1')
 
 INSTALLED_APPS = (
     'hyperkitty',
+    'postorius',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -49,7 +58,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    #'django.contrib.sites',
+    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'social.apps.django_app.default',
@@ -76,6 +85,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
     #'hyperkitty.middleware.SSLRedirect',
     'hyperkitty.middleware.TimezoneMiddleware',
+    'postorius.middleware.PostoriusMiddleware',
 )
 
 ROOT_URLCONF = 'urls'
@@ -99,6 +109,7 @@ TEMPLATES = [
                 'social.apps.django_app.context_processors.backends',
                 'social.apps.django_app.context_processors.login_redirect',
                 'hyperkitty.context_processors.common',
+                'postorius.context_processors.postorius',
             ],
         },
     },
@@ -112,12 +123,11 @@ WSGI_APPLICATION = 'wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(BASE_DIR, 'hyperkitty.db'),  # DB name or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
-        'USER': 'hyperkitty',
-        'PASSWORD': 'hkpass',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'database_name',
+        'USER': 'database_user',
+        'PASSWORD': 'database_password',
+        'HOST': 'localhost',
         'PORT': '',                      # Set to empty string for default.
     }
 }
@@ -196,6 +206,9 @@ BROWSERID_USERNAME_ALGO = username
 BROWSERID_VERIFY_CLASS = "django_browserid.views.Verify"
 
 
+DEFAULT_FROM_EMAIL = "admin@you-domain.org"
+
+
 # Compatibility with Bootstrap 3
 from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
@@ -267,7 +280,7 @@ COMPRESS_PRECOMPILERS = (
    ('text/x-scss', 'sassc -t compressed {infile} {outfile}'),
    ('text/x-sass', 'sassc -t compressed {infile} {outfile}'),
 )
-#COMPRESS_OFFLINE = True
+COMPRESS_OFFLINE = True
 # needed for debug mode
 #INTERNAL_IPS = ('127.0.0.1',)
 
@@ -277,7 +290,7 @@ COMPRESS_PRECOMPILERS = (
 #
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'ENGINE': 'xapian_backend.XapianEngine',
         'PATH': os.path.join(BASE_DIR, "fulltext_index"),
     },
 }
@@ -306,7 +319,7 @@ LOGGING = {
             'level': 'INFO',
             #'class': 'logging.handlers.RotatingFileHandler',
             'class': 'logging.handlers.WatchedFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'hyperkitty.log'),
+            'filename': '/var/log/mailman-webui/mailman-webui.log',
             'formatter': 'verbose',
         },
     },
@@ -326,6 +339,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'postorius': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     },
     'formatters': {
         'verbose': {
@@ -340,6 +358,16 @@ LOGGING = {
     #    'level': 'INFO',
     #},
 }
+
+
+# Cache: use the local memcached server
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
+
 
 #
 # HyperKitty-specific
