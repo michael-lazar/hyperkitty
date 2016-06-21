@@ -66,7 +66,8 @@ INSTALLED_APPS = (
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.persona',
+    'hyperkitty.lib.fedora',
+    'allauth.socialaccount.providers.openid',
     'allauth.socialaccount.providers.github',
     'allauth.socialaccount.providers.gitlab',
     'allauth.socialaccount.providers.google',
@@ -207,9 +208,9 @@ STATICFILES_FINDERS = (
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 
-LOGIN_URL = 'hk_user_login'
+LOGIN_URL = 'account_login'
 LOGIN_REDIRECT_URL = 'hk_root'
-LOGOUT_URL = 'hk_user_logout'
+LOGOUT_URL = 'account_logout'
 
 
 # If you enable internal authentication, this is the address that the emails
