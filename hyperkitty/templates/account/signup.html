@@ -11,7 +11,7 @@
 <p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>
 
 <form class="signup form-horizontal" id="signup_form" method="post" action="{% url 'account_signup' %}">
-  {% render_form_horizontal form 3 4 %}
+  {% bootstrap_form_horizontal form 3 4 %}
   {% if redirect_field_value %}
   <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
   {% endif %}
