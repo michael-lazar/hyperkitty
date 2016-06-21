@@ -38,6 +38,14 @@ def is_checkbox(field):
         'CheckboxInput', 'CheckboxSelectMultiple')
 
 
+@register.inclusion_tag('hyperkitty/fragments/bootstrap/form.html',
+                        takes_context=True)
+def bootstrap_form(context, form, button=None):
+    return dict(
+        form=form,
+        button=button,
+        )
+
 @register.inclusion_tag('hyperkitty/fragments/bootstrap/form-horizontal.html',
                         takes_context=True)
 def bootstrap_form_horizontal(context, form, size_left=2, size_right=8,
