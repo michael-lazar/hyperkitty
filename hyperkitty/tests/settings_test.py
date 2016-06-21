@@ -63,7 +63,6 @@ INSTALLED_APPS = (
     'social.apps.django_app.default',
     'rest_framework',
     'django_gravatar',
-    'crispy_forms',
     'paintstore',
     'compressor',
     'django_browserid',
@@ -213,10 +212,6 @@ from django.contrib.messages import constants as messages  # flake8: noqa
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
-
-# Django Crispy Forms
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
-CRISPY_FAIL_SILENTLY = not DEBUG
 
 
 #

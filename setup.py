@@ -25,7 +25,6 @@ REQUIRES = [
     "django_mailman3>=1.0.0",
     "django-gravatar2>=1.0.6",
     "djangorestframework>=3.0.0",
-    "django-crispy-forms>=1.4.0",
     "rjsmin>=1.0.6",
     "cssmin>=0.2.0",
     "robot-detection>=0.3",

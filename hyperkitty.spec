@@ -18,7 +18,6 @@ BuildRequires:  python-sphinx
 BuildRequires:  python-django-gravatar2
 BuildRequires:  python-django-rest-framework >= 2.2.0
 BuildRequires:  python-social-auth
-BuildRequires:  django-crispy-forms
 BuildRequires:  python-django-compressor
 BuildRequires:  python-rjsmin
 BuildRequires:  sassc
@@ -47,7 +46,6 @@ BuildRequires:  hardlink
 Requires:       python-django-gravatar2
 Requires:       python-social-auth
 Requires:       python-django-rest-framework >= 2.2.0
-Requires:       django-crispy-forms
 Requires:       python-django-compressor
 Requires:       python-rjsmin
 Requires:       sassc

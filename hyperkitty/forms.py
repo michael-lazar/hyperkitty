@@ -25,8 +25,6 @@ from __future__ import absolute_import
 from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout
 
 from hyperkitty.models.profile import Profile
 
@@ -122,11 +120,6 @@ class PostForm(forms.Form):
     # attachment = forms.FileField(required=False, label="",
     #                              widget=AttachmentFileInput)
 
-    def __init__(self, *args, **kwargs):
-        super(PostForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_tag = False
-        self.helper.layout = Layout('subject', 'message')
 
 
 class CategoryForm(forms.Form):

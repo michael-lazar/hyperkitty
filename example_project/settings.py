@@ -58,7 +58,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'django_gravatar',
-    'crispy_forms',
     'paintstore',
     'compressor',
     'haystack',
@@ -231,10 +230,6 @@ from django.contrib.messages import constants as messages  # flake8: noqa
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
-
-# Django Crispy Forms
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
-CRISPY_FAIL_SILENTLY = not DEBUG
 
 
 #
