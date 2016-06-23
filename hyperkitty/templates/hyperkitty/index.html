@@ -20,28 +20,40 @@
                {% if sort_mode == "popular" %}
                <span class="active">{% trans 'Most popular' %}</span>
                {% else %}
-                <a href="{% url 'hk_root' %}?sort=popular" title="{% trans 'Sort by number of recent participants' %}">{% trans 'Most popular' %}</a>
+                <a href="{% url 'hk_root' %}?sort=popular"
+                   data-toggle="tooltip" data-placement="bottom"
+                   title="{% trans 'Sort by number of recent participants' %}"
+                   >{% trans 'Most popular' %}</a>
                {% endif %}
             </li>
             <li>
                {% if sort_mode == "active" %}
                <span class="active">{% trans 'Most active' %}</span>
                {% else %}
-               <a href="{% url 'hk_root' %}?sort=active" title="{% trans 'Sort by number of recent discussions' %}">{% trans 'Most active' %}</a>
+               <a href="{% url 'hk_root' %}?sort=active"
+                  data-toggle="tooltip" data-placement="bottom"
+                  title="{% trans 'Sort by number of recent discussions' %}"
+                  >{% trans 'Most active' %}</a>
                {% endif %}
             </li>
             <li>
                {% if sort_mode == "name" %}
                <span class="active">{% trans 'By name' %}</span>
                {% else %}
-               <a href="{% url 'hk_root' %}?sort=name" title="{% trans 'Sort alphabetically' %}">{% trans 'By name' %}</a>
+               <a href="{% url 'hk_root' %}?sort=name"
+                  data-toggle="tooltip" data-placement="bottom"
+                  title="{% trans 'Sort alphabetically' %}"
+                  >{% trans 'By name' %}</a>
                {% endif %}
             </li>
             <li>
                {% if sort_mode == "creation" %}
                <span class="active">{% trans 'Newest' %}</span>
                {% else %}
-                <a href="{% url 'hk_root' %}?sort=creation" title="{% trans 'Sort by list creation date' %}">{% trans 'Newest' %}</a>
+                <a href="{% url 'hk_root' %}?sort=creation"
+                   data-toggle="tooltip" data-placement="bottom"
+                   title="{% trans 'Sort by list creation date' %}"
+                   >{% trans 'Newest' %}</a>
                {% endif %}
             </li>
         </ul>
@@ -76,12 +88,16 @@
             {% if all_lists %}
             <p class="hide-switches">
                 <label><input type="checkbox" value="inactive" checked="checked" />{% trans "Hide inactive" %}</label>
-                <label><input type="checkbox" value="private"
-                        {% if sort_mode == "active" or sort_mode == "popular" %}
-                        checked="checked" disabled="disabled"
-                        title="{% trans 'Private lists are always hidden in this sort mode' %}"
-                        {% endif %}
-                        />{% trans "Hide private" %}</label>
+                <label
+                    {% if sort_mode == "active" or sort_mode == "popular" %}
+                    data-toggle="tooltip" data-placement="bottom"
+                    title="{% trans 'Private lists are always hidden in this sort mode' %}"
+                    {% endif %}
+                    ><input type="checkbox" value="private"
+                            {% if sort_mode == "active" or sort_mode == "popular" %}
+                            checked="checked" disabled="disabled"
+                            {% endif %}
+                            />{% trans "Hide private" %}</label>
             </p>
             {% endif %}
     </div>
