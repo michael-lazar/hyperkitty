@@ -27,9 +27,19 @@ ADMINS = (
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.8/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
+    "localhost", # Archiving API from Mailman, keep it.
+    "lists.your-domain.org",
+    # Add here all production URLs you may have.
+]
+
 # And for BrowserID too, see
 # http://django-browserid.rtfd.org/page/user/settings.html#django.conf.settings.BROWSERID_AUDIENCES
-BROWSERID_AUDIENCES = [ "http://localhost", "http://localhost:8000" ]
+BROWSERID_AUDIENCES = [
+    "http://localhost",               # Only useful in debug mode
+    "http://localhost:8000",          # Only useful in debug mode
+    "https://lists.your-domain.org",  # Your production URL
+    # Add here all production URLs you may have.
+]
 
 # Mailman API credentials
 MAILMAN_REST_API_URL = 'http://localhost:8001'
@@ -120,6 +130,14 @@ DATABASES = {
         'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',                      # Set to empty string for default.
     }
+    # Example for PostgreSQL (recommanded for production):
+    #'default': {
+    #    'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #    'NAME': 'database_name',
+    #    'USER': 'database_user',
+    #    'PASSWORD': 'database_password',
+    #    'HOST': 'localhost',
+    #}
 }
 
 
@@ -196,6 +214,19 @@ BROWSERID_USERNAME_ALGO = username
 BROWSERID_VERIFY_CLASS = "django_browserid.views.Verify"
 
 
+# If you enable internal authentication, this is the address that the emails
+# will appear to be coming from. Make sure you set a valid domain name,
+# otherwise the emails may get rejected.
+# https://docs.djangoproject.com/en/1.8/ref/settings/#default-from-email
+#DEFAULT_FROM_EMAIL = "mailing-lists@you-domain.org"
+
+# If you enable email reporting for error messages, this is where those emails
+# will appear to be coming from. Make sure you set a valid domain name,
+# otherwise the emails may get rejected.
+# https://docs.djangoproject.com/en/1.8/ref/settings/#std:setting-SERVER_EMAIL
+#SERVER_EMAIL = 'root@your-domain.org'
+
+
 # Compatibility with Bootstrap 3
 from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
@@ -267,8 +298,14 @@ COMPRESS_PRECOMPILERS = (
    ('text/x-scss', 'sassc -t compressed {infile} {outfile}'),
    ('text/x-sass', 'sassc -t compressed {infile} {outfile}'),
 )
+# On a production setup, setting COMPRESS_OFFLINE to True will bring a
+# significant performance improvement, as CSS files will not need to be
+# recompiled on each requests. It means running an additional "compress"
+# management command after each code upgrade.
+# http://django-compressor.readthedocs.io/en/latest/usage/#offline-compression
 #COMPRESS_OFFLINE = True
-# needed for debug mode
+
+# Needed for debug mode
 #INTERNAL_IPS = ('127.0.0.1',)
 
 
@@ -279,6 +316,11 @@ HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
         'PATH': os.path.join(BASE_DIR, "fulltext_index"),
+        # You can also use the Xapian engine, it's faster and more accurate,
+        # but requires another library.
+        # http://django-haystack.readthedocs.io/en/v2.4.1/installing_search_engines.html#xapian
+        # Example configuration for Xapian:
+        #'ENGINE': 'xapian_backend.XapianEngine',
     },
 }
 
@@ -340,6 +382,17 @@ LOGGING = {
     #    'level': 'INFO',
     #},
 }
+
+
+# Using the cache infrastructure can significantly improve performance on a
+# production setup. This is an example with a local Memcached server.
+#CACHES = {
+#    'default': {
+#        'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
+#        'LOCATION': '127.0.0.1:11211',
+#    }
+#}
+
 
 #
 # HyperKitty-specific
