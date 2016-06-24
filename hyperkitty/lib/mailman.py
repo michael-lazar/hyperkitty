@@ -105,8 +105,8 @@ class FakeMMMember:
         self.address = address
 
 class FakeMMPage():
-    def __init__(self, entries=[], count=20, page=1):
-        self.entries = entries
+    def __init__(self, entries=None, count=20, page=1):
+        self.entries = entries or []
         self._count = count
         self._page = page
     def __iter__(self):
