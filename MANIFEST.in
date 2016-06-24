@@ -14,3 +14,4 @@ exclude example_project/hyperkitty.db
 prune example_project/static
 prune example_project/fulltext_index
 prune example_project/logs
+prune example_project/emails

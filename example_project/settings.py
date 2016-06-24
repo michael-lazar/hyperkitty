@@ -394,6 +394,14 @@ LOGGING = {
 #}
 
 
+# When DEBUG is True, don't actually send emails to the SMTP server, just store
+# them in a directory. This way you won't accidentally spam your mailing-lists
+# while you're fiddling with the code.
+if DEBUG == True:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'emails')
+
+
 #
 # HyperKitty-specific
 #
