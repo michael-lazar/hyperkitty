@@ -166,9 +166,9 @@ def reply(request, mlist_fqdn, message_id_hash):
     try:
         subscribed_now = post_to_list(
             request, mlist, subject, form.cleaned_data["message"], headers)
-    except PostingFailed, e:
+    except PostingFailed as e:
         return HttpResponse(str(e), content_type="text/plain", status=500)
-    except ModeratedListException, e:
+    except ModeratedListException as e:
         return HttpResponse(str(e), content_type="text/plain", status=403)
 
     # TODO: if newthread, don't insert the temp mail in the thread, redirect to
@@ -213,9 +213,9 @@ def new_message(request, mlist_fqdn):
             try:
                 post_to_list(request, mlist, form.cleaned_data['subject'],
                              form.cleaned_data["message"], headers)
-            except PostingFailed, e:
+            except PostingFailed as e:
                 messages.error(request, str(e))
-            except ModeratedListException, e:
+            except ModeratedListException as e:
                 return HttpResponse(str(e), content_type="text/plain", status=403)
             else:
                 messages.success(request, "The message has been sent successfully.")

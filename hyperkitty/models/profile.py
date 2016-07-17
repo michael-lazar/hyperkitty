@@ -23,7 +23,7 @@
 
 from __future__ import absolute_import, unicode_literals, print_function
 
-from urllib2 import HTTPError
+from six.moves.urllib.error import HTTPError
 
 
 from django.conf import settings
