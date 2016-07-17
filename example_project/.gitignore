@@ -2,5 +2,6 @@ hyperkitty.db
 static
 settings_local.py
 fulltext_index
-logs/*.log
+hyperkitty.log
 emails
+env
