@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
+# Copyright (C) 1998-2016 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
 #
@@ -25,6 +25,5 @@ from django.conf.urls import include, url
 
 urlpatterns = [
     url(r'', include('hyperkitty.urls')),
-    # BrowserID
-    url(r'', include('django_browserid.urls')),
+    url(r'^accounts/', include('allauth.urls')),
 ]
