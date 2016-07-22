@@ -26,7 +26,7 @@ ADMINS = (
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.8/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
     "localhost", # Archiving API from Mailman, keep it.
     "lists.your-domain.org",
     # Add here all production URLs you may have.
