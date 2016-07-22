@@ -216,12 +216,16 @@ class AddUserToMailmanTestCase(TestCase):
             self.mm_addresses[email] = mm_addr
         return mm_addr
 
-    def test_addresses_verified(self):
+    def test_primary_address_unverified(self):
         self.mailman_client.get_address.side_effect = self._get_or_add_address
-        self.mm_user.add_address.side_effect = self._get_or_add_address
-        details = {"secondary_email": "secondary@example.com"}
-        mailman.add_user_to_mailman(self.user, details)
+        self.mm_user.addresses = ["test@example.com"]
+        mailman.add_address_to_mailman_user(self.user, "test@example.com")
         self.mm_addresses['test@example.com'].verify.assert_called_with()
+        self.assertFalse(self.mm_user.add_address.called)
+
+    def test_addresses_verified(self):
+        self.mm_user.add_address.side_effect = self._get_or_add_address
+        mailman.add_address_to_mailman_user(self.user, "secondary@example.com")
         self.mm_user.add_address.assert_called_with(
             "secondary@example.com", absorb_existing=True)
         self.mm_addresses['secondary@example.com'].verify.assert_called_with()
@@ -234,8 +238,8 @@ class AddUserToMailmanTestCase(TestCase):
         secondary_address.verified_on = None
         secondary_address.__unicode__ = lambda self: self.email
         self.mm_user.addresses.append(secondary_address)
-        details = {"secondary_email": "secondary@example.com"}
-        mailman.add_user_to_mailman(self.user, details)
+        self.mm_addresses["secondary@example.com"] = secondary_address
+        mailman.add_address_to_mailman_user(self.user, "secondary@example.com")
         # The secondary address must only have been verified.
         self.assertFalse(self.mm_user.add_address.called)
         secondary_address.verify.assert_called_with()
