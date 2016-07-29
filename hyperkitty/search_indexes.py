@@ -36,6 +36,7 @@ class EmailIndex(indexes.SearchIndex, indexes.Indexable):
                                 use_template=True)
     date = indexes.DateTimeField(model_attr='date')
     sender = indexes.CharField(model_attr='sender__name', boost=1.125)
+    tags = indexes.CharField(model_attr='thread__tags', boost=1.25)
     archived_date = indexes.DateTimeField(model_attr='archived_date')
 
     def get_model(self):
