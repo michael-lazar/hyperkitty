@@ -23,7 +23,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from email.message import Message
 
-import haystack
+#import haystack
+from django.apps import apps
 from haystack.query import SearchQuerySet
 
 from hyperkitty.models import Email
@@ -36,11 +37,13 @@ class SearchIndexTestCase(SearchEnabledTestCase):
 
     def setUp(self):
         # Disable automatic update
-        haystack.signal_processor.teardown()
+        apps.get_app_config('haystack').signal_processor.teardown()
+        #haystack.signal_processor.teardown()
 
     def tearDown(self):
         # Restore automatic update
-        haystack.signal_processor.setup()
+        apps.get_app_config('haystack').signal_processor.setup()
+        #haystack.signal_processor.setup()
 
     def _add_message(self, msgid="msg"):
         msg = Message()
