@@ -190,23 +190,28 @@ class DbImporter(object):
 
 
 class Command(BaseCommand):
-    args = "-l <list_address> <mbox> [mbox ...]"
     help = "Imports the specified mailbox archive"
-    option_list = BaseCommand.option_list + (
-        make_option('-l', '--list-address',
-            help="the full list address the mailbox will be imported to"),
-        make_option('--no-sync-mailman',
+
+    def add_arguments(self, parser):
+        parser.add_argument('mbox', nargs='+')
+        parser.add_argument('--delete',
+            action='store_true',
+            dest='delete',
+            default=False,
+            help='Delete poll instead of closing it')
+        parser.add_argument('-l', '--list-address',
+            help="the full list address the mailbox will be imported to")
+        parser.add_argument('--no-sync-mailman',
             action='store_true', default=False,
             help="do not sync properties with Mailman (faster, useful "
-                 "for batch imports)"),
-        make_option('--since',
-            help="only import emails later than this date"),
-        make_option('--ignore-mtime',
+                 "for batch imports)")
+        parser.add_argument('--since',
+            help="only import emails later than this date")
+        parser.add_argument('--ignore-mtime',
             action='store_true', default=False,
-            help="do not check mbox mtimes (slower)"),
-        )
+            help="do not check mbox mtimes (slower)")
 
-    def _check_options(self, args, options):
+    def _check_options(self, options):
         if not options.get("list_address"):
             raise CommandError(
                 "The list address must be given on the command-line.")
@@ -214,9 +219,9 @@ class Command(BaseCommand):
             raise CommandError(
                 "The list address must be fully-qualified, including "
                 "the '@' symbol and the domain name.")
-        if not args:
+        if not options.get("mbox"):
             raise CommandError("No mbox file selected.")
-        for mbfile in args:
+        for mbfile in options["mbox"]:
             if not os.path.exists(mbfile):
                 raise CommandError("No such file: %s" % mbfile)
         options["verbosity"] = int(options.get("verbosity", "1"))
@@ -230,7 +235,7 @@ class Command(BaseCommand):
                 raise CommandError("invalid value for '--since': %s" % e)
 
     def handle(self, *args, **options):
-        self._check_options(args, options)
+        self._check_options(options)
         setup_logging(self, options["verbosity"])
         # main
         list_address = options["list_address"].lower()
@@ -250,7 +255,7 @@ class Command(BaseCommand):
                              % options["since"])
         importer = DbImporter(list_address, options, self.stdout, self.stderr)
         # disable mailman client for now
-        for mbfile in args:
+        for mbfile in options["mbox"]:
             if options["verbosity"] >= 1:
                 self.stdout.write("Importing from mbox file %s to %s"
                                   % (mbfile, list_address))

@@ -13,8 +13,9 @@ from traceback import format_exc
 
 from mock import patch, Mock
 from django.conf import settings
-from django.utils.timezone import utc
+from django.core.management import call_command
 from django.db import DEFAULT_DB_ALIAS
+from django.utils.timezone import utc
 
 from hyperkitty.management.commands.hyperkitty_import import Command
 from hyperkitty.lib.incoming import add_to_list
@@ -56,7 +57,8 @@ class CommandTestCase(TestCase):
         with patch("hyperkitty.management.commands.hyperkitty_import.compute_thread_order_and_depth") as mock_compute:
             kw = self.common_cmd_args.copy()
             kw["stdout"] = kw["stderr"] = output
-            self.command.execute(os.path.join(self.tmpdir, "test.mbox"), **kw)
+            call_command('hyperkitty_import',
+                         os.path.join(self.tmpdir, "test.mbox"), **kw)
         #print(mock_compute.call_args_list)
         self.assertEqual(mock_compute.call_count, 1)
         thread = mock_compute.call_args[0][0]
@@ -83,7 +85,8 @@ class CommandTestCase(TestCase):
             DbImporterMock.side_effect = lambda *a, **kw: instance
             kw = self.common_cmd_args.copy()
             kw["stdout"] = kw["stderr"] = output
-            self.command.execute(os.path.join(self.tmpdir, "test.mbox"), **kw)
+            call_command('hyperkitty_import',
+                         os.path.join(self.tmpdir, "test.mbox"), **kw)
         self.assertEqual(DbImporterMock.call_args[0][1]["since"],
                          datetime(2015, 1, 1, 12, 0, tzinfo=utc))
 
@@ -106,7 +109,8 @@ class CommandTestCase(TestCase):
             kw = self.common_cmd_args.copy()
             kw["stdout"] = kw["stderr"] = output
             kw["since"] = "2010-01-01 00:00:00 UTC"
-            self.command.execute(os.path.join(self.tmpdir, "test.mbox"), **kw)
+            call_command('hyperkitty_import',
+                         os.path.join(self.tmpdir, "test.mbox"), **kw)
         self.assertEqual(DbImporterMock.call_args[0][1]["since"],
                          datetime(2010, 1, 1, tzinfo=utc))
 
@@ -123,7 +127,8 @@ class CommandTestCase(TestCase):
         kw = self.common_cmd_args.copy()
         kw["stdout"] = kw["stderr"] = output
         kw["list_address"] = "LIST@example.com"
-        self.command.execute(os.path.join(self.tmpdir, "test.mbox"), **kw)
+        call_command('hyperkitty_import',
+                     os.path.join(self.tmpdir, "test.mbox"), **kw)
         self.assertEqual(MailingList.objects.count(), 1)
         ml = MailingList.objects.first()
         self.assertEqual(ml.name, "list@example.com")
@@ -148,7 +153,8 @@ class CommandTestCase(TestCase):
         output = StringIO()
         kw = self.common_cmd_args.copy()
         kw["stdout"] = kw["stderr"] = output
-        self.command.execute(os.path.join(self.tmpdir, "test.mbox"), **kw)
+        call_command('hyperkitty_import',
+                     os.path.join(self.tmpdir, "test.mbox"), **kw)
         # Message 1 must have been rejected, but no crash
         self.assertIn("Message wrong.encoding failed to import, skipping",
                       output.getvalue())
@@ -179,7 +185,8 @@ class CommandTestCase(TestCase):
         kw = self.common_cmd_args.copy()
         kw["stdout"] = kw["stderr"] = output
         try:
-            self.command.execute(os.path.join(self.tmpdir, "test.mbox"), **kw)
+            call_command('hyperkitty_import',
+                         os.path.join(self.tmpdir, "test.mbox"), **kw)
         except ValueError as e:
             self.fail(format_exc(e))
         # Message must have been accepted
@@ -200,7 +207,8 @@ class CommandTestCase(TestCase):
         output = StringIO()
         kw = self.common_cmd_args.copy()
         kw["stdout"] = kw["stderr"] = output
-        self.command.execute(os.path.join(self.tmpdir, "test.mbox"), **kw)
+        call_command('hyperkitty_import',
+                     os.path.join(self.tmpdir, "test.mbox"), **kw)
         #print(output.getvalue())
         # Message must have been accepted
         self.assertEqual(MailingList.objects.count(), 1)
@@ -225,7 +233,8 @@ class CommandTestCase(TestCase):
         with patch("hyperkitty.management.commands.hyperkitty_import.compute_thread_order_and_depth") as mock_compute:
             kw = self.common_cmd_args.copy()
             kw["stdout"] = kw["stderr"] = output
-            self.command.execute(os.path.join(self.tmpdir, "test.mbox"), **kw)
+            call_command('hyperkitty_import',
+                         os.path.join(self.tmpdir, "test.mbox"), **kw)
         #print(mock_compute.call_args_list)
         called_thread_ids = set([
             call[0][0].starting_email.message_id
