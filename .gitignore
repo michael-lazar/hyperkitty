@@ -1,7 +1,6 @@
 *pyc
 *.swp
 *~
-logs
 *.egg-info
 doc/_build
 doc/_static
