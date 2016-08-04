@@ -29,7 +29,6 @@ import mailbox
 import os
 import re
 from datetime import datetime
-from optparse import make_option
 from email.utils import unquote
 from traceback import print_exc
 from math import floor
