@@ -28,7 +28,6 @@ with open('hyperkitty/__init__.py') as fp:
 # Requirements
 REQUIRES = [
     "Django>=1.8",
-    "Django<1.10",
     "django-gravatar2>=1.0.6",
     "python-social-auth>=0.2.3",
     "djangorestframework>=3.0.0",
