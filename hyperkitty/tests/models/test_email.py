@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2013-2016 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -18,8 +19,6 @@
 #
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
-
-# pylint: disable=unnecessary-lambda
 
 from __future__ import absolute_import, print_function, unicode_literals
 
@@ -49,7 +48,8 @@ class EmailTestCase(TestCase):
         self.assertTrue(msg.is_multipart())
         payload = msg.get_payload()
         self.assertEqual(len(payload), 1)
-        self.assertEqual(payload[0].get_payload(decode=True),
+        self.assertEqual(
+            payload[0].get_payload(decode=True),
             "Dummy message with email(a)address.com")
 
     def test_as_message_unicode(self):
@@ -78,7 +78,8 @@ class EmailTestCase(TestCase):
         msg_in["From"] = "dummy@example.com"
         msg_in["Message-ID"] = "<msg>"
         msg_in.attach(MIMEText("Dummy message"))
-        msg_in.attach(MIMEText("<html><body>Dummy message</body></html>", _subtype="html"))
+        msg_in.attach(MIMEText("<html><body>Dummy message</body></html>",
+                               _subtype="html"))
         add_to_list("list@example.com", msg_in)
         email = Email.objects.get(message_id="msg")
         msg = email.as_message()
@@ -94,7 +95,8 @@ class EmailTestCase(TestCase):
         # here for testing.
         expected_ext = guess_all_extensions("text/html", strict=False)[0]
         self.assertEqual(payload[1].get_content_type(), "text/html")
-        self.assertEqual(payload[1]["Content-Disposition"],
+        self.assertEqual(
+            payload[1]["Content-Disposition"],
             'attachment; filename="attachment%s"' % expected_ext)
         self.assertEqual(
             payload[1].get_payload(decode=True),
@@ -113,7 +115,6 @@ class EmailTestCase(TestCase):
 
 
 class EmailSetParentTestCase(TestCase):
-    # pylint: disable=unbalanced-tuple-unpacking
 
     def _create_tree(self, tree):
         emails = []
@@ -139,8 +140,8 @@ class EmailSetParentTestCase(TestCase):
         self.assertEqual(thread.id, email1.thread_id)
         self.assertEqual(thread.emails.count(), 2)
         self.assertEqual(
-            list(thread.emails.order_by("thread_order")
-                .values_list("message_id", flat=True)),
+            list(thread.emails.order_by(
+                "thread_order").values_list("message_id", flat=True)),
             ["msg1", "msg2"])
         self.assertEqual(thread.date_active, email2.date)
 
@@ -160,9 +161,9 @@ class EmailSetParentTestCase(TestCase):
         for msgid in tree:
             email = Email.objects.get(message_id=msgid)
             self.assertEqual(email.thread_id, email1.thread_id)
-        self.assertEqual(tree,
-            list(thread.emails.order_by("thread_order")
-                .values_list("message_id", flat=True)))
+        self.assertEqual(
+            tree, list(thread.emails.order_by(
+                "thread_order").values_list("message_id", flat=True)))
 
     def test_switch(self):
         email1, email2 = self._create_tree(["msg1", "msg1.1"])
@@ -174,8 +175,8 @@ class EmailSetParentTestCase(TestCase):
         emails = self._create_tree(["msg1", "msg1.1", "msg1.1.1", "msg1.1.2"])
         emails[1].set_parent(emails[2])
         self.assertEqual(emails[2].parent_id, emails[0].id)
-        self.assertEqual(list(emails[0].thread.emails
-            .order_by("thread_order").values_list("message_id", flat=True)),
+        self.assertEqual(list(emails[0].thread.emails.order_by(
+            "thread_order").values_list("message_id", flat=True)),
             ["msg1", "msg1.1.1", "msg1.1", "msg1.1.2"])
 
     def test_attach_to_grandchild(self):
@@ -183,8 +184,8 @@ class EmailSetParentTestCase(TestCase):
             ["msg1", "msg1.1", "msg1.1.1", "msg1.1.2", "msg1.1.1.1"])
         emails[1].set_parent(emails[-1])
         self.assertEqual(emails[-1].parent_id, emails[0].id)
-        self.assertEqual(list(emails[0].thread.emails
-            .order_by("thread_order").values_list("message_id", flat=True)),
+        self.assertEqual(list(emails[0].thread.emails.order_by(
+            "thread_order").values_list("message_id", flat=True)),
             ["msg1", "msg1.1.1.1", "msg1.1", "msg1.1.1", "msg1.1.2"])
 
     def test_attach_to_itself(self):

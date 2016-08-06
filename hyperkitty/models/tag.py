@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -19,8 +20,6 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-# pylint: disable=no-init,unnecessary-lambda,unused-argument
-
 from __future__ import absolute_import, unicode_literals, print_function
 
 from django.conf import settings
@@ -35,17 +34,17 @@ class Tagging(models.Model):
     tag = models.ForeignKey("Tag")
 
     def __unicode__(self):
-        return 'Tag %s on %s by %s' % (unicode(self.tag),
-                unicode(self.thread), unicode(self.user))
+        return 'Tag %s on %s by %s' % (
+            unicode(self.tag), unicode(self.thread), unicode(self.user))
 
 
 class Tag(models.Model):
 
     name = models.CharField(max_length=255, db_index=True, unique=True)
-    threads = models.ManyToManyField("Thread",
-        through="Tagging", related_name="tags")
-    users = models.ManyToManyField(settings.AUTH_USER_MODEL,
-        through="Tagging", related_name="tags")
+    threads = models.ManyToManyField(
+        "Thread", through="Tagging", related_name="tags")
+    users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, through="Tagging", related_name="tags")
 
     class Meta:
         ordering = ["name"]
@@ -54,4 +53,3 @@ class Tag(models.Model):
         return 'Tag %s' % (unicode(self.name))
 
 admin.site.register(Tag)
-

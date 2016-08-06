@@ -20,8 +20,6 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-# pylint: disable=unused-argument
-
 from django.conf import settings
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.shortcuts import resolve_url
@@ -41,7 +39,7 @@ def export_settings(request):
     extra_context = dict(
         (name.lower(), getattr(settings, name, None)) for name in exports)
     extra_context["HYPERKITTY_VERSION"] = VERSION
-    extra_context["login_url"]  = resolve_url(settings.LOGIN_URL)
+    extra_context["login_url"] = resolve_url(settings.LOGIN_URL)
     extra_context["logout_url"] = resolve_url(settings.LOGOUT_URL)
     return extra_context
 
@@ -54,4 +52,4 @@ def postorius_info(request):
             postorius_url = postorius_url.rstrip("/")
         except NoReverseMatch:
             pass
-    return {"postorius_installed": postorius_url }
+    return {"postorius_installed": postorius_url}

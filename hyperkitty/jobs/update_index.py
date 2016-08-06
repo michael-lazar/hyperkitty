@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -66,7 +66,7 @@ def run_with_lock(remove=False):
         return
     try:
         update_index(remove=remove)
-    except Exception as e: # pylint: disable-msg=broad-except
+    except Exception as e:
         logger.exception("Failed to update the fulltext index: %s", e)
     finally:
         lock.release()

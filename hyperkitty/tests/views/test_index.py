@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -43,7 +44,8 @@ class PrivateListTestCase(TestCase):
         msg["Message-ID"] = "<msgid>"
         msg["Subject"] = "Dummy message"
         msg.set_payload("Dummy message")
-        msg["Message-ID-Hash"] = self.msgid = add_to_list("list@example.com", msg)
+        msg["Message-ID-Hash"] = self.msgid = add_to_list(
+            "list@example.com", msg)
 
     def _do_test(self, sort_mode):
         response = self.client.get(reverse("hk_root"), {"sort": sort_mode})
@@ -51,8 +53,10 @@ class PrivateListTestCase(TestCase):
 
     def test_sort_active(self):
         self._do_test("active")
+
     def test_sort_popular(self):
         self._do_test("popular")
+
 
 class FindTestCase(TestCase):
 
@@ -65,14 +69,16 @@ class FindTestCase(TestCase):
         response = self.client.get("%s?term=one" % reverse("hk_find_list"))
         self.assertEqual(
             json.loads(response.content),
-            [{'label': 'list-one@example.com', 'value': 'list-one@example.com'}]
+            [{'label': 'list-one@example.com',
+              'value': 'list-one@example.com'}]
             )
 
     def test_name(self):
         response = self.client.get("%s?term=example" % reverse("hk_find_list"))
         self.assertEqual(
             json.loads(response.content),
-            [{'label': 'list-one@example.com', 'value': 'list-one@example.com'},
+            [{'label': 'list-one@example.com',
+              'value': 'list-one@example.com'},
              {'label': 'List Two', 'value': 'list-two@example.com'}]
             )
 

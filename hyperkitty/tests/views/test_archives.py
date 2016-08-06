@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2012-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -20,8 +21,6 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-# pylint: disable=unnecessary-lambda
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 import os
@@ -36,8 +35,8 @@ from bs4 import BeautifulSoup
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
-from hyperkitty.models import (MailingList, ArchivePolicy, Sender, Thread,
-    Favorite, Email)
+from hyperkitty.models import (
+    MailingList, ArchivePolicy, Sender, Thread, Favorite, Email)
 from hyperkitty.lib.cache import cache
 from hyperkitty.lib.incoming import add_to_list
 from hyperkitty.lib.mailman import FakeMMList, FakeMMMember
@@ -58,11 +57,13 @@ class ListArchivesTestCase(TestCase):
         today = datetime.date.today()
         response = self.client.get(reverse(
                 'hk_archives_latest', args=['list@example.com']))
-        final_url = reverse('hk_archives_with_month',
-                kwargs={'mlist_fqdn': 'list@example.com',
-                        'year': today.year,
-                        'month': today.month,
-                })
+        final_url = reverse(
+            'hk_archives_with_month',
+            kwargs={
+                'mlist_fqdn': 'list@example.com',
+                'year': today.year,
+                'month': today.month,
+            })
         self.assertRedirects(response, final_url)
 
     def test_wrong_date(self):
@@ -75,7 +76,8 @@ class ListArchivesTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_overview(self):
-        response = self.client.get(reverse('hk_list_overview', args=["list@example.com"]))
+        response = self.client.get(reverse(
+            'hk_list_overview', args=["list@example.com"]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["view_name"], "overview")
         self.assertEqual(len(response.context["top_threads"]), 1)
@@ -83,7 +85,8 @@ class ListArchivesTestCase(TestCase):
         self.assertEqual(len(response.context["pop_threads"]), 0)
 
     def test_overview_with_user(self):
-        user = User.objects.create_user('testuser', 'dummy@example.com', 'testPass')
+        user = User.objects.create_user(
+            'testuser', 'dummy@example.com', 'testPass')
         sender = Sender.objects.get(address='dummy@example.com')
         sender.mailman_id = "dummy"
         sender.save()
@@ -93,7 +96,8 @@ class ListArchivesTestCase(TestCase):
         self.client.login(username='testuser', password='testPass')
         thread = Thread.objects.first()
         Favorite.objects.create(thread=thread, user=user)
-        response = self.client.get(reverse('hk_list_overview', args=["list@example.com"]))
+        response = self.client.get(
+            reverse('hk_list_overview', args=["list@example.com"]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["threads_posted_to"]), 1)
         self.assertEqual(len(response.context["flagged_threads"]), 1)
@@ -102,7 +106,8 @@ class ListArchivesTestCase(TestCase):
         # Test the overview page with a clean cache (different code path for
         # MailingList.recent_threads)
         cache.delete("MailingList:list@example.com:recent_threads")
-        response = self.client.get(reverse('hk_list_overview', args=["list@example.com"]))
+        response = self.client.get(
+            reverse('hk_list_overview', args=["list@example.com"]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["view_name"], "overview")
         self.assertEqual(len(response.context["top_threads"]), 1)
@@ -113,7 +118,6 @@ class ListArchivesTestCase(TestCase):
         url = reverse('hk_list_overview', args=["list@example.com"])
         response = self.client.get(url)
         self.assertNotContains(response, "dummy@example.com", status_code=200)
-
 
 
 class ExportMboxTestCase(TestCase):
@@ -129,14 +133,15 @@ class ExportMboxTestCase(TestCase):
         # filesystem path, it does not accept a file-like object.
 
     def _get_mbox(self, qs=None):
-        url = reverse("hk_list_export_mbox",
-            args=["list@example.com", "dummy"])
+        url = reverse(
+            "hk_list_export_mbox", args=["list@example.com", "dummy"])
         if qs:
             url += "?" + qs
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/gzip")
-        self.assertEqual(response["Content-Disposition"],
+        self.assertEqual(
+            response["Content-Disposition"],
             'attachment; filename="dummy.mbox.gz"')
         mboxfilepath = os.path.join(self.tmpdir, "dummy.mbox")
         # Store the gzipped mailbox
@@ -145,14 +150,14 @@ class ExportMboxTestCase(TestCase):
                 mboxfile.write(line)
         # Decompress the mailbox
         with gzip.open(mboxfilepath + ".gz", 'rb') as f_in, \
-              open(mboxfilepath, 'wb') as f_out:
+                open(mboxfilepath, 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
         mbox = mailbox.mbox(mboxfilepath)
         return mbox
 
     def test_basic(self):
         mbox = self._get_mbox()
-        content = open(mbox._path).read() # pylint: disable-msg=protected-access
+        content = open(mbox._path).read()
         self.assertTrue(content.startswith("From dummy at example.com "))
         self.assertEqual(len(mbox), 1)
         email = mbox.values()[0]
@@ -199,7 +204,7 @@ class ExportMboxTestCase(TestCase):
         mbox = self._get_mbox(qs="thread=%s" % thread_id)
         self.assertEqual(len(mbox), 2)
         self.assertEqual(
-            [ m["Message-ID"] for m in mbox ], ["<msg>", "<msg2>"])
+            [m["Message-ID"] for m in mbox], ["<msg>", "<msg2>"])
 
     def test_message(self):
         msg = Message()
@@ -210,13 +215,14 @@ class ExportMboxTestCase(TestCase):
         msg_id = add_to_list("list@example.com", msg)
         mbox = self._get_mbox(qs="message=%s" % msg_id)
         self.assertEqual(len(mbox), 1)
-        self.assertEqual([ m["Message-ID"] for m in mbox ], ["<msg2>"])
+        self.assertEqual([m["Message-ID"] for m in mbox], ["<msg2>"])
 
 
 class PrivateArchivesTestCase(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user('testuser', 'test@example.com', 'testPass')
+        self.user = User.objects.create_user(
+            'testuser', 'test@example.com', 'testPass')
         MailingList.objects.create(
             name="list@example.com", subject_prefix="[example] ",
             archive_policy=ArchivePolicy.private.value)
@@ -225,11 +231,13 @@ class PrivateArchivesTestCase(TestCase):
         msg["Message-ID"] = "<msgid>"
         msg["Subject"] = "Dummy message"
         msg.set_payload("Dummy message")
-        msg["Message-ID-Hash"] = self.msgid = add_to_list("list@example.com", msg)
+        msg["Message-ID-Hash"] = self.msgid = add_to_list(
+            "list@example.com", msg)
         # Set the mailman_client after the message has been added to the list,
         # otherwise MailingList.update_from_mailman() will overwrite the list
         # properties.
-        self.mailman_client.get_list.side_effect = lambda name: FakeMMList(name)
+        self.mailman_client.get_list.side_effect = \
+            lambda name: FakeMMList(name)
         self.mm_user = Mock()
         self.mm_user.user_id = "dummy"
         self.mailman_client.get_user.side_effect = lambda name: self.mm_user
@@ -241,37 +249,40 @@ class PrivateArchivesTestCase(TestCase):
     def tearDown(self):
         self.client.logout()
 
-
     def _do_test(self, url, query=None):
         if query is None:
             query = {}
         response = self.client.get(url, query)
         self.assertEqual(response.status_code, 403)
         self.client.login(username='testuser', password='testPass')
-        ## use a temp variable below because self.client.session is actually a
-        ## property which returns a new instance en each call :-/
-        ## http://blog.joshcrompton.com/2012/09/how-to-use-sessions-in-django-unit-tests.html
-        #session = self.client.session
-        #session["subscribed"] = ["list@example.com"]
-        #session.save()
-        #self.user.hyperkitty_profile.get_subscriptions = lambda: ["list@example.com"]
+        # # use a temp variable below because self.client.session is actually a
+        # # property which returns a new instance en each call :-/
+        # http://blog.joshcrompton.com/2012/09/how-to-use-sessions-in-django-unit-tests.html
+        # session = self.client.session
+        # session["subscribed"] = ["list@example.com"]
+        # session.save()
+        # self.user.hyperkitty_profile.get_subscriptions = \
+        #     lambda: ["list@example.com"]
         response = self.client.get(url, query)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Dummy message")
 
-
     def test_month_view(self):
         now = datetime.datetime.now()
-        self._do_test(reverse('hk_archives_with_month', args=["list@example.com", now.year, now.month]))
+        self._do_test(reverse(
+            'hk_archives_with_month',
+            args=["list@example.com", now.year, now.month]))
 
     def test_overview(self):
         self._do_test(reverse('hk_list_overview', args=["list@example.com"]))
 
     def test_thread_view(self):
-        self._do_test(reverse('hk_thread', args=["list@example.com", self.msgid]))
+        self._do_test(reverse(
+            'hk_thread', args=["list@example.com", self.msgid]))
 
     def test_message_view(self):
-        self._do_test(reverse('hk_message_index', args=["list@example.com", self.msgid]))
+        self._do_test(reverse(
+            'hk_message_index', args=["list@example.com", self.msgid]))
 
 
 class MonthsListTestCase(TestCase):
@@ -288,13 +299,16 @@ class MonthsListTestCase(TestCase):
         add_to_list("list@example.com", msg)
 
     def _assertCollapsed(self, panel):
-        self.assertTrue("in" not in panel["class"],
+        self.assertTrue(
+            "in" not in panel["class"],
             "Panel %s has the 'in' class" % panel["id"])
-        self.assertTrue("collapse" in panel["class"],
+        self.assertTrue(
+            "collapse" in panel["class"],
             "Panel %s has no 'collapse' class" % panel["id"])
 
     def _assertNotCollapsed(self, panel):
-        self.assertTrue("in" in panel["class"],
+        self.assertTrue(
+            "in" in panel["class"],
             "Panel %s has no 'in' class" % panel["id"])
 
     def _assertActivePanel(self, html, panel_num):
@@ -313,7 +327,8 @@ class MonthsListTestCase(TestCase):
                 self._assertCollapsed(panel)
 
     def test_overview(self):
-        response = self.client.get(reverse('hk_list_overview', args=["list@example.com"]))
+        response = self.client.get(reverse(
+            'hk_list_overview', args=["list@example.com"]))
         self.assertEqual(response.status_code, 200)
         self._assertActivePanel(response.content, 0)
 

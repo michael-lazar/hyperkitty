@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -19,10 +20,9 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-# pylint: disable=no-init,unnecessary-lambda,unused-argument
-
 from __future__ import absolute_import, unicode_literals, print_function
 
+# flake8:noqa
 
 from .category import ThreadCategory
 from .email import Email, Attachment

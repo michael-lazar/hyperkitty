@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -19,8 +20,6 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-# pylint: disable=no-init,unnecessary-lambda,unused-argument
-
 from __future__ import absolute_import, unicode_literals, print_function
 
 from hyperkitty.lib.cache import cache
@@ -30,6 +29,7 @@ def get_votes(instance):
     from .thread import Thread
     from .email import Email
     from .vote import Vote
+
     def _getvalue():
         if isinstance(instance, Thread):
             filters = {"email__thread_id": instance.id}
@@ -41,9 +41,10 @@ def get_votes(instance):
         votes = list(Vote.objects.filter(**filters).values_list(
             "value", flat=True))
         return (
-                len([ v for v in votes if v == 1 ]),
-                len([ v for v in votes if v == -1 ]),
+                len([v for v in votes if v == 1]),
+                len([v for v in votes if v == -1]),
             )
+
     cache_key = "%s:%s:votes" % (instance.__class__.__name__, instance.id)
     votes = cache.get_or_set(cache_key, _getvalue, None)
     likes, dislikes = votes

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -39,7 +40,6 @@ from hyperkitty.models.email import Email
 from hyperkitty.models.mailinglist import MailingList
 from hyperkitty.models.thread import Thread
 from hyperkitty.tests.utils import TestCase, get_flash_messages
-
 
 
 class MessageViewsTestCase(TestCase):
@@ -122,11 +122,13 @@ class MessageViewsTestCase(TestCase):
         self.assertContains(response, "Dummy Sender", count=1)
         self.assertContains(response, "Dummy Subject", count=3)
         self.assertNotContains(response, "dummy@example.com")
-        self.assertContains(response,
+        self.assertContains(
+            response,
             get_gravatar_url("dummy@example.com", 120).replace("&", "&amp;"))
         self.assertContains(response, "list@example.com")
         self.assertContains(response, url)
-        sender_time = '<span title="Sender\'s time: 2015-02-02 13:00:00">10:00:00</span>'
+        sender_time = ('<span title="Sender\'s time: 2015-02-02 '
+                       '13:00:00">10:00:00</span>')
         self.assertIn(sender_time, response.content.decode("utf-8"))
 
     def test_reply(self):
@@ -137,14 +139,15 @@ class MessageViewsTestCase(TestCase):
         url = reverse('hk_message_reply', args=("list@example.com",
                       get_message_id_hash("msg")))
         with patch("hyperkitty.views.message.post_to_list") as posting_fn:
-            response = self.client.post(url, {"message": "dummy reply content"})
+            response = self.client.post(
+                url, {"message": "dummy reply content"})
             self.assertEqual(response.status_code, 200)
             self.assertEqual(posting_fn.call_count, 1)
-            self.assertEqual(posting_fn.call_args[0][1:],
+            self.assertEqual(
+                posting_fn.call_args[0][1:],
                 (mlist, 'Re: Dummy Subject', 'dummy reply content',
                  {'References': '<msg>', 'In-Reply-To': '<msg>'}))
         result = json.loads(response.content)
-        #print(result["message_html"])
         self.assertIn("Django User", result["message_html"])
         self.assertIn("dummy reply content", result["message_html"])
         self.assertIn(
@@ -156,12 +159,14 @@ class MessageViewsTestCase(TestCase):
         url = reverse('hk_message_reply', args=("list@example.com",
                       get_message_id_hash("msg")))
         with patch("hyperkitty.views.message.post_to_list") as posting_fn:
-            response = self.client.post(url,
+            response = self.client.post(
+                url,
                 {"message": "dummy reply content",
                  "newthread": 1, "subject": "new subject"})
             self.assertEqual(response.status_code, 200)
             self.assertEqual(posting_fn.call_count, 1)
-            self.assertEqual(posting_fn.call_args[0][1:],
+            self.assertEqual(
+                posting_fn.call_args[0][1:],
                 (mlist, 'new subject', 'dummy reply content', {}))
         result = json.loads(response.content)
         self.assertEqual(result["message_html"], None)
@@ -185,16 +190,17 @@ class MessageViewsTestCase(TestCase):
                 })
             self.assertEqual(response.status_code, 200)
             self.assertEqual(posting_fn.call_count, 1)
-            self.assertEqual(posting_fn.call_args[0][1:],
+            self.assertEqual(
+                posting_fn.call_args[0][1:],
                 (mlist, 'Re: Dummy Subject', 'dummy reply content',
                  {'From': 'otheremail@example.com',
                   'In-Reply-To': '<msg>', 'References': '<msg>'}))
         result = json.loads(response.content)
-        #print(result["message_html"])
         self.assertIn("Django User", result["message_html"])
         self.assertIn("dummy reply content", result["message_html"])
         self.assertIn(
-            get_gravatar_url("otheremail@example.com", 120).replace("&", "&amp;"),
+            get_gravatar_url("otheremail@example.com", 120).replace(
+                "&", "&amp;"),
             result["message_html"])
 
     def test_new_message_page(self):
@@ -225,9 +231,10 @@ class MessageViewsTestCase(TestCase):
         self.assertEqual(messages[0].tags, "success")
         # sent email
         self.assertEqual(len(mail.outbox), 1)
-        #print(mail.outbox[0].message())
+        # print(mail.outbox[0].message())
         self.assertEqual(mail.outbox[0].recipients(), ["list@example.com"])
-        self.assertEqual(mail.outbox[0].from_email, '"Django User" <test@example.com>')
+        self.assertEqual(mail.outbox[0].from_email,
+                         '"Django User" <test@example.com>')
         self.assertEqual(mail.outbox[0].subject, 'Test subject')
         self.assertEqual(mail.outbox[0].body, "Test message content")
         self.assertIsNone(mail.outbox[0].message().get("references"))
@@ -251,7 +258,8 @@ class MessageViewsTestCase(TestCase):
                 "message": "Test message content",
                 })
             self.assertEqual(posting_fn.call_count, 1)
-            self.assertEqual(posting_fn.call_args[0][1:],
+            self.assertEqual(
+                posting_fn.call_args[0][1:],
                 (mlist, 'Test subject', 'Test message content',
                  {'From': 'otheremail@example.com'}))
         redirect_url = reverse(
@@ -273,12 +281,14 @@ class MessageViewsTestCase(TestCase):
         msg["Message-ID"] = "<msg2>"
         msg.set_payload("Dummy message with @@ signs (looks like a patch)")
         add_to_list("list@example.com", msg)
-        url1 = reverse('hk_message_index', args=("list@example.com",
-                      get_message_id_hash("msg")))
+        url1 = reverse(
+            'hk_message_index', args=("list@example.com",
+                                      get_message_id_hash("msg")))
         response1 = self.client.get(url1)
         self.assertNotContains(response1, "email-body fixed", status_code=200)
-        url2 = reverse('hk_message_index', args=("list@example.com",
-                      get_message_id_hash("msg2")))
+        url2 = reverse(
+            'hk_message_index', args=("list@example.com",
+                                      get_message_id_hash("msg2")))
         response2 = self.client.get(url2)
         self.assertContains(response2, "email-body fixed", status_code=200)
 
@@ -322,7 +332,8 @@ class MessageViewsTestCase(TestCase):
         url = reverse('hk_message_index', args=("list@example.com",
                       get_message_id_hash("msg2")))
         response = self.client.get(url)
-        self.assertNotContains(response, "someone-else@example.com", status_code=200)
+        self.assertNotContains(
+            response, "someone-else@example.com", status_code=200)
 
     def test_delete_forbidden(self):
         url = reverse('hk_message_delete', args=("list@example.com",

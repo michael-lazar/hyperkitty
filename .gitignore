@@ -9,7 +9,6 @@ doc/_static
 .tox
 .coverage
 coverage
-pylint.log
 
 ^.idea/
 .DS_Store

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -19,8 +20,6 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-# pylint: disable=no-init,unnecessary-lambda,unused-argument
-
 from __future__ import absolute_import, unicode_literals, print_function
 
 from django.contrib import admin
@@ -37,6 +36,7 @@ class ThreadCategory(models.Model):
 
     def __unicode__(self):
         return u'Thread category "%s"' % (unicode(self.name))
+
 
 class ThreadCategoryAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):

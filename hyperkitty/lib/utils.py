@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -29,9 +29,9 @@ from hashlib import sha1
 from email.header import decode_header
 from datetime import timedelta
 
-import dateutil.parser, dateutil.tz
+import dateutil.parser
+import dateutil.tz
 from django.utils import timezone
-
 
 
 def get_message_id_hash(msg_id):
@@ -55,12 +55,14 @@ def get_message_id(message):
 
 
 IN_BRACKETS_RE = re.compile("[^<]*<([^>]+)>.*")
+
+
 def get_ref(message):
     """
     Returns the message-id of the reference email for a given message.
     """
-    if (not message.has_key("References")
-            and not message.has_key("In-Reply-To")):
+    if ("References" not in message and
+            "In-Reply-To" not in message):
         return None
     ref_id = message.get("In-Reply-To")
     if ref_id is not None:
@@ -111,13 +113,14 @@ def parsedate(datestring):
             abs(offset) > timedelta(hours=13):
         parsed = parsed.astimezone(timezone.utc)
     if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=timezone.utc) # make it aware
+        parsed = parsed.replace(tzinfo=timezone.utc)  # make it aware
     return parsed
 
 
 def header_to_unicode(header):
     """
-    See also: http://ginstrom.com/scribbles/2007/11/19/parsing-multilingual-email-with-python/
+    See also:
+    http://ginstrom.com/scribbles/2007/11/19/parsing-multilingual-email-with-python/
     """
     h_decoded = []
     for text, charset in decode_header(header):
@@ -143,20 +146,20 @@ def stripped_subject(mlist, subject):
     if not mlist.subject_prefix:
         return subject
     if subject.lower().startswith(mlist.subject_prefix.lower()):
-        subject = subject[len(mlist.subject_prefix) : ]
+        subject = subject[len(mlist.subject_prefix):]
     return subject
 
 
-
-import time
-from collections import defaultdict
-LASTTIME = None
-TIMES = defaultdict(list)
-def timeit(name):
-    global LASTTIME#, TIMES # pylint: disable=global-statement
-    now = time.time()
-    if LASTTIME is not None:
-        spent = now - LASTTIME
-        TIMES[name].append(spent)
-        print("{}: {}".format(name, spent))
-    LASTTIME = now
+# import time
+# from collections import defaultdict
+# LASTTIME = None
+# TIMES = defaultdict(list)
+#
+# def timeit(name):
+#     global LASTTIME
+#     now = time.time()
+#     if LASTTIME is not None:
+#         spent = now - LASTTIME
+#         TIMES[name].append(spent)
+#         print("{}: {}".format(name, spent))
+#     LASTTIME = now

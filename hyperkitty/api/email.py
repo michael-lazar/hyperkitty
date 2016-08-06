@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # Copyright (C) 2012-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -19,8 +19,6 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-# pylint: disable=no-init
-
 from __future__ import absolute_import, unicode_literals
 
 from django.shortcuts import get_object_or_404
@@ -37,7 +35,8 @@ class EmailShortSerializer(serializers.HyperlinkedModelSerializer):
         view_name='hk_api_email_detail', read_only=True,
         lookup_field="message_id_hash", source="*")
     mailinglist = serializers.HyperlinkedRelatedField(
-        view_name='hk_api_mailinglist_detail', read_only=True, lookup_field="name")
+        view_name='hk_api_mailinglist_detail', read_only=True,
+        lookup_field="name")
     thread = MLChildHyperlinkedRelatedField(
         view_name='hk_api_thread_detail', read_only=True,
         lookup_field="thread_id")
@@ -61,7 +60,7 @@ class EmailShortSerializer(serializers.HyperlinkedModelSerializer):
 class EmailSerializer(EmailShortSerializer):
     class Meta:
         model = Email
-        fields = EmailShortSerializer.Meta.fields + ("content",)#, "attachments")
+        fields = EmailShortSerializer.Meta.fields + ("content",)
 
 
 class EmailList(generics.ListAPIView):
@@ -86,7 +85,8 @@ class EmailListBySender(generics.ListAPIView):
     def get_queryset(self):
         return Email.objects.filter(
                 sender__address=self.kwargs["address"],
-            ).exclude(mailinglist__archive_policy=ArchivePolicy.private.value
+            ).exclude(
+                mailinglist__archive_policy=ArchivePolicy.private.value
             ).order_by("-archived_date")
 
 
@@ -96,7 +96,8 @@ class EmailDetail(generics.RetrieveAPIView):
     serializer_class = EmailSerializer
 
     def get_object(self):
-        email = get_object_or_404(Email,
+        email = get_object_or_404(
+            Email,
             mailinglist__name=self.kwargs["mlist_fqdn"],
             message_id_hash=self.kwargs["message_id_hash"],
             )

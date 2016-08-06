@@ -1,4 +1,5 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -47,19 +48,19 @@ def key_and_ip_auth(func):
                 msg = "Missing setting: %s" % attr
                 logger.error(msg)
                 raise ImproperlyConfigured(msg)
-        if request.META.get("REMOTE_ADDR") not in settings.MAILMAN_ARCHIVER_FROM:
-            # pylint: disable=logging-format-interpolation
+        if (request.META.get("REMOTE_ADDR") not in
+                settings.MAILMAN_ARCHIVER_FROM):
             logger.error(
                 "Access to the archiving API endpoint was forbidden from "
                 "IP {}, your MAILMAN_ARCHIVER_FROM setting may be "
                 "misconfigured".format(request.META["REMOTE_ADDR"]))
-            return HttpResponse("""
-                <html><title>Forbidden</title><body>
+            return HttpResponse(
+                """<html><title>Forbidden</title><body>
                 <h1>Access is forbidden</h1></body></html>""",
                 content_type="text/html", status=403)
         if request.GET.get("key") != settings.MAILMAN_ARCHIVER_KEY:
-            return HttpResponse("""
-                <html><title>Auth required</title><body>
+            return HttpResponse(
+                """<html><title>Auth required</title><body>
                 <h1>Authorization Required</h1></body></html>""",
                 content_type="text/html", status=401)
         return func(request, *args, **kwargs)
@@ -71,9 +72,10 @@ def _get_url(mlist_fqdn, msg_id=None):
     # mailman API may be accessed via localhost
     # https://docs.djangoproject.com/en/dev/ref/request-response/#django.http.HttpRequest.build_absolute_uri
     # https://docs.djangoproject.com/en/dev/ref/contrib/sites/#getting-the-current-domain-for-full-urls
-    #result = urljoin(public_url, urlunquote(
-    #        reverse('hk_list_overview', args=[mlist_fqdn])))
-    # So we return the relative URL and let the admin configure the public URL in Mailman
+    # result = urljoin(public_url, urlunquote(
+    #                  reverse('hk_list_overview', args=[mlist_fqdn])))
+    # So we return the relative URL and let the admin configure the public URL
+    # in Mailman.
     if msg_id is None:
         url = reverse('hk_list_overview', args=[mlist_fqdn])
     else:

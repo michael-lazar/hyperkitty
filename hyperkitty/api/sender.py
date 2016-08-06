@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # Copyright (C) 2012-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -19,8 +19,6 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-# pylint: disable=no-init
-
 from __future__ import absolute_import, unicode_literals, print_function
 
 from rest_framework import serializers
@@ -32,7 +30,9 @@ class OptionalHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
         value = getattr(obj, self.lookup_field)
         if value is None:
             return None
-        return super(OptionalHyperlinkedRelatedField, self).to_representation(obj)
+        return super(
+            OptionalHyperlinkedRelatedField, self
+            ).to_representation(obj)
 
 
 class SenderSerializer(serializers.HyperlinkedModelSerializer):
@@ -40,6 +40,7 @@ class SenderSerializer(serializers.HyperlinkedModelSerializer):
         view_name='hk_api_sender_email_list', read_only=True,
         lookup_field="mailman_id", source="*", required=False)
     # emails is None if mailmain_id is None
+
     class Meta:
         model = Sender
         fields = ("name", "mailman_id", "emails")

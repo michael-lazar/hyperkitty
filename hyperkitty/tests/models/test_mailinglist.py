@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2013-2016 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -18,8 +19,6 @@
 #
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
-
-# pylint: disable=unnecessary-lambda
 
 from __future__ import absolute_import, print_function, unicode_literals
 
@@ -121,7 +120,8 @@ class MailingListTestCase(TestCase):
         msg2["Date"] = "2015-03-15 00:00:00 UTC"
         msg2.set_payload("message 2")
         add_to_list(self.ml.name, msg2)
-        # The thread started in Feb, was updated in March. It should show up in both the Feb threads and the March threads.
+        # The thread started in Feb, was updated in March. It should show up in
+        # both the Feb threads and the March threads.
         self.assertEqual(Thread.objects.count(), 1)
         feb_threads = self.ml.get_threads_between(
             datetime(2015, 2, 1, 0, 0, 0, tzinfo=utc),

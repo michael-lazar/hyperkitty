@@ -48,7 +48,8 @@ class EmailIndex(indexes.SearchIndex, indexes.Indexable):
 
     def load_all_queryset(self):
         # Pull other objects related to the Email in search results.
-        return self.get_model().objects.all().select_related("sender", "thread")
+        return self.get_model().objects.all().select_related(
+            "sender", "thread")
 
 
 def update_index(remove=False):
@@ -63,7 +64,7 @@ def update_index(remove=False):
     # Find the last email in the index:
     try:
         last_email = SearchQuerySet().latest('archived_date')
-    except Exception: # pylint: disable-msg=broad-except
+    except Exception:
         # Different backends can raise different exceptions unfortunately
         update_cmd.start_date = None
     else:

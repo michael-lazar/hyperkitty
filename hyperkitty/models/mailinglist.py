@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -18,8 +19,6 @@
 #
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
-
-# pylint: disable=no-init,unnecessary-lambda,unused-argument
 
 from __future__ import absolute_import, unicode_literals, print_function
 
@@ -45,7 +44,6 @@ logger = logging.getLogger(__name__)
 
 
 class ArchivePolicy(Enum):
-    # pylint: disable=too-few-public-methods
     """
     Copy from mailman.interfaces.archiver.ArchivePolicy since we can't import
     mailman (PY3-only).
@@ -67,7 +65,7 @@ class MailingList(models.Model):
     description = models.TextField()
     subject_prefix = models.CharField(max_length=255)
     archive_policy = models.IntegerField(
-        choices=[ (p.value, p.name) for p in ArchivePolicy ],
+        choices=[(p.value, p.name) for p in ArchivePolicy],
         default=ArchivePolicy.public.value)
     created_at = models.DateTimeField(default=now)
 
@@ -87,7 +85,7 @@ class MailingList(models.Model):
 
     def get_recent_dates(self):
         today = now()
-        #today -= datetime.timedelta(days=400) #debug
+        # today -= datetime.timedelta(days=400) #debug
         # the upper boundary is excluded in the search, add one day
         end_date = today + datetime.timedelta(days=1)
         begin_date = end_date - datetime.timedelta(days=32)
@@ -114,7 +112,7 @@ class MailingList(models.Model):
         return cache.get_or_set(
             "MailingList:%s:recent_participants_count" % self.name,
             lambda: self.get_participants_count_between(begin_date, end_date),
-            3600 * 6) # 6 hours
+            3600 * 6)  # 6 hours
 
     @property
     def recent_threads(self):
@@ -125,7 +123,7 @@ class MailingList(models.Model):
         thread_ids = cache.get(cache_key)
         if thread_ids is None:
             threads = self.get_threads_between(begin_date, end_date)
-            cache.set(cache_key, [t.id for t in threads], 3600 * 12) # 12 hours
+            cache.set(cache_key, [t.id for t in threads], 3600 * 12)  # 12h
         else:
             threads = Thread.objects.filter(id__in=thread_ids)
         return threads
@@ -137,7 +135,7 @@ class MailingList(models.Model):
         result = cache.get(cache_key)
         if result is None:
             result = self.get_threads_between(begin_date, end_date).count()
-            cache.set(cache_key, result, 3600 * 12) # 12 hours
+            cache.set(cache_key, result, 3600 * 12)  # 12 hours
         return result
 
     def _recent_threads_cache_rebuild(self):
@@ -149,7 +147,7 @@ class MailingList(models.Model):
         if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
             thread_ids = list(self.get_threads_between(
                 begin_date, end_date).values_list("id", flat=True))
-            cache.set(cache_key, thread_ids, 3600 * 12) # 12 hours
+            cache.set(cache_key, thread_ids, 3600 * 12)  # 12 hours
             cache.set("%s_count" % cache_key, len(thread_ids), 3600 * 12)
 
     def on_thread_added(self, thread):
@@ -158,9 +156,9 @@ class MailingList(models.Model):
         if recent_thread_ids is not None and len(recent_thread_ids) >= 1000:
             # It's a high-volume list, just append to the cache
             recent_thread_ids.append(thread.id)
-            cache.set(cache_key, recent_thread_ids, 3600 * 12) # 12 hours
+            cache.set(cache_key, recent_thread_ids, 3600 * 12)  # 12 hours
             cache.set("%s_count" % cache_key,
-                      len(recent_thread_ids), 3600 * 12) # 12 hours
+                      len(recent_thread_ids), 3600 * 12)  # 12 hours
         else:
             # Low-volume list, rebuild the cache
             self._recent_threads_cache_rebuild()
@@ -185,20 +183,17 @@ class MailingList(models.Model):
             emails__mailinglist=self,
             emails__date__gte=begin_date,
             emails__date__lt=end_date,
-            ).annotate(count=models.Count("emails")
-            ).order_by("-count")
+        ).annotate(count=models.Count("emails")).order_by("-count")
         # Because of South, ResultSets are not pickleizable directly, they must
         # be converted to lists (there's an extra field without the _deferred
         # attribute that causes tracebacks)
         return cache.get_or_set(
             "MailingList:%s:top_posters" % self.name,
             lambda: list(query[:5]),
-            3600 * 6) # 6 hours
+            3600 * 6)  # 6 hours
         # It's not actually necessary to convert back to instances since it's
         # only used in templates where access to instance attributes or
         # dictionnary keys is identical
-        #return [ Sender.objects.get(address=data["address"]) for data in sender_ids ]
-        #return sender_ids
 
     def update_from_mailman(self):
         try:
@@ -207,9 +202,10 @@ class MailingList(models.Model):
         except MailmanConnectionError:
             return
         except HTTPError:
-            return # can't update at this time
+            return  # can't update at this time
         if not mm_list:
             return
+
         def convert_date(value):
             value = dateutil.parser.parse(value)
             if value.tzinfo is None:
@@ -217,7 +213,7 @@ class MailingList(models.Model):
             return value
         converters = {
             "created_at": convert_date,
-            "archive_policy": lambda p: ArchivePolicy[p].value, # pylint: disable=unsubscriptable-object
+            "archive_policy": lambda p: ArchivePolicy[p].value,
         }
         for propname in self.MAILMAN_ATTRIBUTES:
             try:

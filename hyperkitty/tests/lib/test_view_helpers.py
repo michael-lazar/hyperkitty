@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -31,7 +32,6 @@ from hyperkitty.models import MailingList
 from hyperkitty.tests.utils import TestCase
 
 
-
 class GetDisplayDatesTestCase(TestCase):
 
     def test_month(self):
@@ -44,7 +44,8 @@ class GetDisplayDatesTestCase(TestCase):
             begin_date, end_date = get_display_dates('2012', '12', None)
         except ValueError, e:
             self.fail(e)
-        self.assertEqual(begin_date, datetime.datetime(2012, 12, 1, tzinfo=utc))
+        self.assertEqual(
+            begin_date, datetime.datetime(2012, 12, 1, tzinfo=utc))
         self.assertEqual(end_date, datetime.datetime(2013, 1, 1, tzinfo=utc))
 
     def test_day(self):
@@ -53,11 +54,11 @@ class GetDisplayDatesTestCase(TestCase):
         self.assertEqual(end_date, datetime.datetime(2012, 4, 3, tzinfo=utc))
 
 
-
 class ShowMlistTestCase(TestCase):
 
     def _do_test(self, listdomain, vhost, expected):
-        mlist = MailingList.objects.get_or_create(name="test@{}".format(listdomain))[0]
+        mlist = MailingList.objects.get_or_create(
+            name="test@{}".format(listdomain))[0]
         req = HttpRequest()
         req.META["HTTP_HOST"] = vhost
         self.assertEqual(show_mlist(mlist, req), expected)
@@ -78,7 +79,8 @@ class ShowMlistTestCase(TestCase):
 
     def test_different_domains(self):
         self._do_test("example.com", "another-example.com", False)
-        self._do_test("lists.example.com", "archives.another-example.com", False)
+        self._do_test("lists.example.com", "archives.another-example.com",
+                      False)
 
     def test_single_component_domain(self):
         self._do_test("intranet", "intranet", True)

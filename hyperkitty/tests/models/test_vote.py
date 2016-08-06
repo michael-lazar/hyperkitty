@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2013-2016 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -19,8 +20,6 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-# pylint: disable=unnecessary-lambda
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 from email.message import Message
@@ -39,6 +38,7 @@ def _create_email(num, reply_to=None):
     if reply_to is not None:
         msg["In-Reply-To"] = "<msg%d>" % reply_to
     return add_to_list("example-list", msg)
+
 
 class VoteTestCase(TestCase):
 
@@ -129,4 +129,3 @@ class VoteTestCase(TestCase):
         _create_email(1)
         msg = Email.objects.get(message_id="msg1")
         self.assertRaises(ValueError, msg.vote, 2, self.user)
-

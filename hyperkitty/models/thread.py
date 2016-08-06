@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -18,8 +19,6 @@
 #
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
-
-# pylint: disable=no-init,unnecessary-lambda,unused-argument
 
 from __future__ import absolute_import, unicode_literals, print_function
 
@@ -48,10 +47,12 @@ class Thread(models.Model):
     mailinglist = models.ForeignKey("MailingList", related_name="threads")
     thread_id = models.CharField(max_length=255, db_index=True)
     date_active = models.DateTimeField(db_index=True, default=now)
-    category = models.ForeignKey("ThreadCategory",
-        related_name="threads", null=True, on_delete=models.SET_NULL)
-    starting_email = models.OneToOneField("Email",
-        related_name="started_thread", null=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(
+        "ThreadCategory", related_name="threads", null=True,
+        on_delete=models.SET_NULL)
+    starting_email = models.OneToOneField(
+        "Email", related_name="started_thread", null=True,
+        on_delete=models.SET_NULL)
 
     class Meta:
         unique_together = ("mailinglist", "thread_id")
@@ -71,22 +72,22 @@ class Thread(models.Model):
     def replies_after(self, date):
         return self.emails.filter(date__gt=date)
 
-    #def _get_category(self):
-    #    if not self.category_id:
-    #        return None
-    #    return self.category_obj.name
-    #def _set_category(self, name):
-    #    if not name:
-    #        self.category_id = None
-    #        return
-    #    session = object_session(self)
-    #    try:
-    #        category = session.query(Category).filter_by(name=name).one()
-    #    except NoResultFound:
-    #        category = Category(name=name)
-    #        session.add(category)
-    #    self.category_id = category.id
-    #category = property(_get_category, _set_category)
+    # def _get_category(self):
+    #     if not self.category_id:
+    #         return None
+    #     return self.category_obj.name
+    # def _set_category(self, name):
+    #     if not name:
+    #         self.category_id = None
+    #         return
+    #     session = object_session(self)
+    #     try:
+    #         category = session.query(Category).filter_by(name=name).one()
+    #     except NoResultFound:
+    #         category = Category(name=name)
+    #         session.add(category)
+    #     self.category_id = category.id
+    # category = property(_get_category, _set_category)
 
     @property
     def emails_count(self):
@@ -106,14 +107,14 @@ class Thread(models.Model):
         return get_votes(self)
 
     @property
-    def prev_thread(self): # TODO: Make it a relationship
+    def prev_thread(self):  # TODO: Make it a relationship
         return Thread.objects.filter(
                 mailinglist=self.mailinglist,
                 date_active__lt=self.date_active
             ).order_by("-date_active").first()
 
     @property
-    def next_thread(self): # TODO: Make it a relationship
+    def next_thread(self):  # TODO: Make it a relationship
         return Thread.objects.filter(
                 mailinglist=self.mailinglist,
                 date_active__gt=self.date_active
@@ -134,7 +135,7 @@ class Thread(models.Model):
 
     def find_starting_email(self):
         # Find and set the staring email if it was not specified
-        from .email import Email # circular import
+        from .email import Email  # circular import
         if self.starting_email is not None:
             return
         try:
@@ -156,25 +157,27 @@ class Thread(models.Model):
 def on_pre_save(sender, **kwargs):
     kwargs["instance"].on_pre_save()
 
+
 @receiver(new_thread)
 def on_new_thread(sender, **kwargs):
     kwargs["thread"].on_new_thread()
+
 
 @receiver(post_delete, sender=Thread)
 def on_post_delete(sender, **kwargs):
     kwargs["instance"].on_post_delete()
 
 
-#@receiver(new_thread)
-#def cache_thread_subject(sender, **kwargs):
-#    thread = kwargs["instance"]
-#    thread.subject
-
+# @receiver(new_thread)
+# def cache_thread_subject(sender, **kwargs):
+#     thread = kwargs["instance"]
+#     thread.subject
 
 
 class LastView(models.Model):
     thread = models.ForeignKey("Thread", related_name="lastviews")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="lastviews")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name="lastviews")
     view_date = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
@@ -185,7 +188,7 @@ class LastView(models.Model):
 
     def num_unread(self):
         if self.thread.date_active.replace(tzinfo=utc) <= self.view_date:
-            return 0 # avoid the expensive query below
+            return 0  # avoid the expensive query below
         else:
             return self.thread.emails.filter(date__gt=self.view_date).count()
 

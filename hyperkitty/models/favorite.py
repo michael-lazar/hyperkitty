@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -19,8 +20,6 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-# pylint: disable=no-init,unnecessary-lambda,unused-argument
-
 from __future__ import absolute_import, unicode_literals, print_function
 
 from django.conf import settings
@@ -30,11 +29,11 @@ from django.db import models
 
 class Favorite(models.Model):
     thread = models.ForeignKey("Thread", related_name="favorites")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="favorites")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name="favorites")
 
     def __unicode__(self):
         return u"%s is a favorite of %s" % (
             unicode(self.thread), unicode(self.user))
 
 admin.site.register(Favorite)
-

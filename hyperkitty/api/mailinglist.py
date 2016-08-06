@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # Copyright (C) 2012-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -19,14 +19,9 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-# pylint: disable=no-init
-
 from __future__ import absolute_import, unicode_literals
 
-#from django.shortcuts import get_object_or_404
-#from django.http import Http404
 from django.core.exceptions import PermissionDenied
-#from rest_framework.response import Response
 from rest_framework import serializers, generics
 
 from hyperkitty.models import MailingList, ArchivePolicy
@@ -43,10 +38,12 @@ class MailingListSerializer(serializers.HyperlinkedModelSerializer):
         view_name='hk_api_email_list', lookup_field="name",
         lookup_url_kwarg="mlist_fqdn")
     archive_policy = EnumField(enum=ArchivePolicy)
+
     class Meta:
         model = MailingList
-        fields = ("url", "name", "display_name", "description", "subject_prefix",
-                  "archive_policy", "created_at", "threads", "emails")
+        fields = (
+            "url", "name", "display_name", "description", "subject_prefix",
+            "archive_policy", "created_at", "threads", "emails")
         lookup_field = "name"
 
 
@@ -73,11 +70,11 @@ class MailingListDetail(generics.RetrieveAPIView):
 
     def get_object(self):
         mlist = super(MailingListDetail, self).get_object()
-        #mlist = get_object_or_404(MailingList, name=self.kwargs["name"])
-        #try:
-        #    mlist = MailingList.objects.get(name=self.kwargs["name"])
-        #except MailingList.DoesNotExist:
-        #    raise Http404
+        # mlist = get_object_or_404(MailingList, name=self.kwargs["name"])
+        # try:
+        #     mlist = MailingList.objects.get(name=self.kwargs["name"])
+        # except MailingList.DoesNotExist:
+        #     raise Http404
         if mlist.archive_policy == ArchivePolicy.private.value:
             raise PermissionDenied
         return mlist

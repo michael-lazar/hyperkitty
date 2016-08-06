@@ -1,4 +1,5 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+#
 # Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -45,6 +46,7 @@ def get_sender(request, mlist):
         address = subscriptions[mlist.list_id]
     return address
 
+
 def get_from(request, address):
     """Returns the appropriate 'From' header"""
     assert address is not None
@@ -83,7 +85,8 @@ def post_to_list(request, mlist, subject, message, headers=None,
         raise PostingFailed("Can't connect to Mailman's REST server, "
                             "your message has not been sent.")
     # send the message
-    headers["User-Agent"] = "HyperKitty on %s" % request.build_absolute_uri("/")
+    headers["User-Agent"] = (
+        "HyperKitty on %s" % request.build_absolute_uri("/"))
     msg = EmailMessage(
                subject=subject,
                body=message,
@@ -99,7 +102,7 @@ def post_to_list(request, mlist, subject, message, headers=None,
             msg.attach(attach.name, attach.read())
     # XXX: Inject into the incoming queue instead?
     if not settings.DEBUG:
-        msg.send() # Don't send mail in debug mode, just in case...
+        msg.send()  # Don't send mail in debug mode, just in case...
     return subscribed_now
 
 

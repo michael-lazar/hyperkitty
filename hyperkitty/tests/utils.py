@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -33,7 +34,6 @@ from django.test import RequestFactory, TestCase as DjangoTestCase
 from django.conf import settings
 from django.contrib.messages.storage.cookie import CookieStorage
 from django.core.management import call_command
-#from django.core.cache import get_cache
 
 from hyperkitty.lib.cache import cache
 
@@ -58,11 +58,9 @@ def setup_logging(tmpdir):
 
 
 class TestCase(DjangoTestCase):
-    # pylint: disable=attribute-defined-outside-init
 
     # Testcase classes can use this variable to add more overrides:
     override_settings = {}
-
 
     def _pre_setup(self):
         super(TestCase, self)._pre_setup()
@@ -71,14 +69,16 @@ class TestCase(DjangoTestCase):
         setup_logging(self.tmpdir)
         # Override settings
         self._old_settings = {}
-        self._override_setting("STATIC_ROOT",
-            os.path.join(self.tmpdir, "static"))
+        self._override_setting(
+            "STATIC_ROOT", os.path.join(self.tmpdir, "static"))
         override_settings = self.override_settings.copy()
         for key, value in override_settings.items():
             self._override_setting(key, value)
         self.mailman_client = Mock()
-        self.mailman_client.get_user.side_effect = mailmanclient.MailmanConnectionError()
-        self.mailman_client.get_list.side_effect = mailmanclient.MailmanConnectionError()
+        self.mailman_client.get_user.side_effect = \
+            mailmanclient.MailmanConnectionError()
+        self.mailman_client.get_list.side_effect = \
+            mailmanclient.MailmanConnectionError()
         self._mm_client_patcher = patch("hyperkitty.lib.mailman.MailmanClient",
                                         lambda *a: self.mailman_client)
         self._mm_client_patcher.start()
@@ -100,11 +100,10 @@ class TestCase(DjangoTestCase):
 
 
 class SearchEnabledTestCase(TestCase):
-    # pylint: disable=attribute-defined-outside-init
 
     def _pre_setup(self):
         try:
-            import whoosh # pylint: disable=unused-variable
+            import whoosh  # flake8: noqa
         except ImportError:
             raise SkipTest("The Whoosh library is not available")
         super(SearchEnabledTestCase, self)._pre_setup()
@@ -112,8 +111,6 @@ class SearchEnabledTestCase(TestCase):
 
     def _post_teardown(self):
         super(SearchEnabledTestCase, self)._post_teardown()
-
-
 
 
 def get_test_file(*fileparts):

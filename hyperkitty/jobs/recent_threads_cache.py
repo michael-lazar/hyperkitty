@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+#
 # Copyright (C) 2016 by the Free Software Foundation, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -38,4 +38,4 @@ class Job(BaseJob):
         for mlist in MailingList.objects.all():
             cache_key = "MailingList:%s:recent_threads" % mlist.name
             cache.delete(cache_key)
-            mlist.recent_threads # pylint: disable=pointless-statement
+            mlist.recent_threads

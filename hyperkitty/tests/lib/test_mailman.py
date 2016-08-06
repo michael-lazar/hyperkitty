@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -52,6 +53,7 @@ class MailmanSubscribeTestCase(TestCase):
         self.ml.get_member.side_effect = ValueError
         cache.set("User:%s:subscriptions" % self.user.id,
                   "test-value", version=2)
+
         class Prefs(dict):
             save = Mock()
         member = Mock()
@@ -68,7 +70,7 @@ class MailmanSubscribeTestCase(TestCase):
             None)
 
     def test_subscribe_moderate(self):
-        self.ml.get_member.side_effect = ValueError # User is not subscribed
+        self.ml.get_member.side_effect = ValueError  # User is not subscribed
         self.ml.settings["subscription_policy"] = "moderate"
         self.assertRaises(mailman.ModeratedListException,
                           mailman.subscribe, "list@example.com", self.user)
@@ -104,7 +106,8 @@ class MailmanSubscribeTestCase(TestCase):
                   "test-value", version=2)
         self.ml.settings["subscription_policy"] = "open"
         self.ml.get_member.side_effect = ValueError
-        response_dict = {'token_owner': 'subscriber', 'http_etag': '"deadbeef"',
+        response_dict = {'token_owner': 'subscriber',
+                         'http_etag': '"deadbeef"',
                          'token': 'deadbeefdeadbeef'}
         self.ml.subscribe.side_effect = lambda *a, **kw: response_dict
         try:
@@ -121,11 +124,6 @@ class MailmanSubscribeTestCase(TestCase):
     def test_subscribe_different_address(self):
         self.ml.settings["subscription_policy"] = "open"
         self.ml.get_member.side_effect = ValueError
-        #class Prefs(dict):
-        #    save = Mock()
-        #member = Mock()
-        #member.preferences = Prefs()
-        #self.ml.subscribe.side_effect = lambda *a, **kw: member
         self.ml.subscribe.side_effect = lambda *a, **kw: {}
         mailman.subscribe(
             "list@example.com", self.user, "otheremail@example.com",
@@ -134,9 +132,6 @@ class MailmanSubscribeTestCase(TestCase):
         self.ml.subscribe.assert_called_with(
             'otheremail@example.com', "Other Display Name",
             pre_verified=True, pre_confirmed=True)
-        #self.assertEqual(member.preferences["delivery_status"], "by_user")
-        #self.assertTrue(member.preferences.save.called)
-
 
 
 class MailmanSyncTestCase(TestCase):
@@ -176,6 +171,7 @@ class MailmanSyncTestCase(TestCase):
             for i in range(1, 23)
             ]
         mlists[1].settings["archive_policy"] = "never"
+
         def _make_page(count, page):
             return mailman.FakeMMPage(mlists, count, page)
         self.mailman_client.get_list_page.side_effect = _make_page
@@ -193,7 +189,7 @@ class MailmanSyncTestCase(TestCase):
         self.assertEqual(self.mailman_client.get_list.call_count, 20)
 
 
-@override_settings(CACHES = {
+@override_settings(CACHES={
     'default': {'BACKEND': 'django.core.cache.backends.dummy.DummyCache'}
 })
 class AddUserToMailmanTestCase(TestCase):
@@ -210,7 +206,7 @@ class AddUserToMailmanTestCase(TestCase):
         self.mailman_client.get_user.side_effect = lambda e: self.mm_user
         self.mm_addresses = {}
 
-    def _get_or_add_address(self, email, **kw): # pylint: disable-msg=unused-argument
+    def _get_or_add_address(self, email, **kw):
         try:
             mm_addr = self.mm_addresses[email]
         except KeyError:

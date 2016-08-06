@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 # Copyright (C) 2011-2012 by the Free Software Foundation, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -54,7 +56,8 @@ def guess_extension(ctype, ext):
 def get_charset(message, default="ascii", guess=False):
     """
     Get the message charset.
-    From: http://ginstrom.com/scribbles/2007/11/19/parsing-multilingual-email-with-python/
+
+    http://ginstrom.com/scribbles/2007/11/19/parsing-multilingual-email-with-python/
     """
     if message.get_content_charset():
         return message.get_content_charset().decode("ascii")
@@ -91,19 +94,19 @@ class Scrubber(object):
     """
     Scrubs a single message, extracts attachments, and return the text and the
     attachments.
-    See also: http://ginstrom.com/scribbles/2007/11/19/parsing-multilingual-email-with-python/
+
+    http://ginstrom.com/scribbles/2007/11/19/parsing-multilingual-email-with-python/
     """
 
     def __init__(self, mlist, msg):
         self.mlist = mlist
         self.msg = msg
 
-
     def scrub(self):
         attachments = []
-        sanitize = 1 # TODO: implement other options
-        #outer = True
-        # Now walk over all subparts of this message and scrub out various types
+        sanitize = 1  # TODO: implement other options
+        # Now walk over all subparts of this message and scrub out various
+        # types
         for part_num, part in enumerate(self.msg.walk()):
             ctype = part.get_content_type()
             if not isinstance(ctype, unicode):
@@ -111,51 +114,17 @@ class Scrubber(object):
             # If the part is text/plain, we leave it alone
             if ctype == 'text/plain':
                 disposition = part.get('content-disposition')
-                if disposition and disposition.decode("ascii", "replace"
+                if disposition and disposition.decode(
+                        "ascii", "replace"
                         ).strip().startswith("attachment"):
                     # part is attached
                     attachments.append(self.parse_attachment(part, part_num))
                     part.set_payload('')
             elif ctype == 'text/html' and isinstance(sanitize, IntType):
-#            if sanitize == 0:
-#                if outer:
-#                    raise DiscardMessage
-#                replace_payload_by_text(part,
-#                                 _('HTML attachment scrubbed and removed'),
-#                                 # Adding charset arg and removing content-type
-#                                 # sets content-type to text/plain
-#                                 lcset)
-#            elif sanitize == 2:
-#                # By leaving it alone, Pipermail will automatically escape it
-#                pass
-#            elif sanitize == 3:
-#                # Pull it out as an attachment but leave it unescaped.  This
-#                # is dangerous, but perhaps useful for heavily moderated
-#                # lists.
-#                attachments.append(self.parse_attachment(part, part_num, filter_html=False))
-#                replace_payload_by_text(part, _("""\
-#An HTML attachment was scrubbed...
-#URL: %(url)s
-#"""), lcset)
-#            else:
                 if sanitize == 1:
                     # Don't HTML-escape it, this is the frontend's job
-                    ## HTML-escape it and store it as an attachment, but make it
-                    ## look a /little/ bit prettier. :(
-                    #payload = websafe(part.get_payload(decode=True))
-                    ## For whitespace in the margin, change spaces into
-                    ## non-breaking spaces, and tabs into 8 of those.  Then use a
-                    ## mono-space font.  Still looks hideous to me, but then I'd
-                    ## just as soon discard them.
-                    #def doreplace(s):
-                    #    return s.expandtabs(8).replace(' ', '&nbsp;')
-                    #lines = [doreplace(s) for s in payload.split('\n')]
-                    #payload = '<tt>\n' + BR.join(lines) + '\n</tt>\n'
-                    #part.set_payload(payload)
-                    ## We're replacing the payload with the decoded payload so this
-                    ## will just get in the way.
-                    #del part['content-transfer-encoding']
-                    attachments.append(self.parse_attachment(part, part_num, filter_html=False))
+                    attachments.append(self.parse_attachment(
+                        part, part_num, filter_html=False))
                     part.set_payload('')
             elif ctype == 'message/rfc822':
                 # This part contains a submessage, so it too needs scrubbing
@@ -168,26 +137,27 @@ class Scrubber(object):
                 ctype = part.get_content_type()
                 if not isinstance(ctype, unicode):
                     ctype.decode("ascii")
-                # XXX Under email 2.5, it is possible that payload will be None.
-                # This can happen when you have a Content-Type: multipart/* with
-                # only one part and that part has two blank lines between the
-                # first boundary and the end boundary.  In email 3.0 you end up
-                # with a string in the payload.  I think in this case it's safe to
-                # ignore the part.
+                # XXX Under email 2.5, it is possible that payload will be
+                # None. This can happen when you have a Content-Type:
+                # multipart/* with only one part and that part has two blank
+                # lines between the first boundary and the end boundary.  In
+                # email 3.0 you end up with a string in the payload.  I think
+                # in this case it's safe to ignore the part.
                 if payload is None:
                     continue
                 attachments.append(self.parse_attachment(part, part_num))
-            #outer = False
         # We still have to sanitize multipart messages to flat text because
-        # Pipermail can't handle messages with list payloads.  This is a kludge;
-        # def (n) clever hack ;).
+        # Pipermail can't handle messages with list payloads.  This is a
+        # kludge; def (n) clever hack ;).
         if self.msg.is_multipart():
-            # We now want to concatenate all the parts which have been scrubbed to
-            # text/plain, into a single text/plain payload.  We need to make sure
-            # all the characters in the concatenated string are in the same
-            # encoding, so we'll use the 'replace' key in the coercion call.
+            # We now want to concatenate all the parts which have been scrubbed
+            # to text/plain, into a single text/plain payload.  We need to make
+            # sure all the characters in the concatenated string are in the
+            # same encoding, so we'll use the 'replace' key in the coercion
+            # call.
             # BAW: Martin's original patch suggested we might want to try
-            # generalizing to utf-8, and that's probably a good idea (eventually).
+            # generalizing to utf-8, and that's probably a good idea
+            # (eventually).
             text = []
             for part in self.msg.walk():
                 # TK: bug-id 1099138 and multipart
@@ -200,7 +170,7 @@ class Scrubber(object):
                 partctype = part.get_content_type()
                 if partctype != 'text/plain' and (partctype != 'text/html' or
                                                   sanitize != 2):
-                    #text.append(_('Skipped content of type %(partctype)s\n'))
+                    # text.append(_('Skipped content of type %(partctype)s\n'))
                     continue
                 try:
                     t = part.get_payload(decode=True) or ''
@@ -240,15 +210,13 @@ class Scrubber(object):
 
         return (text, attachments)
 
-
     def parse_attachment(self, part, counter, filter_html=True):
-        # pylint: disable=unused-argument
         # Store name, content-type and size
         # Figure out the attachment type and get the decoded data
         decodedpayload = part.get_payload(decode=True)
-        # BAW: mimetypes ought to handle non-standard, but commonly found types,
-        # e.g. image/jpg (should be image/jpeg).  For now we just store such
-        # things as application/octet-streams since that seems the safest.
+        # BAW: mimetypes ought to handle non-standard, but commonly found
+        # types, e.g. image/jpg (should be image/jpeg).  For now we just store
+        # such things as application/octet-streams since that seems the safest.
         ctype = part.get_content_type()
         if not isinstance(ctype, unicode):
             ctype = ctype.decode("ascii")
@@ -264,11 +232,11 @@ class Scrubber(object):
         # For safety, we should confirm this is valid ext for content-type
         # but we can use fnext if we introduce fnext filtering
         # TODO: re-implement this
-        #if mm_cfg.SCRUBBER_USE_ATTACHMENT_FILENAME_EXTENSION:
-        #    # HTML message doesn't have filename :-(
-        #    ext = fnext or guess_extension(ctype, fnext)
-        #else:
-        #    ext = guess_extension(ctype, fnext)
+        # if mm_cfg.SCRUBBER_USE_ATTACHMENT_FILENAME_EXTENSION:
+        #     # HTML message doesn't have filename :-(
+        #     ext = fnext or guess_extension(ctype, fnext)
+        # else:
+        #     ext = guess_extension(ctype, fnext)
         ext = fnext or guess_extension(ctype, fnext)
         if not ext:
             # We don't know what it is, so assume it's just a shapeless
@@ -305,7 +273,5 @@ class Scrubber(object):
         if ctype == 'message/rfc822':
             submsg = part.get_payload()
             # Don't HTML-escape it, this is the frontend's job
-            ## BAW: I'm sure we can eventually do better than this. :(
-            #decodedpayload = websafe(str(submsg))
             decodedpayload = str(submsg)
         return (counter, filebase+ext, ctype, charset, decodedpayload)

@@ -12,9 +12,9 @@ django18:
 #  - sqlite
 #  - gcc
 
-pylint:
+lint:
   script:
-  - tox -e pylint
+  - tox -e lint
   tags:
   - sqlite
   - gcc

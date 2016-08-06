@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -19,7 +20,8 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from __future__ import with_statement, absolute_import, unicode_literals, print_function
+from __future__ import (
+    with_statement, absolute_import, unicode_literals, print_function)
 
 import os
 import mailbox
@@ -45,7 +47,6 @@ def summary(request, list_name=None):
 
 
 def arch_month(request, list_name, year, month_name, summary_type="thread"):
-    # pylint: disable=unused-argument
     mlist = get_list_by_name(list_name, request.get_host())
     return redirect(reverse('hk_archives_with_month', kwargs={
             'mlist_fqdn': mlist.name,
@@ -59,7 +60,6 @@ def arch_month_mbox(request, list_name, year, month_name):
     The messages must be rebuilt before being added to the mbox file, including
     headers and the textual content, making sure to escape email addresses.
     """
-    # pylint: disable=unused-argument,unreachable
     return HttpResponse("Not implemented yet.",
                         content_type="text/plain", status=500)
     mlist = get_list_by_name(list_name, request.get_host())
@@ -71,9 +71,11 @@ def arch_month_mbox(request, list_name, year, month_name):
     else:
         end_month = 1
     end_date = datetime.datetime(year, end_month, 1)
-    messages = Email.objects.filter(mailinglist=mlist, date__gte=begin_date, date__lte=end_date).order_by("date")
-    mboxfile, mboxfilepath = tempfile.mkstemp(prefix="hyperkitty-",
-                                              suffix=".mbox.gz")
+    messages = Email.objects.filter(
+        mailinglist=mlist, date__gte=begin_date, date__lte=end_date
+        ).order_by("date")
+    mboxfile, mboxfilepath = tempfile.mkstemp(
+        prefix="hyperkitty-", suffix=".mbox.gz")
     os.close(mboxfile)
     mbox = mailbox.mbox(mboxfilepath)
     for msg in messages:
@@ -88,21 +90,20 @@ def arch_month_mbox(request, list_name, year, month_name):
     content.close()
     response['Content-Type'] = "application/mbox+gz"
     response['Content-Disposition'] = 'attachment; filename=%d-%s.txt.gz' \
-            % (year, month_name)
+        % (year, month_name)
     response['Content-Length'] = len(response.content)
     os.remove(mboxfilepath)
     return response
 
 
 def message(request, list_name, year, month_name, msg_num):
-    # pylint: disable=unused-argument
     mlist = get_list_by_name(list_name, request.get_host())
-    msg_num = int(msg_num) - 1 # pipermail starts at 1, not 0
+    msg_num = int(msg_num) - 1  # pipermail starts at 1, not 0
     if msg_num < 0:
         raise Http404("No such message in this mailing-list.")
     try:
-        msg = Email.objects.filter(mailinglist=mlist
-            ).order_by("archived_date")[msg_num]
+        msg = Email.objects.filter(
+            mailinglist=mlist).order_by("archived_date")[msg_num]
     except IndexError:
         raise Http404("No such message in this mailing-list.")
     return redirect(reverse('hk_message_index', kwargs={

@@ -23,7 +23,6 @@ from hyperkitty.models import MailingList, Email
 from hyperkitty.tests.utils import TestCase, get_test_file
 
 
-
 class CommandTestCase(TestCase):
 
     def setUp(self):
@@ -54,17 +53,16 @@ class CommandTestCase(TestCase):
         mbox.add(msg2)
         # do the import
         output = StringIO()
-        with patch("hyperkitty.management.commands.hyperkitty_import.compute_thread_order_and_depth") as mock_compute:
+        with patch("hyperkitty.management.commands.hyperkitty_import"
+                   ".compute_thread_order_and_depth") as mock_compute:
             kw = self.common_cmd_args.copy()
             kw["stdout"] = kw["stderr"] = output
             call_command('hyperkitty_import',
                          os.path.join(self.tmpdir, "test.mbox"), **kw)
-        #print(mock_compute.call_args_list)
         self.assertEqual(mock_compute.call_count, 1)
         thread = mock_compute.call_args[0][0]
         self.assertEqual(thread.emails.count(), 1)
         self.assertEqual(thread.starting_email.message_id, "msg2")
-        #print(output.getvalue())
 
     def test_since_auto(self):
         # When there's mail already and the "since" option is not used, it
@@ -78,8 +76,8 @@ class CommandTestCase(TestCase):
         mailbox.mbox(os.path.join(self.tmpdir, "test.mbox"))
         # do the import
         output = StringIO()
-        with patch("hyperkitty.management.commands.hyperkitty_import.DbImporter"
-            ) as DbImporterMock:
+        with patch("hyperkitty.management.commands.hyperkitty_import"
+                   ".DbImporter") as DbImporterMock:
             instance = Mock()
             instance.impacted_thread_ids = []
             DbImporterMock.side_effect = lambda *a, **kw: instance
@@ -101,8 +99,8 @@ class CommandTestCase(TestCase):
         mailbox.mbox(os.path.join(self.tmpdir, "test.mbox"))
         # do the import
         output = StringIO()
-        with patch("hyperkitty.management.commands.hyperkitty_import.DbImporter"
-            ) as DbImporterMock:
+        with patch("hyperkitty.management.commands.hyperkitty_import"
+                   ".DbImporter") as DbImporterMock:
             instance = Mock()
             instance.impacted_thread_ids = []
             DbImporterMock.side_effect = lambda *a, **kw: instance
@@ -137,7 +135,7 @@ class CommandTestCase(TestCase):
         """badly encoded message, only fails on PostgreSQL"""
         db_engine = settings.DATABASES[DEFAULT_DB_ALIAS]["ENGINE"]
         if db_engine == "django.db.backends.sqlite3":
-            raise SkipTest # SQLite will accept anything
+            raise SkipTest  # SQLite will accept anything
         with open(get_test_file("payload-utf8-wrong.txt")) as email_file:
             msg = message_from_file(email_file)
         mbox = mailbox.mbox(os.path.join(self.tmpdir, "test.mbox"))
@@ -209,7 +207,6 @@ class CommandTestCase(TestCase):
         kw["stdout"] = kw["stderr"] = output
         call_command('hyperkitty_import',
                      os.path.join(self.tmpdir, "test.mbox"), **kw)
-        #print(output.getvalue())
         # Message must have been accepted
         self.assertEqual(MailingList.objects.count(), 1)
         self.assertEqual(Email.objects.count(), 1)
@@ -230,12 +227,12 @@ class CommandTestCase(TestCase):
             mbox.add(msg)
         # do the import
         output = StringIO()
-        with patch("hyperkitty.management.commands.hyperkitty_import.compute_thread_order_and_depth") as mock_compute:
+        with patch("hyperkitty.management.commands.hyperkitty_import"
+                   ".compute_thread_order_and_depth") as mock_compute:
             kw = self.common_cmd_args.copy()
             kw["stdout"] = kw["stderr"] = output
             call_command('hyperkitty_import',
                          os.path.join(self.tmpdir, "test.mbox"), **kw)
-        #print(mock_compute.call_args_list)
         called_thread_ids = set([
             call[0][0].starting_email.message_id
             for call in mock_compute.call_args_list
@@ -243,4 +240,3 @@ class CommandTestCase(TestCase):
         self.assertEqual(
             called_thread_ids,
             set([("msg%d" % i) for i in range(250)]))
-        #print(output.getvalue())
