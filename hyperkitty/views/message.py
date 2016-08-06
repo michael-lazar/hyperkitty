@@ -31,7 +31,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.exceptions import SuspiciousOperation
-from django.template import RequestContext, loader
+from django.template import loader
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import gettext as _
 
@@ -129,10 +129,10 @@ def vote(request, mlist_fqdn, message_id_hash):
     # Extract all the votes for this message to refresh it
     message.myvote = message.votes.filter(user=request.user).first()
     t = loader.get_template('hyperkitty/fragments/like_form.html')
-    html = t.render(RequestContext(request, {
+    html = t.render({
             "object": message,
             "message_id_hash": message_id_hash,
-            }))
+            }, request)
 
     votes = message.get_votes()
     result = { "like": votes["likes"], "dislike": votes["dislikes"],
@@ -188,7 +188,7 @@ def reply(request, mlist_fqdn, message_id_hash):
             "level": message.thread_depth, # no need to increment, level = thread_depth - 1
         }
         t = loader.get_template('hyperkitty/ajax/temp_message.html')
-        html = t.render(RequestContext(request, { 'email': email_reply }))
+        html = t.render({ 'email': email_reply }, request)
     # TODO: make the message below translatable.
     result = {"result": "Your reply has been sent and is being processed.",
               "message_html": html}

@@ -32,7 +32,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from django.template import RequestContext, loader
+from django.template import loader
 from django.utils.timezone import utc
 from django.utils.translation import gettext as _
 from haystack.query import SearchQuerySet
@@ -212,7 +212,7 @@ def replies(request, mlist_fqdn, threadid):
                                              limit=chunk_size)
 
     replies_tpl = loader.get_template('hyperkitty/ajax/replies.html')
-    replies_html = replies_tpl.render(RequestContext(request, context))
+    replies_html = replies_tpl.render(context, request)
     response = {"replies_html": replies_html,
                 "more_pending": False,
                 "next_offset": None,
@@ -265,9 +265,7 @@ def tags(request, mlist_fqdn, threadid):
 
     # Now refresh the tag list
     tpl = loader.get_template('hyperkitty/threads/tags.html')
-    html = tpl.render(RequestContext(request, {
-            "thread": thread,
-            }))
+    html = tpl.render({"thread": thread}, request)
 
     response = {"tags": [ t.name for t in thread.tags.distinct() ],
                 "html": html}
