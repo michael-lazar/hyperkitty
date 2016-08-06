@@ -25,7 +25,6 @@ from django.conf.urls import url
 from django.views.generic.base import TemplateView
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.contrib.auth.views import logout as logout_view
 
 from hyperkitty.api import (
     mailinglist as api_mailinglist, email as api_email,

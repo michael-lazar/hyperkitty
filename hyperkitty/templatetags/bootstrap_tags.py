@@ -18,6 +18,7 @@
 
 from django import template
 
+# pylint: disable-msg=unused-argument
 
 register = template.Library()
 

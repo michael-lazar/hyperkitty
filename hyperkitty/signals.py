@@ -31,6 +31,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+# from allauth.account.signals import user_logged_in
 # @receiver(user_logged_in)
 # def on_user_logged_in(sender, **kwargs):
 #     # Sent when a user logs in.
@@ -48,6 +49,7 @@ def on_user_signed_up(sender, **kwargs):
                 add_address_to_mailman_user(sociallogin.user, address)
 
 
+# from allauth.account.signals import email_added
 # @receiver(email_added)
 # def on_email_added(sender, **kwargs):
 #     print("ON_EMAIL_ADDED", kwargs.keys())
@@ -66,6 +68,7 @@ def on_email_confirmed(sender, **kwargs):
     add_address_to_mailman_user(email_address.user, email_address.email)
 
 
+# from hyperkitty.lib.mailman import get_mailman_client
 # @receiver(email_changed)
 # def on_email_changed(sender, **kwargs):
 #     # Sent when a primary email address has been changed.
