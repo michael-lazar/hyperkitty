@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -18,8 +19,6 @@
 #
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
-
-# pylint: disable=no-init,unnecessary-lambda,unused-argument
 
 from __future__ import absolute_import, unicode_literals, print_function
 
@@ -50,8 +49,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
-
 class Email(models.Model):
     """
     An archived email, from a mailing-list. It is identified by both the list
@@ -67,17 +64,18 @@ class Email(models.Model):
     timezone = models.SmallIntegerField()
     in_reply_to = models.CharField(
         max_length=255, null=True, blank=True, db_index=True)
-    parent = models.ForeignKey("self",
-        blank=True, null=True, on_delete=models.SET_NULL,
+    parent = models.ForeignKey(
+        "self", blank=True, null=True, on_delete=models.SET_NULL,
         related_name="children")
     thread = models.ForeignKey("Thread", related_name="emails")
     archived_date = models.DateTimeField(default=now, db_index=True)
     thread_depth = models.IntegerField(default=0)
     thread_order = models.IntegerField(default=0, db_index=True)
 
+    ADDRESS_REPLACE_RE = re.compile(r"([\w.+-]+)@([\w.+-]+)")
+
     class Meta:
         unique_together = ("mailinglist", "message_id")
-
 
     def get_votes(self):
         return get_votes(self)
@@ -86,7 +84,7 @@ class Email(models.Model):
         # Checks if the user has already voted for this message.
         existing = self.votes.filter(user=user).first()
         if existing is not None and existing.value == value:
-            return # Vote already recorded (should I raise an exception?)
+            return  # Vote already recorded (should I raise an exception?)
         if value not in (0, 1, -1):
             raise ValueError("A vote can only be +1 or -1 (or 0 to cancel)")
         if existing is not None:
@@ -106,6 +104,7 @@ class Email(models.Model):
             raise ValueError("An email can't be its own parent")
         # Compute the subthread
         subthread = [self]
+
         def _collect_children(current_email):
             children = list(current_email.children.all())
             if not children:
@@ -138,9 +137,6 @@ class Email(models.Model):
             if former_thread.emails.count() == 0:
                 former_thread.delete()
         compute_thread_order_and_depth(parent.thread)
-
-
-    ADDRESS_REPLACE_RE = re.compile(r"([\w.+-]+)@([\w.+-]+)")
 
     def as_message(self, escape_addresses=True):
         # http://wordeology.com/computer/how-to-send-good-unicode-email-with-python.html
@@ -208,7 +204,7 @@ class Email(models.Model):
         return "@@" in self.content
 
     def _set_message_id_hash(self):
-        from hyperkitty.lib.utils import get_message_id_hash # circular import
+        from hyperkitty.lib.utils import get_message_id_hash  # circular import
         if not self.message_id_hash:
             self.message_id_hash = get_message_id_hash(self.message_id)
 
@@ -224,7 +220,6 @@ class Email(models.Model):
                      % (self.mailinglist_id, self.date.year, self.date.month))
         # don't warm up the cache in batch mode (mass import)
         if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
-            # pylint: disable=pointless-statement
             try:
                 self.thread.emails_count
                 self.thread.participants_count
@@ -233,7 +228,7 @@ class Email(models.Model):
                 self.mailinglist.get_participants_count_for_month(
                     self.date.year, self.date.month)
             except (Thread.DoesNotExist, MailingList.DoesNotExist):
-                pass # it's post_delete, those may have been deleted too
+                pass  # it's post_delete, those may have been deleted too
 
     def on_post_init(self):
         self._set_message_id_hash()
@@ -241,13 +236,12 @@ class Email(models.Model):
     def on_pre_save(self):
         self._set_message_id_hash()
         # Make sure there is only one email with parent_id == None in a thread
-        if self.parent_id != None:
+        if self.parent_id is not None:
             return
         starters = Email.objects.filter(
                 thread=self.thread, parent_id__isnull=True
             ).values_list("id", flat=True)
         if len(starters) > 0 and list(starters) != [self.id]:
-            # pylint: disable=nonstandard-exception
             raise IntegrityError("There can be only one email with "
                                  "parent_id==None in the same thread")
 
@@ -261,9 +255,9 @@ class Email(models.Model):
         if not children:
             return
         if self.parent is None:
-            # temporarily set the email's parent_id to not None, to allow the next
-            # email to be the starting email (there's a check on_save for duplicate
-            # thread starters)
+            #  Temporarily set the email's parent_id to not None, to allow the
+            #  next email to be the starting email (there's a check on_save for
+            #  duplicate thread starters)
             self.parent = self
             self.save(update_fields=["parent"])
             starter = children[0]
@@ -294,22 +288,25 @@ class Email(models.Model):
 def Email_on_post_init(sender, **kwargs):
     kwargs["instance"].on_post_init()
 
+
 @receiver(pre_save, sender=Email)
 def Email_on_pre_save(sender, **kwargs):
     kwargs["instance"].on_pre_save()
+
 
 @receiver(post_save, sender=Email)
 def Email_on_post_save(sender, **kwargs):
     kwargs["instance"].on_post_save()
 
+
 @receiver(pre_delete, sender=Email)
 def Email_on_pre_delete(sender, **kwargs):
     kwargs["instance"].on_pre_delete()
 
+
 @receiver(post_delete, sender=Email)
 def Email_on_post_delete(sender, **kwargs):
     kwargs["instance"].on_post_delete()
-
 
 
 class Attachment(models.Model):
@@ -327,6 +324,7 @@ class Attachment(models.Model):
     def on_pre_save(self):
         # set the size
         self.size = len(self.content)
+
 
 @receiver(pre_save, sender=Attachment)
 def Attachment_on_pre_save(sender, **kwargs):

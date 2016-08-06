@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@ from django.core.cache import cache as django_cache
 
 MISSING = object()
 
+
 class CacheProxy:
 
     def __init__(self):
@@ -46,4 +47,3 @@ class CacheProxy:
         return value
 
 cache = CacheProxy()
-

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -18,8 +19,6 @@
 #
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 
-# pylint: disable=unnecessary-lambda
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 import uuid
@@ -35,13 +34,13 @@ from hyperkitty.models import MailingList, ArchivePolicy
 from hyperkitty.tests.utils import SearchEnabledTestCase
 
 
-
 class SearchViewsTestCase(SearchEnabledTestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(
             'testuser', 'test@example.com', 'testPass')
-        self.mailman_client.get_list.side_effect = lambda name: FakeMMList(name)
+        self.mailman_client.get_list.side_effect = \
+            lambda name: FakeMMList(name)
         self.mm_user = Mock()
         self.mailman_client.get_user.side_effect = lambda name: self.mm_user
         self.mm_user.user_id = uuid.uuid1().int
@@ -56,7 +55,6 @@ class SearchViewsTestCase(SearchEnabledTestCase):
         return add_to_list(mlist.name, msg)
 
     def test_search(self):
-        #self.client.login(username='testuser', password='testPass')
         response = self.client.get(reverse("hk_search"), {"q": "dummy"})
         self.assertEqual(response.status_code, 200)
 
@@ -68,7 +66,8 @@ class SearchViewsTestCase(SearchEnabledTestCase):
         mm_mlist = FakeMMList("public@example.com")
         self.mailman_client.get_list.side_effect = lambda name: mm_mlist
         self._send_message(mlist)
-        response = self.client.get(reverse("hk_search"),
+        response = self.client.get(
+            reverse("hk_search"),
             {"q": "dummy", "mlist": "public@example.com"})
         self.assertContains(response, "Dummy message")
 
@@ -84,11 +83,13 @@ class SearchViewsTestCase(SearchEnabledTestCase):
             FakeMMMember("private.example.com", self.user.email),
         ]
         self._send_message(mlist)
-        response = self.client.get(reverse("hk_search"),
+        response = self.client.get(
+            reverse("hk_search"),
             {"q": "dummy", "mlist": "private@example.com"})
         self.assertEqual(response.status_code, 403)
         self.client.login(username='testuser', password='testPass')
-        response = self.client.get(reverse("hk_search"),
+        response = self.client.get(
+            reverse("hk_search"),
             {"q": "dummy", "mlist": "private@example.com"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Dummy message")
@@ -110,9 +111,12 @@ class SearchViewsTestCase(SearchEnabledTestCase):
             "private@example.com": FakeMMList("private@example.com"),
             "private-sub@example.com": FakeMMList("private-sub@example.com"),
         }
-        mailman_lists["private@example.com"].settings["archive_policy"] = "private"
-        mailman_lists["private-sub@example.com"].settings["archive_policy"] = "private"
-        self.mailman_client.get_list.side_effect = lambda name: mailman_lists[name]
+        mailman_lists["private@example.com"].settings["archive_policy"] = \
+            "private"
+        mailman_lists["private-sub@example.com"].settings["archive_policy"] = \
+            "private"
+        self.mailman_client.get_list.side_effect = \
+            lambda name: mailman_lists[name]
         # Subscribe the user to one of the private lists
         self.mm_user.subscriptions = [
             FakeMMMember("private-sub.example.com", self.user.email),
@@ -145,7 +149,8 @@ class SearchViewsTestCase(SearchEnabledTestCase):
         for query in [{"q": "dummy"},
                       {"q": "dummy", "mlist": "public@example.com"}]:
             response = self.client.get(reverse("hk_search"), query)
-            self.assertNotContains(response, "email@example.com",
+            self.assertNotContains(
+                response, "email@example.com",
                 msg_prefix="With query %r" % query, status_code=200)
 
     def test_email_in_link_in_body(self):
@@ -187,5 +192,6 @@ class SearchViewsTestCase(SearchEnabledTestCase):
         for query in [{"q": "dummy"},
                       {"q": "dummy", "mlist": "public@example.com"}]:
             response = self.client.get(reverse("hk_search"), query)
-            self.assertNotContains(response, "someone-else@example.com",
+            self.assertNotContains(
+                response, "someone-else@example.com",
                 msg_prefix="With query %r" % query, status_code=200)

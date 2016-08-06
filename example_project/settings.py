@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Django settings for HyperKitty.
 
@@ -27,7 +27,7 @@ ADMINS = (
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.8/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = [
-    "localhost", # Archiving API from Mailman, keep it.
+    "localhost",  # Archiving API from Mailman, keep it.
     "lists.your-domain.org",
     # Add here all production URLs you may have.
 ]
@@ -59,7 +59,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    #'django.contrib.sites',
+    # 'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'social.apps.django_app.default',
@@ -84,7 +84,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    #'hyperkitty.middleware.SSLRedirect',
     'hyperkitty.middleware.TimezoneMiddleware',
 )
 
@@ -122,13 +121,18 @@ WSGI_APPLICATION = 'wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(BASE_DIR, 'hyperkitty.db'),  # DB name or path to database file if using sqlite3.
+        # Use 'sqlite3', 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.sqlite3',
+        # DB name or path to database file if using sqlite3.
+        'NAME': os.path.join(BASE_DIR, 'hyperkitty.db'),
         # The following settings are not used with sqlite3:
         'USER': 'hyperkitty',
         'PASSWORD': 'hkpass',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
+        # HOST: empty for localhost through domain sockets or '127.0.0.1' for
+        # localhost through TCP.
+        'HOST': '',
+        # PORT: set to empty string for default.
+        'PORT': '',
     }
     # Example for PostgreSQL (recommanded for production):
     #'default': {
@@ -143,12 +147,12 @@ DATABASES = {
 
 # If you're behind a proxy, use the X-Forwarded-Host header
 # See https://docs.djangoproject.com/en/1.8/ref/settings/#use-x-forwarded-host
-#USE_X_FORWARDED_HOST = True
+# USE_X_FORWARDED_HOST = True
 
 # And if your proxy does your SSL encoding for you, set SECURE_PROXY_SSL_HEADER
-# see https://docs.djangoproject.com/en/1.8/ref/settings/#secure-proxy-ssl-header
-#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_SCHEME', 'https')
+# https://docs.djangoproject.com/en/1.8/ref/settings/#secure-proxy-ssl-header
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_SCHEME', 'https')
 
 
 # Internationalization
@@ -173,7 +177,7 @@ USE_TZ = True
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-#STATIC_ROOT = ''
+# STATIC_ROOT = ''
 STATIC_ROOT = BASE_DIR + '/static/'
 
 # URL prefix for static files.
@@ -185,7 +189,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    #BASE_DIR + '/static/',
+    # BASE_DIR + '/static/',
 )
 
 # List of finder classes that know how to find static files in
@@ -193,18 +197,19 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
     'compressor.finders.CompressorFinder',
 )
 
-# Django 1.6+ defaults to a JSON serializer, but it won't work with django-openid, see
+# Django 1.6+ defaults to a JSON serializer, but it won't work with
+# django-openid, see
 # https://bugs.launchpad.net/django-openid-auth/+bug/1252826
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 
-LOGIN_URL          = 'hk_user_login'
+LOGIN_URL = 'hk_user_login'
 LOGIN_REDIRECT_URL = 'hk_root'
-LOGOUT_URL         = 'hk_user_logout'
+LOGOUT_URL = 'hk_user_logout'
 
 # Use the email username as identifier, but truncate it because
 # the User.username field is only 30 chars long.
@@ -218,17 +223,17 @@ BROWSERID_VERIFY_CLASS = "django_browserid.views.Verify"
 # will appear to be coming from. Make sure you set a valid domain name,
 # otherwise the emails may get rejected.
 # https://docs.djangoproject.com/en/1.8/ref/settings/#default-from-email
-#DEFAULT_FROM_EMAIL = "mailing-lists@you-domain.org"
+# DEFAULT_FROM_EMAIL = "mailing-lists@you-domain.org"
 
 # If you enable email reporting for error messages, this is where those emails
 # will appear to be coming from. Make sure you set a valid domain name,
 # otherwise the emails may get rejected.
 # https://docs.djangoproject.com/en/1.8/ref/settings/#std:setting-SERVER_EMAIL
-#SERVER_EMAIL = 'root@your-domain.org'
+# SERVER_EMAIL = 'root@your-domain.org'
 
 
 # Compatibility with Bootstrap 3
-from django.contrib.messages import constants as messages
+from django.contrib.messages import constants as messages  # flake8: noqa
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
@@ -242,11 +247,11 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 # Social auth
 #
 AUTHENTICATION_BACKENDS = (
-    #'social.backends.open_id.OpenIdAuth',
+    # 'social.backends.open_id.OpenIdAuth',
     # http://python-social-auth.readthedocs.org/en/latest/backends/google.html
-    #'social.backends.google.GoogleOpenId',
-    #'social.backends.google.GoogleOAuth2',
-    #'social.backends.twitter.TwitterOAuth',
+    # 'social.backends.google.GoogleOpenId',
+    # 'social.backends.google.GoogleOAuth2',
+    # 'social.backends.twitter.TwitterOAuth',
     'social.backends.yahoo.YahooOpenId',
     'django_browserid.auth.BrowserIDBackend',
     'django.contrib.auth.backends.ModelBackend',
@@ -271,23 +276,23 @@ SOCIAL_AUTH_PIPELINE = (
 )
 
 
-
 #
 # Gravatar
 # https://github.com/twaddington/django-gravatar
 #
 # Gravatar base url.
-#GRAVATAR_URL = 'http://cdn.libravatar.org/'
+# GRAVATAR_URL = 'http://cdn.libravatar.org/'
 # Gravatar base secure https url.
-#GRAVATAR_SECURE_URL = 'https://seccdn.libravatar.org/'
+# GRAVATAR_SECURE_URL = 'https://seccdn.libravatar.org/'
 # Gravatar size in pixels.
-#GRAVATAR_DEFAULT_SIZE = '80'
-# An image url or one of the following: 'mm', 'identicon', 'monsterid', 'wavatar', 'retro'.
-#GRAVATAR_DEFAULT_IMAGE = 'mm'
+# GRAVATAR_DEFAULT_SIZE = '80'
+# An image url or one of the following: 'mm', 'identicon', 'monsterid',
+# 'wavatar', 'retro'.
+# GRAVATAR_DEFAULT_IMAGE = 'mm'
 # One of the following: 'g', 'pg', 'r', 'x'.
-#GRAVATAR_DEFAULT_RATING = 'g'
+# GRAVATAR_DEFAULT_RATING = 'g'
 # True to use https by default, False for plain http.
-#GRAVATAR_DEFAULT_SECURE = True
+# GRAVATAR_DEFAULT_SECURE = True
 
 #
 # django-compressor
@@ -303,10 +308,10 @@ COMPRESS_PRECOMPILERS = (
 # recompiled on each requests. It means running an additional "compress"
 # management command after each code upgrade.
 # http://django-compressor.readthedocs.io/en/latest/usage/#offline-compression
-#COMPRESS_OFFLINE = True
+# COMPRESS_OFFLINE = True
 
 # Needed for debug mode
-#INTERNAL_IPS = ('127.0.0.1',)
+# INTERNAL_IPS = ('127.0.0.1',)
 
 
 #
@@ -411,10 +416,6 @@ APP_NAME = 'List Archives'
 # Allow authentication with the internal user database?
 # By default, only a login through Persona or your email provider is allowed.
 USE_INTERNAL_AUTH = False
-
-# Use SSL when logged in. You need to enable the SSLRedirect middleware for
-# this feature to work.
-#USE_SSL = True
 
 # Only display mailing-lists from the same virtual host as the webserver
 FILTER_VHOST = False

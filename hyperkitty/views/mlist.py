@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -41,7 +42,6 @@ from hyperkitty.lib.view_helpers import (
 from hyperkitty.lib.paginator import paginate
 
 
-
 @check_mlist_private
 def archives(request, mlist_fqdn, year=None, month=None, day=None):
     if year is None and month is None:
@@ -63,8 +63,7 @@ def archives(request, mlist_fqdn, year=None, month=None, day=None):
         list_title = date_format(begin_date, "F Y")
         no_results_text = "for this month"
     else:
-        #list_title = date_format(begin_date, settings.DATE_FORMAT)
-        list_title = formats.date_format(begin_date) # works with i18n
+        list_title = formats.date_format(begin_date)  # works with i18n
         no_results_text = "for this day"
     # Export button
     export = {
@@ -91,7 +90,9 @@ def archives(request, mlist_fqdn, year=None, month=None, day=None):
     return _thread_list(request, mlist, threads, extra_context=extra_context)
 
 
-def _thread_list(request, mlist, threads, template_name='hyperkitty/thread_list.html', extra_context=None):
+def _thread_list(request, mlist, threads,
+                 template_name='hyperkitty/thread_list.html',
+                 extra_context=None):
     threads = paginate(threads, request.GET.get('page'),
                        results_per_page=request.GET.get('count'))
     for thread in threads:
@@ -109,7 +110,7 @@ def _thread_list(request, mlist, threads, template_name='hyperkitty/thread_list.
             get_category_widget(request, thread.category)
 
     context = {
-        'mlist' : mlist,
+        'mlist': mlist,
         'threads': threads,
         'months_list': get_months(mlist),
     }
@@ -146,6 +147,7 @@ def overview(request, mlist_fqdn=None):
         votes = t.get_votes()
         if votes["likes"] - votes["dislikes"] > 0:
             pop_threads.append(t)
+
     def _get_thread_vote_result(t):
         votes = t.get_votes()
         return votes["likes"] - votes["dislikes"]
@@ -162,15 +164,17 @@ def overview(request, mlist_fqdn=None):
             continue
         threads_by_category[thread.category].append(thread)
 
-    # Personalized discussion groups: flagged/favorited threads and threads by user
+    # Personalized discussion groups: flagged/favorited threads and threads by
+    # user.
     if request.user.is_authenticated():
-        favorites = [ f.thread for f in Favorite.objects.filter(
-            thread__mailinglist=mlist, user=request.user) ]
+        favorites = [f.thread for f in Favorite.objects.filter(
+            thread__mailinglist=mlist, user=request.user)]
         mm_user_id = request.user.hyperkitty_profile.get_mailman_user_id()
         threads_posted_to = []
         if mm_user_id is not None:
             for thread in threads:
-                senders = set([e.sender.mailman_id for e in thread.emails.all()])
+                senders = set(
+                    [e.sender.mailman_id for e in thread.emails.all()])
                 if mm_user_id in senders:
                     threads_posted_to.append(thread)
     else:
@@ -187,7 +191,7 @@ def overview(request, mlist_fqdn=None):
 
     # Export button
     recent_dates = [
-        d.strftime("%Y-%m-%d") for d in mlist.get_recent_dates() ]
+        d.strftime("%Y-%m-%d") for d in mlist.get_recent_dates()]
     recent_url = "%s?start=%s&end=%s" % (
         reverse("hk_list_export_mbox", kwargs={
                 "mlist_fqdn": mlist.name,
@@ -206,7 +210,7 @@ def overview(request, mlist_fqdn=None):
 
     context = {
         'view_name': 'overview',
-        'mlist' : mlist,
+        'mlist': mlist,
         'top_threads': top_threads[:20],
         'most_active_threads': active_threads[:20],
         'top_author': authors,
@@ -222,10 +226,9 @@ def overview(request, mlist_fqdn=None):
 
 
 @check_mlist_private
-@cache_page(3600 * 12) # cache for 12 hours
+@cache_page(3600 * 12)  # cache for 12 hours
 def recent_activity(request, mlist_fqdn):
     """Return the number of emails posted in the last 30 days"""
-    # pylint: disable=unused-argument
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
     begin_date, end_date = mlist.get_recent_dates()
     days = daterange(begin_date, end_date)
@@ -244,11 +247,11 @@ def recent_activity(request, mlist_fqdn):
     for email in emails_in_month:
         date_str = email.date.strftime("%Y-%m-%d")
         if date_str not in emails_per_date:
-            continue # outside the range
+            continue  # outside the range
         emails_per_date[date_str] += 1
     # return the proper format for the javascript chart function
-    evolution = [ {"date": d, "count": emails_per_date[d]}
-             for d in sorted(emails_per_date) ]
+    evolution = [{"date": d, "count": emails_per_date[d]}
+                 for d in sorted(emails_per_date)]
     return HttpResponse(json.dumps({"evolution": evolution}),
                         content_type='application/javascript')
 
@@ -271,6 +274,7 @@ def export_mbox(request, mlist_fqdn, filename):
         query = query.filter(thread__thread_id=request.GET["thread"])
     if "message" in request.GET:
         query = query.filter(message_id_hash=request.GET["message"])
+
     def stream_mbox(query):
         # Use the gzip format: http://www.zlib.net/manual.html#Advanced
         compressor = zlib.compressobj(6, zlib.DEFLATED, zlib.MAX_WBITS | 16)

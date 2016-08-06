@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2013-2016 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -19,11 +20,9 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-# pylint: disable=unnecessary-lambda
-
 from __future__ import absolute_import, print_function, unicode_literals
 
-import string # pylint: disable=deprecated-module
+import string
 import random
 from email.message import Message
 
@@ -32,7 +31,6 @@ from hyperkitty.models.email import Email
 from hyperkitty.models.mailinglist import MailingList
 from hyperkitty.models.thread import Thread
 from hyperkitty.tests.utils import TestCase
-
 
 
 class ThreadTestCase(TestCase):
@@ -114,8 +112,8 @@ class ThreadTestCase(TestCase):
         # with assertions here.
         # We use random chars to build the subject, if we use a single repeated
         # char, the index will never be big enough.
-        subject = [ random.choice(string.letters + string.digits + " ")
-                    for i_ in range(3000) ]
+        subject = [random.choice(string.letters + string.digits + " ")
+                   for i_ in range(3000)]
         subject = "".join(subject)
         msg = Message()
         msg["From"] = "sender@example.com"
@@ -126,5 +124,6 @@ class ThreadTestCase(TestCase):
         add_to_list("example-list", msg)
         self.assertEqual(Email.objects.count(), 1)
         msg_db = Email.objects.all()[0]
-        self.assertTrue(len(msg_db.subject) < 2712,
-                "Very long subjects are not trimmed")
+        self.assertTrue(
+            len(msg_db.subject) < 2712,
+            "Very long subjects are not trimmed")

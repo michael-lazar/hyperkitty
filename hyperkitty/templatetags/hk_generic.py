@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -36,6 +37,12 @@ import hyperkitty.lib.posting
 from hyperkitty.lib.utils import stripped_subject
 
 register = template.Library()
+
+MAILTO_RE = re.compile(
+    "<a href=['\"]mailto:([^'\"]+)@([^'\"]+)['\"]>[^<]+</a>")
+SNIPPED_RE = re.compile(r"^(\s*&gt;).*$", re.M)
+SNIPPED_BEGIN_PGP = re.compile("^.*(BEGIN PGP SIGNATURE).*$", re.M)
+SNIPPED_END_PGP = re.compile("^.*(END PGP SIGNATURE).*$", re.M)
 
 
 @register.filter(name='sort')
@@ -104,7 +111,7 @@ def escapeemail(text):
     """To escape email addresses"""
     return text.replace("@", u"\uff20")
 
-MAILTO_RE = re.compile("<a href=['\"]mailto:([^'\"]+)@([^'\"]+)['\"]>[^<]+</a>")
+
 @register.filter(is_safe=True)
 def escapeemaillinks(text):
     """To escape email addresses in links"""
@@ -122,7 +129,6 @@ def date_with_senders_timezone(email):
     return email.date.astimezone(tz)
 
 
-SNIPPED_RE = re.compile(r"^(\s*&gt;).*$", re.M)
 @register.filter(needs_autoescape=True)
 def snip_quoted(content, quotemsg="...", autoescape=None):
     """Snip quoted text in messages"""
@@ -131,32 +137,28 @@ def snip_quoted(content, quotemsg="...", autoescape=None):
     quoted = []
     current_quote = []
     current_quote_orig = []
-    #lastline = None
     for line in content.split("\n"):
         match = SNIPPED_RE.match(line)
         if match is not None:
-            #if lastline == "":
-            #    current_quote_orig.append(lastline)
             current_quote_orig.append(line)
             content_start = len(match.group(1))
             current_quote.append(line[content_start:])
         else:
             if current_quote_orig:
                 current_quote_orig.append("")
-                quoted.append( (current_quote_orig[:], current_quote[:]) )
+                quoted.append((current_quote_orig[:], current_quote[:]))
                 current_quote = []
                 current_quote_orig = []
-        #lastline = line
     for quote_orig, quote in quoted:
-        replaced = ('<div class="quoted-switch"><a style="font-weight:normal" href="#">%s</a></div>' % quotemsg
-                   +'<div class="quoted-text">'
-                   +"\n".join(quote)
-                   +' </div>')
+        replaced = (
+            '<div class="quoted-switch">'
+            '<a style="font-weight:normal" href="#">{quotemsg}</a></div>'
+            '<div class="quoted-text">{quote} </div>'
+            ).format(quotemsg=quotemsg, quote="\n".join(quote))
         content = content.replace("\n".join(quote_orig), replaced)
     return mark_safe(content)
 
-SNIPPED_BEGIN_PGP = re.compile("^.*(BEGIN PGP SIGNATURE).*$", re.M)
-SNIPPED_END_PGP = re.compile("^.*(END PGP SIGNATURE).*$", re.M)
+
 @register.filter(needs_autoescape=True)
 def snip_pgp(content, quotemsg="...PGP SIGNATURE...", autoescape=None):
     """Snip pgp signature in messages"""
@@ -180,16 +182,18 @@ def snip_pgp(content, quotemsg="...PGP SIGNATURE...", autoescape=None):
             pgp_signature = False
             if current_quote_orig:
                 current_quote_orig.append("")
-                quoted.append( (current_quote_orig[:], current_quote[:]) )
+                quoted.append((current_quote_orig[:], current_quote[:]))
                 current_quote = []
                 current_quote_orig = []
     for quote_orig, quote in quoted:
-        replaced = ('<div class="quoted-switch"><a href="#" class="pgp">%s</a></div>' % quotemsg
-                   +'<div class="quoted-text">'
-                   +"\n".join(quote)
-                   +' </div>')
+        replaced = (
+            '<div class="quoted-switch">'
+            '<a href="#" class="pgp">{quotemsg}</a></div>'
+            '<div class="quoted-text">{quote} </div>'
+            ).format(quotemsg=quotemsg, quote="\n".join(quote))
         content = content.replace("\n".join(quote_orig), replaced)
     return mark_safe(content)
+
 
 @register.filter()
 def multiply(num1, num2):
@@ -204,12 +208,13 @@ def multiply(num1, num2):
 def is_message_new(context, refdate):
     user = context["user"]
     if "last_view" not in context:
-        return False # viewing a single message
+        return False  # viewing a single message
     last_view = context["last_view"]
     refdate = refdate.replace(tzinfo=utc)
-    return (user.is_authenticated() and
-            (not last_view or refdate > last_view)
-           )
+    return (
+        user.is_authenticated() and
+        (not last_view or refdate > last_view)
+        )
 
 
 @register.simple_tag(takes_context=True)
@@ -257,9 +262,11 @@ def reply_subject(value):
 def strip_subject(subject, mlist):
     return stripped_subject(mlist, subject)
 
+
 @register.filter
 def is_unread_by(thread, user):
     return thread.is_unread_by(user)
+
 
 @register.filter
 def sort_by_name(p_list):

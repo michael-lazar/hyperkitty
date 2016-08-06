@@ -1,4 +1,5 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -36,7 +37,7 @@ from hyperkitty.models import MailingList
 def index(request):
     mlists = [
         ml for ml in MailingList.objects.all()
-        if not settings.FILTER_VHOST or show_mlist(ml, request) ]
+        if not settings.FILTER_VHOST or show_mlist(ml, request)]
 
     # Sorting
     sort_mode = request.GET.get('sort')
@@ -47,12 +48,12 @@ def index(request):
     elif sort_mode == "active":
         # Don't show private lists when sorted by activity, to avoid disclosing
         # info about the private list's activity
-        mlists = [ ml for ml in mlists if ml.is_private == False ]
+        mlists = [ml for ml in mlists if not ml.is_private]
         mlists.sort(key=lambda l: l.recent_threads_count, reverse=True)
     elif sort_mode == "popular":
-        # Don't show private lists when sorted by popularity, to avoid disclosing
-        # info about the private list's popularity
-        mlists = [ l for l in mlists if l.is_private == False ]
+        # Don't show private lists when sorted by popularity, to avoid
+        # disclosing info about the private list's popularity.
+        mlists = [l for l in mlists if not l.is_private]
         mlists.sort(key=lambda l: l.recent_participants_count, reverse=True)
     elif sort_mode == "creation":
         mlists.sort(key=lambda l: l.created_at, reverse=True)

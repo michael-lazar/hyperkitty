@@ -34,7 +34,7 @@ REQUIRES = [
     "django-compressor>=1.3",
     "django-browserid>=0.11.1",
     "mailmanclient>=1.0.0b1",
-    "python-dateutil < 2.0", # python-dateutil 2.0+ is for Python 3
+    "python-dateutil < 2.0",  # python-dateutil 2.0+ is for Python 3
     "networkx>=1.9.1",
     "enum34>=1.0",
     "django-haystack>=2.1.0",
@@ -61,7 +61,7 @@ setup(
         "Programming Language :: JavaScript",
         ],
     keywords='email',
-    #packages=find_packages(exclude=["*.test", "test", "*.test.*"]),
+    # packages=find_packages(exclude=["*.test", "test", "*.test.*"]),
     packages=find_packages(),
     include_package_data=True,
     install_requires=REQUIRES,

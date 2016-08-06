@@ -1,4 +1,5 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+#
 # Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -45,8 +46,8 @@ def get_months(mlist):
     """
     date_first = cache.get_or_set(
         "MailingList:%s:first_date" % mlist.name,
-        lambda: mlist.emails.order_by("date"
-            ).values_list("date", flat=True).first(),
+        lambda: mlist.emails.order_by(
+            "date").values_list("date", flat=True).first(),
         None)
     now = datetime.datetime.now()
     if not date_first:
@@ -56,7 +57,7 @@ def get_months(mlist):
     year = date_first.year
     month = date_first.month
     while year < now.year:
-        archives[year] = range(1, 13)[(month -1):]
+        archives[year] = range(1, 13)[(month-1):]
         year = year + 1
         month = 1
     archives[now.year] = range(1, 13)[:now.month]
@@ -94,13 +95,15 @@ def get_category_widget(request, current_category=None):
     request.
     """
 
-    categories = [ (c.name, c.name.upper())
-                   for c in ThreadCategory.objects.all() ] \
-                 + [("", "no category")]
+    categories = [
+        (c.name, c.name.upper())
+        for c in ThreadCategory.objects.all()
+        ] + [("", "no category")]
     if request.method == "POST":
         category_form = CategoryForm(request.POST)
     else:
-        category_form = CategoryForm(initial={"category": current_category or ""})
+        category_form = CategoryForm(
+            initial={"category": current_category or ""})
     category_form["category"].field.choices = categories
 
     if request.method == "POST" and category_form.is_valid():
@@ -120,8 +123,8 @@ def get_category_widget(request, current_category=None):
 def show_mlist(mlist, request):
     def get_domain(host):
         return ".".join(host.split(".")[-2:])
-    return (get_domain(mlist.name.partition("@")[2])
-            == get_domain(request.get_host()))
+    return (get_domain(mlist.name.partition("@")[2]) ==
+            get_domain(request.get_host()))
 
 
 # View decorator: check that the list is authorized
@@ -169,6 +172,6 @@ def get_posting_form(formclass, request, mlist, data=None):
     form = formclass(data, initial={
         "sender": get_sender(request, mlist)})
     if request.user.is_authenticated():
-        form.fields['sender'].choices = [ (a, a) for a in
-            request.user.hyperkitty_profile.addresses ]
+        form.fields['sender'].choices = [
+            (a, a) for a in request.user.hyperkitty_profile.addresses]
     return form

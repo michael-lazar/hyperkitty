@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2013-2016 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -19,8 +20,6 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-# pylint: disable=unnecessary-lambda
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 from hyperkitty.models import Sender
@@ -30,10 +29,11 @@ from hyperkitty.tests.utils import TestCase
 class SenderTestCase(TestCase):
 
     def test_set_mailman_id_invalid_address(self):
-        # set_mailman_id: invalid email address given should silently do nothing
+        # set_mailman_id: invalid email address given should silently do
+        # nothing
         sender = Sender.objects.create(address="invalid email address")
         self.mailman_client.get_user.side_effect = ValueError
         try:
-            sender.set_mailman_id() # The ValueError should not be propagated
+            sender.set_mailman_id()  # The ValueError should not be propagated
         except ValueError:
             self.fail("ValueError was raised")

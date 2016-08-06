@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -35,7 +35,8 @@ from hyperkitty.management.utils import setup_logging
 class Command(BaseCommand):
     help = "Sync properties from Mailman into HyperKitty"
     option_list = BaseCommand.option_list + (
-        make_option('--overwrite', action='store_true', default=False,
+        make_option(
+            '--overwrite', action='store_true', default=False,
             help="overwrite existing Mailman IDs in HyperKitty's database"),
         )
 

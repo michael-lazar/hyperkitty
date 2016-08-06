@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -38,7 +38,8 @@ class Job(BaseJob):
         for thread in Thread.objects.filter(
                 starting_email__isnull=True).all():
             try:
-                thread.starting_email = thread.emails.get(parent_id__isnull=True)
+                thread.starting_email = thread.emails.get(
+                    parent_id__isnull=True)
             except Email.DoesNotExist:
                 thread.starting_email = thread.emails.order_by("date").first()
                 if thread.starting_email is None:

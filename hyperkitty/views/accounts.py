@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -34,15 +35,14 @@ from django.shortcuts import render, redirect
 from django.utils.http import is_safe_url
 from django.utils.timezone import get_current_timezone
 from django.http import Http404, HttpResponse
-#from django.utils.translation import gettext as _
 from social.backends.base import BaseAuth as SocialAuthBackend
 import dateutil.parser
 import mailmanclient
 
-from hyperkitty.models import (Favorite, LastView, MailingList, Sender,
-    Email, Vote, Profile)
-from hyperkitty.forms import (InternalAuthenticationForm,
-    RegistrationForm, UserProfileForm)
+from hyperkitty.models import (
+    Favorite, LastView, MailingList, Sender, Email, Vote, Profile)
+from hyperkitty.forms import (
+    InternalAuthenticationForm, RegistrationForm, UserProfileForm)
 from hyperkitty.lib.view_helpers import is_mlist_authorized
 from hyperkitty.lib.paginator import paginate
 from hyperkitty.lib.mailman import get_mailman_client
@@ -61,7 +61,7 @@ def login_view(request, *args, **kwargs):
     # harder to re-read that the lines above.
     for backend in get_backends():
         if not isinstance(backend, SocialAuthBackend):
-            continue # It should be checked using duck-typing instead
+            continue  # It should be checked using duck-typing instead
         kwargs["extra_context"]["social_backends"].append(backend.name)
     kwargs["authentication_form"] = InternalAuthenticationForm
     return django_login_view(request, *args, **kwargs)
@@ -110,7 +110,7 @@ def user_profile(request):
     gravatar_shortname = '.'.join(gravatar_url.split('.')[-2:]).strip('/')
 
     context = {
-        'user_profile' : profile,
+        'user_profile': profile,
         'form': form,
         'other_addresses': other_addresses,
         'gravatar_url': gravatar_url,
@@ -163,8 +163,8 @@ def user_registration(request):
 @login_required
 def favorites(request):
     # Favorite threads
-    favs = Favorite.objects.filter(user=request.user
-        ).order_by("-thread__date_active")
+    favs = Favorite.objects.filter(
+        user=request.user).order_by("-thread__date_active")
     favs = paginate(favs, request.GET.get('favpage'))
     return render(request, 'hyperkitty/ajax/favorites.html', {
                 "favorites": favs,
@@ -174,8 +174,8 @@ def favorites(request):
 @login_required
 def last_views(request):
     # Last viewed threads
-    lviews = LastView.objects.filter(user=request.user
-        ).order_by("-view_date")
+    lviews = LastView.objects.filter(
+        user=request.user).order_by("-view_date")
     lviews = paginate(lviews, request.GET.get('lvpage'))
     return render(request, 'hyperkitty/ajax/last_views.html', {
                 "last_views": lviews,
@@ -184,8 +184,8 @@ def last_views(request):
 
 @login_required
 def votes(request):
-    all_votes = paginate(request.user.votes.all(),
-                     request.GET.get('vpage'))
+    all_votes = paginate(
+        request.user.votes.all(), request.GET.get('vpage'))
     return render(request, 'hyperkitty/ajax/votes.html', {
                 "votes": all_votes,
             })
@@ -193,9 +193,6 @@ def votes(request):
 
 @login_required
 def subscriptions(request):
-    #if "user_id" not in request.session:
-    #    return HttpResponse("Could not find or create your user ID in Mailman",
-    #                        content_type="text/plain", status=500)
     profile = request.user.hyperkitty_profile
     mm_user_id = profile.get_mailman_user_id()
     subs = []
@@ -203,11 +200,12 @@ def subscriptions(request):
         try:
             mlist = MailingList.objects.get(list_id=mlist_id)
         except MailingList.DoesNotExist:
-            mlist = None # no archived email yet
+            mlist = None  # no archived email yet
         posts_count = likes = dislikes = 0
         first_post = all_posts_url = None
         if mlist is not None:
-            posts_count = profile.emails.filter(mailinglist__name=mlist.name).count()
+            posts_count = profile.emails.filter(
+                mailinglist__name=mlist.name).count()
             likes, dislikes = profile.get_votes_in_list(mlist.name)
             first_post = profile.get_first_post(mlist)
             if mm_user_id is not None:
@@ -247,13 +245,9 @@ def public_profile(request, user_id):
     except HTTPError:
         raise Http404("No user with this ID: %s" % user_id)
     except mailmanclient.MailmanConnectionError:
-        #if db_user is None:
-        #    return HttpResponse("Can't connect to Mailman",
-        #                        content_type="text/plain", status=500)
         mm_user = FakeMailmanUser()
         mm_user.user_id = user_id
-        #mm_user.addresses = db_user.addresses
-    #XXX: don't list subscriptions, there's a privacy issue here.
+    # XXX: don't list subscriptions, there's a privacy issue here.
     # # Subscriptions
     # subscriptions = get_subscriptions(mm_user, db_user)
     all_votes = Vote.objects.filter(email__sender__mailman_id=user_id)
@@ -272,16 +266,16 @@ def public_profile(request, user_id):
         email = None
     fullname = mm_user.display_name
     if not fullname:
-        fullname = Sender.objects.filter(mailman_id=user_id).exclude(name=""
-            ).values_list("name", flat=True).first()
+        fullname = Sender.objects.filter(mailman_id=user_id).exclude(
+            name="").values_list("name", flat=True).first()
     if mm_user.created_on is not None:
         creation = dateutil.parser.parse(mm_user.created_on)
     else:
         creation = None
     posts_count = Email.objects.filter(sender__mailman_id=user_id).count()
     is_user = request.user.is_authenticated() and bool(
-                   set([str(a) for a in mm_user.addresses])
-                 & set(request.user.hyperkitty_profile.addresses))
+        set([str(a) for a in mm_user.addresses]) &
+        set(request.user.hyperkitty_profile.addresses))
     context = {
         "fullname": fullname,
         "creation": creation,
@@ -310,8 +304,8 @@ def posts(request, user_id):
                             "mlist": mlist,
                           }, status=403)
 
-    fullname = Sender.objects.filter(mailman_id=user_id).exclude(name=""
-        ).values_list("name", flat=True).first()
+    fullname = Sender.objects.filter(mailman_id=user_id).exclude(
+        name="").values_list("name", flat=True).first()
     # Get the messages and paginate them
     emails = Email.objects.filter(
         mailinglist=mlist, sender__mailman_id=user_id)
@@ -326,7 +320,7 @@ def posts(request, user_id):
 
     context = {
         'user_id': user_id,
-        'mlist' : mlist,
+        'mlist': mlist,
         'emails': emails,
         'fullname': fullname,
     }

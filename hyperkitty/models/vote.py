@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -18,8 +19,6 @@
 #
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
-
-# pylint: disable=no-init,unnecessary-lambda,unused-argument
 
 from __future__ import absolute_import, unicode_literals, print_function
 
@@ -57,9 +56,11 @@ class Vote(models.Model):
 
 admin.site.register(Vote)
 
+
 @receiver(pre_save, sender=Vote)
 def on_pre_save(sender, **kwargs):
     kwargs["instance"].on_pre_save()
+
 
 @receiver(pre_delete, sender=Vote)
 def on_pre_delete(sender, **kwargs):

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -18,8 +19,6 @@
 #
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
-
-# pylint: disable=no-init,unnecessary-lambda,unused-argument
 
 from __future__ import absolute_import, unicode_literals, print_function
 
@@ -46,17 +45,18 @@ class Sender(models.Model):
             mm_user = client.get_user(self.address)
         except HTTPError as e:
             if e.code == 404:
-                return # User not found in Mailman
-            raise MailmanConnectionError(e) # normalize all possible error types
+                return  # User not found in Mailman
+            # normalize all possible error types
+            raise MailmanConnectionError(e)
         except ValueError as e:
-            # This smells like a badly formatted email address (saw it in the wild)
+            # This smells like a badly formatted email address (saw it in the
+            # wild)
             logger.warning(
                 "Invalid response when getting user %s from Mailman",
                 self.address)
-            return # Ignore it
+            return  # Ignore it
         self.mailman_id = mm_user.user_id
         self.save()
-        ## Go further and associate the user's other addresses?
-        #Sender.objects.filter(address__in=mm_user.addresses
-        #    ).update(mailman_id=mm_user.user_id)
-
+        # # Go further and associate the user's other addresses?
+        # Sender.objects.filter(address__in=mm_user.addresses
+        #     ).update(mailman_id=mm_user.user_id)

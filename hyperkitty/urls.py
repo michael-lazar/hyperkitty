@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -27,20 +28,24 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib.auth.views import logout as logout_view
 from django.contrib import admin
 
-from hyperkitty import api
+from hyperkitty.api import (
+    mailinglist as api_mailinglist, email as api_email,
+    thread as api_thread, tag as api_tag)
 from hyperkitty.views import (
     index, accounts, users, mlist, message, thread, search, categories, tags,
     mailman, compat)
 
 
-# pylint: disable=invalid-name
+# flake8: noqa
+
 urlpatterns = [
     # Index
     url(r'^$', index.index, name='hk_root'),
     url(r'^find-list$', index.find_list, name='hk_find_list'),
 
     # Account (logged-in user)
-    url(r'^accounts/login/$', accounts.login_view, {'template_name': 'hyperkitty/login.html'}, name='hk_user_login'),
+    url(r'^accounts/login/$', accounts.login_view,
+        {'template_name': 'hyperkitty/login.html'}, name='hk_user_login'),
     url(r'^accounts/logout/$', logout_view, {'next_page': '/'}, name='hk_user_logout'),
     url(r'^accounts/profile/$', accounts.user_profile, name='hk_user_profile'),
     url(r'^accounts/profile/favorites$', accounts.favorites, name='hk_user_favorites'),
@@ -118,24 +123,24 @@ urlpatterns = [
     # REST API
     url(r'^api/$', TemplateView.as_view(template_name="hyperkitty/api.html")),
     url(r'^api/lists/$',
-        api.MailingListList.as_view(), name="hk_api_mailinglist_list"),
+        api_mailinglist.MailingListList.as_view(), name="hk_api_mailinglist_list"),
     url(r'^api/list/(?P<name>[^/@]+@[^/@]+)/$',
-        api.MailingListDetail.as_view(), name="hk_api_mailinglist_detail"),
+        api_mailinglist.MailingListDetail.as_view(), name="hk_api_mailinglist_detail"),
     url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)\/threads/$',
-        api.ThreadList.as_view(), name="hk_api_thread_list"),
+        api_thread.ThreadList.as_view(), name="hk_api_thread_list"),
     url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)\/thread/(?P<thread_id>[^/]+)/$',
-        api.ThreadDetail.as_view(), name="hk_api_thread_detail"),
+        api_thread.ThreadDetail.as_view(), name="hk_api_thread_detail"),
     url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/emails/$',
-        api.EmailList.as_view(), name="hk_api_email_list"),
+        api_email.EmailList.as_view(), name="hk_api_email_list"),
     url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)\/email/(?P<message_id_hash>.*)/$',
-        api.EmailDetail.as_view(), name="hk_api_email_detail"),
+        api_email.EmailDetail.as_view(), name="hk_api_email_detail"),
     url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/thread/(?P<thread_id>[^/]+)/emails/$',
-        api.EmailList.as_view(), name="hk_api_thread_email_list"),
+        api_email.EmailList.as_view(), name="hk_api_thread_email_list"),
     #url(r'^api/sender/(?P<address>[^/@]+@[^/@]+)/$',
-    #    api.SenderDetail.as_view(), name="hk_api_sender_detail"),
+    #    api_sender.SenderDetail.as_view(), name="hk_api_sender_detail"),
     url(r'^api/sender/(?P<mailman_id>[^/]+)/emails/$',
-        api.EmailListBySender.as_view(), name="hk_api_sender_email_list"),
-    url(r'^api/tags/$', api.TagList.as_view(), name="hk_api_tag_list"),
+        api_email.EmailListBySender.as_view(), name="hk_api_sender_email_list"),
+    url(r'^api/tags/$', api_tag.TagList.as_view(), name="hk_api_tag_list"),
     #url(r'^', include(restrouter.urls)),
     #url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
@@ -161,11 +166,3 @@ urlpatterns = [
 ]
 #) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += staticfiles_urlpatterns()
-
-
-# See the hyperkitty.middleware.SSLRedirect class
-SSL_URLS = (
-    "hyperkitty.views.accounts.login_view",
-    "hyperkitty.views.accounts.user_registration",
-    admin.site.urls,
-    )

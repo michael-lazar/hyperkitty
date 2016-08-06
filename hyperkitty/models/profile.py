@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -18,8 +19,6 @@
 #
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
-
-# pylint: disable=no-init,unnecessary-lambda,unused-argument
 
 from __future__ import absolute_import, unicode_literals, print_function
 
@@ -43,13 +42,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 related_name="hyperkitty_profile")
 
     karma = models.IntegerField(default=1)
-    TIMEZONES = sorted([ (tz, tz) for tz in pytz.common_timezones ])
+    TIMEZONES = sorted([(tz, tz) for tz in pytz.common_timezones])
     timezone = models.CharField(max_length=100, choices=TIMEZONES, default=u"")
 
     def __unicode__(self):
@@ -62,7 +60,7 @@ class Profile(models.Model):
 
     @property
     def addresses(self):
-        addresses = set([self.user.email,])
+        addresses = set([self.user.email])
         mm_user = self.get_mailman_user()
         if mm_user:
             # TODO: caching?
@@ -91,7 +89,7 @@ class Profile(models.Model):
                     mm_user = mm_client.get_user(self.user.email)
                 except HTTPError as e:
                     if e.code != 404:
-                        raise # will be caught down there
+                        raise  # will be caught down there
                     mm_user = mm_client.create_user(
                         self.user.email, self.user.get_full_name())
                     # XXX The email is not set as verified, because we don't
@@ -130,14 +128,15 @@ class Profile(models.Model):
         # mailman when a new subscription occurs? Or store in the session?
         return cache.get_or_set(
             "User:%s:subscriptions" % self.id,
-            _get_value, 60, version=2) # 1 minute
+            _get_value, 60, version=2)  # 1 minute
         # TODO: increase the cache duration when we have Mailman signals
 
     def get_first_post(self, mlist):
-        return self.emails.filter(mailinglist=mlist
-            ).order_by("archived_date").first()
+        return self.emails.filter(
+            mailinglist=mlist).order_by("archived_date").first()
 
 admin.site.register(Profile)
+
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_profile(sender, **kwargs):

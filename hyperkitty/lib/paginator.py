@@ -1,4 +1,5 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+#
 # Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -23,8 +24,8 @@
 from __future__ import absolute_import, unicode_literals, division
 
 from django.http import Http404
-from django.core.paginator import (Paginator, EmptyPage, PageNotAnInteger,
-    InvalidPage)
+from django.core.paginator import (
+    Paginator, EmptyPage, PageNotAnInteger, InvalidPage)
 
 
 def paginate(objects=None, page_num=1, max_page_range=10, paginator=None,
@@ -51,7 +52,7 @@ def paginate(objects=None, page_num=1, max_page_range=10, paginator=None,
         raise Http404("No such page of results!")
     # Calculate the displayed page range
     if paginator.num_pages > max_page_range:
-        objects.page_range = [ 1 ]
+        objects.page_range = [1]
         subrange_lower = page_num - int(max_page_range / 2 - 2)
         if subrange_lower > 3:
             objects.page_range.append("...")
@@ -68,5 +69,5 @@ def paginate(objects=None, page_num=1, max_page_range=10, paginator=None,
             objects.page_range.append("...")
         objects.page_range.append(paginator.num_pages)
     else:
-        objects.page_range = [ p+1 for p in range(paginator.num_pages) ]
+        objects.page_range = [p+1 for p in range(paginator.num_pages)]
     return objects

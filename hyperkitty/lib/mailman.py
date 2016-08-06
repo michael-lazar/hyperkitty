@@ -1,4 +1,5 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+#
 # Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -25,7 +26,7 @@ from urllib2 import HTTPError
 
 from django.conf import settings
 from django.utils.timezone import now
-from mailmanclient import Client, MailmanConnectionError
+from mailmanclient import Client as MailmanClient, MailmanConnectionError
 
 from hyperkitty.lib.cache import cache
 
@@ -37,13 +38,13 @@ class ModeratedListException(Exception):
     pass
 
 
-MailmanClient = Client
 def get_mailman_client():
     # easier to patch during unit tests
-    client = MailmanClient('%s/3.0' %
-                settings.MAILMAN_REST_API_URL,
-                settings.MAILMAN_REST_API_USER,
-                settings.MAILMAN_REST_API_PASS)
+    client = MailmanClient(
+        '%s/3.0' %
+        settings.MAILMAN_REST_API_URL,
+        settings.MAILMAN_REST_API_USER,
+        settings.MAILMAN_REST_API_PASS)
     return client
 
 
@@ -56,8 +57,8 @@ def subscribe(list_address, user, email=None, display_name=None):
     rest_list = client.get_list(list_address)
     subscription_policy = rest_list.settings.get(
         "subscription_policy", "moderate")
-    # Add a flag to return that would tell the user they have been subscribed to
-    # the current list.
+    # Add a flag to return that would tell the user they have been subscribed
+    # to the current list.
     subscribed_now = False
     try:
         member = rest_list.get_member(email)
@@ -65,12 +66,13 @@ def subscribe(list_address, user, email=None, display_name=None):
         # We don't want to bypass moderation, don't subscribe. Instead
         # raise an error so that it can be caught to show the user
         if subscription_policy in ("moderate", "confirm_then_moderate"):
-            raise ModeratedListException("This list is moderated, please subscribe"
-                                         " to it before posting.")
+            raise ModeratedListException(
+                "This list is moderated, please subscribe"
+                " to it before posting.")
 
         # not subscribed yet, subscribe the user without email delivery
-        member = rest_list.subscribe(email, display_name,
-                pre_verified=True, pre_confirmed=True)
+        member = rest_list.subscribe(
+            email, display_name, pre_verified=True, pre_confirmed=True)
         # The result can be a Member object or a dict if the subscription can't
         # be done directly, or if it's pending, or something else.
         # Broken API :-(
@@ -87,6 +89,7 @@ def subscribe(list_address, user, email=None, display_name=None):
 
     return subscribed_now
 
+
 class FakeMMList:
     def __init__(self, name):
         self.fqdn_listname = name
@@ -99,24 +102,30 @@ class FakeMMList:
             "archive_policy": "public",
             }
 
+
 class FakeMMMember:
     def __init__(self, list_id, address):
         self.list_id = list_id
         self.address = address
 
+
 class FakeMMPage():
+
     def __init__(self, entries=None, count=20, page=1):
         self.entries = entries or []
         self._count = count
         self._page = page
+
     def __iter__(self):
         first = (self._page - 1) * self._count
         last = self._page * self._count
         for entry in self.entries[first:last]:
             yield entry
+
     @property
     def has_previous(self):
         return self._page > 1
+
     @property
     def has_next(self):
         return self._count * self._page < len(self.entries)
@@ -126,24 +135,26 @@ def get_new_lists_from_mailman():
     from hyperkitty.models import MailingList
     mmclient = get_mailman_client()
     page_num = 0
-    while page_num < 10000: # Just for security
+    while page_num < 10000:  # Just for security
         page_num += 1
         try:
             mlist_page = mmclient.get_list_page(count=10, page=page_num)
         except MailmanConnectionError:
             break
         except HTTPError:
-            break # can't update at this time
+            break  # can't update at this time
         for mm_list in mlist_page:
             if MailingList.objects.filter(name=mm_list.fqdn_listname).exists():
                 continue
             if mm_list.settings["archive_policy"] == "never":
-                continue # Should we display those lists anyway?
-            logger.info("Imported the new list %s from Mailman", mm_list.fqdn_listname)
+                continue  # Should we display those lists anyway?
+            logger.info("Imported the new list %s from Mailman",
+                        mm_list.fqdn_listname)
             mlist = MailingList.objects.create(name=mm_list.fqdn_listname)
             mlist.update_from_mailman()
         if not mlist_page.has_next:
             break
+
 
 def sync_with_mailman(overwrite=False):
     from hyperkitty.models import MailingList, Sender
@@ -164,23 +175,24 @@ def sync_with_mailman(overwrite=False):
             for sender in query.all()[lower_bound:upper_bound]:
                 sender.set_mailman_id()
         except MailmanConnectionError:
-            break # Can't refresh at this time
+            break  # Can't refresh at this time
         count = query.count()
         if count == 0:
-            break # all done
+            break  # all done
         if count == prev_count:
             # no improvement...
             if count < upper_bound:
-                break # ...and all users checked
+                break  # ...and all users checked
             else:
                 # there may be some more left
                 lower_bound = upper_bound
                 upper_bound += buffer_size
         prev_count = count
-        logger.info("%d emails left to refresh, checked %d", count, lower_bound)
+        logger.info("%d emails left to refresh, checked %d",
+                    count, lower_bound)
 
 
-def add_user_to_mailman(user, details, *args, **kwargs): # pylint: disable-msg=unused-argument
+def add_user_to_mailman(user, details, *args, **kwargs):
     """
     On social_auth login, create the Mailman user and associate any secondary
     email addresses with it.
@@ -215,7 +227,8 @@ def add_user_to_mailman(user, details, *args, **kwargs): # pylint: disable-msg=u
                         if unicode(addr) == secondary_email]
     if not existing_address:
         try:
-            mm_address = mm_user.add_address(secondary_email, absorb_existing=True)
+            mm_address = mm_user.add_address(
+                secondary_email, absorb_existing=True)
             # The address has been verified by the social auth provider.
             mm_address.verify()
             logger.debug("Associated secondary address %s with %s",

@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -32,16 +32,14 @@ from crispy_forms.layout import Layout, Submit
 
 from hyperkitty.models.profile import Profile
 
-# pylint: disable=too-few-public-methods
-
 
 class RegistrationForm(UserCreationForm):
 
-    email    = forms.EmailField(required=True)
+    email = forms.EmailField(required=True)
 
-    class Meta: # pylint: disable=no-init
+    class Meta:
         model = User
-        fields  = ["username", "email"]
+        fields = ["username", "email"]
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
@@ -49,7 +47,8 @@ class RegistrationForm(UserCreationForm):
             "A user with that email already exists.")
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-5 col-md-offset-1 col-md-4 col-lg-offset-3 col-lg-2'
+        self.helper.label_class = (
+            'col-sm-5 col-md-offset-1 col-md-4 col-lg-offset-3 col-lg-2')
         self.helper.field_class = 'col-sm-6 col-md-5 col-lg-4 col-xl-3'
         self.helper.add_input(Submit('submit', _('Register')))
 
@@ -84,7 +83,6 @@ class UserProfileForm(forms.Form):
                                  choices=Profile.TIMEZONES)
 
 
-
 class TextInputWithButton(forms.TextInput):
     """
     Render a text field and a button following the Twitter Bootstrap
@@ -97,25 +95,27 @@ class TextInputWithButton(forms.TextInput):
         button_text = self.attrs.pop("button_text", u"")
         initial_rendering = forms.TextInput.render(
                 self, name, value, attrs)
-        button = mark_safe(u'<span class="input-group-btn"><button type="submit" class="btn btn-default">%s</button></span>'
-                           % button_text)
-        return "".join([u'<span class="input-append"><div class="input-group">',
-                        initial_rendering, button, u'</div></span>'])
-
+        button = mark_safe(
+            u'<span class="input-group-btn"><button type="submit" '
+            u'class="btn btn-default">%s</button></span>'
+            % button_text)
+        return "".join([
+            u'<span class="input-append"><div class="input-group">',
+            initial_rendering, button, u'</div></span>'])
 
 
 class AddTagForm(forms.Form):
-    tag =  forms.CharField(label='', help_text=None,
-                widget=TextInputWithButton(
-                    attrs={'placeholder': 'Add a tag...',
-                           'class': 'input-medium form-control',
-                           'button_text': 'Add',
-                           'title': 'use commas to add multiple tags',
-                           }
-                    )
-                )
+    tag = forms.CharField(
+        label='', help_text=None,
+        widget=TextInputWithButton(
+            attrs={'placeholder': 'Add a tag...',
+                   'class': 'input-medium form-control',
+                   'button_text': 'Add',
+                   'title': 'use commas to add multiple tags',
+                   }
+            )
+        )
     action = forms.CharField(widget=forms.HiddenInput, initial="add")
-
 
 
 class AttachmentFileInput(forms.FileInput):
@@ -137,35 +137,42 @@ class AttachmentFileInput(forms.FileInput):
             'attach_another_text': self.attach_another_text,
             'rm_text': self.rm_text,
         }
-        substitutions['input'] = super(AttachmentFileInput, self).render(name, value, attrs)
+        substitutions['input'] = super(AttachmentFileInput, self).render(
+            name, value, attrs)
         return mark_safe(self.template % substitutions)
 
 
 class ReplyForm(forms.Form):
     newthread = forms.BooleanField(label="", required=False)
-    subject = forms.CharField(label="", required=False,
+    subject = forms.CharField(
+        label="", required=False,
         widget=forms.TextInput(attrs={
-            'placeholder': 'New subject','class': 'form-control'}))
-    message = forms.CharField(label="",
-        widget=forms.Textarea(attrs={ 'class': 'form-control' }))
-    sender = forms.ChoiceField(label="", required=False,
-        widget=forms.Select(attrs={ 'class': 'form-control input-sm' }))
-    #attachment = forms.FileField(required=False, widget=AttachmentFileInput)
+            'placeholder': 'New subject', 'class': 'form-control'}))
+    message = forms.CharField(
+        label="",
+        widget=forms.Textarea(attrs={'class': 'form-control'}))
+    sender = forms.ChoiceField(
+        label="", required=False,
+        widget=forms.Select(attrs={'class': 'form-control input-sm'}))
+    #  attachment = forms.FileField(required=False, widget=AttachmentFileInput)
+
 
 class PostForm(forms.Form):
 
     subject = forms.CharField()
     message = forms.CharField(widget=forms.Textarea)
-    sender = forms.ChoiceField(label="", required=False,
-        widget=forms.Select(attrs={ 'class': 'form-control input-sm' }))
-    #attachment = forms.FileField(required=False, label="",
-    #                             widget=AttachmentFileInput)
+    sender = forms.ChoiceField(
+        label="", required=False,
+        widget=forms.Select(attrs={'class': 'form-control input-sm'}))
+    # attachment = forms.FileField(required=False, label="",
+    #                              widget=AttachmentFileInput)
 
     def __init__(self, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout('subject', 'message')
+
 
 class CategoryForm(forms.Form):
     category = forms.ChoiceField(label="", required=False)

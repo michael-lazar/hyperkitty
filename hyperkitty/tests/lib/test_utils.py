@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -36,7 +37,9 @@ from hyperkitty.tests.utils import TestCase, get_test_file
 class TestUtils(TestCase):
 
     def test_ref_parsing(self):
-        with open(get_test_file("strange-in-reply-to-header.txt")) as email_file:
+        with open(
+                get_test_file("strange-in-reply-to-header.txt")
+                ) as email_file:
             msg = message_from_file(email_file)
         ref_id = utils.get_ref(msg)
         self.assertEqual(ref_id, "200704070053.46646.other.person@example.com")
@@ -111,11 +114,17 @@ class TestUtils(TestCase):
                 ("=?ISO-8859-2?Q?V=EDt_Ondruch?=", u'V\xedt Ondruch'),
                 ("=?UTF-8?B?VsOtdCBPbmRydWNo?=", u'V\xedt Ondruch'),
                 ("=?iso-8859-1?q?Bj=F6rn_Persson?=", u'Bj\xf6rn Persson'),
-                ("=?UTF-8?B?TWFyY2VsYSBNYcWhbMOhxYhvdsOh?=", u'Marcela Ma\u0161l\xe1\u0148ov\xe1'),
+                ("=?UTF-8?B?TWFyY2VsYSBNYcWhbMOhxYhvdsOh?=",
+                 u'Marcela Ma\u0161l\xe1\u0148ov\xe1'),
                 ("Dan =?ISO-8859-1?Q?Hor=E1k?=", u'Dan Hor\xe1k'),
                 ("=?ISO-8859-1?Q?Bj=F6rn?= Persson", u'Bj\xf6rn Persson'),
-                ("=?UTF-8?Q?Re=3A_=5BFedora=2Dfr=2Dlist=5D_Compte=2Drendu_de_la_r=C3=A9union_du_?= =?UTF-8?Q?1_novembre_2009?=", u"Re: [Fedora-fr-list] Compte-rendu de la r\xe9union du 1 novembre 2009"),
-                ("=?iso-8859-1?q?Compte-rendu_de_la_r=E9union_du_?= =?iso-8859-1?q?1_novembre_2009?=", u"Compte-rendu de la r\xe9union du 1 novembre 2009"),
+                ("=?UTF-8?Q?Re=3A_=5BFedora=2Dfr=2Dlist=5D_Compte=2D"
+                 "rendu_de_la_r=C3=A9union_du_?= =?UTF-8?Q?1_novembre_2009?=",
+                 u"Re: [Fedora-fr-list] Compte-rendu de la r\xe9union du "
+                 u"1 novembre 2009"),
+                ("=?iso-8859-1?q?Compte-rendu_de_la_r=E9union_du_?= "
+                 "=?iso-8859-1?q?1_novembre_2009?=",
+                 u"Compte-rendu de la r\xe9union du 1 novembre 2009"),
                 ]
         for h_in, h_expected in testdata:
             h_out = utils.header_to_unicode(h_in)
@@ -128,8 +137,10 @@ class TestUtils(TestCase):
         """
         testdata = [
             (b"Guillermo G\xf3mez", u"Guillermo G\ufffdmez"),
-            ("=?gb2312?B?UmU6IFJlOl9bQW1iYXNzYWRvcnNdX01hdGVyaWFfc29icmVfb19DRVNvTF8oRGnhcmlvX2RlX2JvcmRvKQ==?=",
-                u"Re: Re:_[Ambassadors]_Materia_sobre_o_CESoL_(Di\ufffdrio_de_bordo)"),
+            ("=?gb2312?B?UmU6IFJlOl9bQW1iYXNzYWRvcnNdX01hdGVyaWFfc29icmVfb1"
+             "9DRVNvTF8oRGnhcmlvX2RlX2JvcmRvKQ==?=",
+             u"Re: Re:_[Ambassadors]_Materia_sobre_o_CESoL_"
+             u"(Di\ufffdrio_de_bordo)"),
         ]
         for h_in, h_expected in testdata:
             try:
@@ -151,11 +162,11 @@ class TestUtils(TestCase):
         """
         datestrings = [
             ("Wed, 1 Nov 2006 23:50:26 +1800",
-            datetime.datetime(2006, 11, 1, 23, 50, 26,
-                              tzinfo=get_fixed_timezone(18*60))),
+             datetime.datetime(2006, 11, 1, 23, 50, 26,
+                               tzinfo=get_fixed_timezone(18*60))),
             ("Wed, 1 Nov 2006 23:50:26 -1800",
-            datetime.datetime(2006, 11, 1, 23, 50, 26,
-                              tzinfo=get_fixed_timezone(-18*60))),
+             datetime.datetime(2006, 11, 1, 23, 50, 26,
+                               tzinfo=get_fixed_timezone(-18*60))),
             ]
         for datestring, expected in datestrings:
             parsed = utils.parsedate(datestring)

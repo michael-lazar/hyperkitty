@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -40,7 +41,6 @@ class PostingTestCase(TestCase):
         self.ml = FakeMMList("list@example.com")
         self.mailman_client.get_list.side_effect = lambda n: self.ml
         self.ml.get_member = Mock()
-        #self.ml.subscribe = Mock()
         self.user = User.objects.create_user(
             'testuser', 'testuser@example.com', 'testPass')
         self.mm_user = Mock()
@@ -63,9 +63,9 @@ class PostingTestCase(TestCase):
                 'list@example.com', self.user, 'testuser@example.com',
                 'Django User')
         self.assertEqual(len(mail.outbox), 1)
-        #print(mail.outbox[0].message())
         self.assertEqual(mail.outbox[0].recipients(), ["list@example.com"])
-        self.assertEqual(mail.outbox[0].from_email, '"Django User" <testuser@example.com>')
+        self.assertEqual(mail.outbox[0].from_email,
+                         '"Django User" <testuser@example.com>')
         self.assertEqual(mail.outbox[0].subject, 'Dummy subject')
         self.assertEqual(mail.outbox[0].body, "dummy content")
         self.assertEqual(mail.outbox[0].message().get("references"), "<msg>")
@@ -83,9 +83,9 @@ class PostingTestCase(TestCase):
                 'list@example.com', self.user, 'otheremail@example.com',
                 'Django User')
         self.assertEqual(len(mail.outbox), 1)
-        #print(mail.outbox[0].message())
         self.assertEqual(mail.outbox[0].recipients(), ["list@example.com"])
-        self.assertEqual(mail.outbox[0].from_email, '"Django User" <otheremail@example.com>')
+        self.assertEqual(mail.outbox[0].from_email,
+                         '"Django User" <otheremail@example.com>')
 
     def test_sender_not_subscribed(self):
         self.assertEqual(posting.get_sender(self.request, self.mlist),
@@ -109,7 +109,8 @@ class PostingTestCase(TestCase):
     def test_unwrap_subject(self):
         subject = "This subject contains\n    a newline"
         try:
-            posting.post_to_list(self.request, self.mlist, subject, "dummy content")
+            posting.post_to_list(self.request, self.mlist, subject,
+                                 "dummy content")
         except ValueError as e:
             self.fail(e)
         self.assertEqual(len(mail.outbox), 1)
@@ -118,7 +119,8 @@ class PostingTestCase(TestCase):
     def test_unwrap_subject_2(self):
         subject = 'This subject is wrapped with\n a newline'
         try:
-            posting.post_to_list(self.request, self.mlist, subject, "dummy content")
+            posting.post_to_list(self.request, self.mlist, subject,
+                                 "dummy content")
         except ValueError as e:
             self.fail(e)
         self.assertEqual(len(mail.outbox), 1)

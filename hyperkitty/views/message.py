@@ -1,4 +1,5 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -55,8 +56,8 @@ def index(request, mlist_fqdn, message_id_hash):
     message_id)
     '''
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
-    message = get_object_or_404(Email,
-        mailinglist=mlist, message_id_hash=message_id_hash)
+    message = get_object_or_404(
+        Email, mailinglist=mlist, message_id_hash=message_id_hash)
     if request.user.is_authenticated():
         message.myvote = message.votes.filter(user=request.user).first()
     else:
@@ -66,17 +67,18 @@ def index(request, mlist_fqdn, message_id_hash):
     export = {
         "url": "%s?message=%s" % (
             reverse("hk_list_export_mbox", kwargs={
-                    "mlist_fqdn": mlist.name,
-                    "filename": "%s-%s" % (mlist.name, message.message_id_hash)}),
+                "mlist_fqdn": mlist.name,
+                "filename": "%s-%s" % (mlist.name, message.message_id_hash)
+                }),
             message.message_id_hash),
         "message": _("Download"),
         "title": _("This message in gzipped mbox format"),
     }
 
     context = {
-        'mlist' : mlist,
+        'mlist': mlist,
         'message': message,
-        'message_id_hash' : message_id_hash,
+        'message_id_hash': message_id_hash,
         'months_list': get_months(mlist),
         'month': message.date,
         'reply_form': get_posting_form(ReplyForm, request, mlist),
@@ -91,12 +93,11 @@ def attachment(request, mlist_fqdn, message_id_hash, counter, filename):
     Sends the numbered attachment for download. The filename is not used for
     lookup, but validated nonetheless for security reasons.
     """
-    # pylint: disable=unused-argument
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
-    message = get_object_or_404(Email,
-        mailinglist=mlist, message_id_hash=message_id_hash)
-    att = get_object_or_404(Attachment,
-        email=message, counter=int(counter))
+    message = get_object_or_404(
+        Email, mailinglist=mlist, message_id_hash=message_id_hash)
+    att = get_object_or_404(
+        Attachment, email=message, counter=int(counter))
     if att.name != filename:
         raise Http404
     # http://djangosnippets.org/snippets/1710/
@@ -107,7 +108,7 @@ def attachment(request, mlist_fqdn, message_id_hash, counter, filename):
         response['Content-Encoding'] = att.encoding
     # Follow RFC2231, browser support is sufficient nowadays (2012-09)
     response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'%s' \
-            % urllib.quote(att.name.encode('utf-8'))
+        % urllib.quote(att.name.encode('utf-8'))
     return response
 
 
@@ -120,8 +121,8 @@ def vote(request, mlist_fqdn, message_id_hash):
         return HttpResponse('You must be logged in to vote',
                             content_type="text/plain", status=403)
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
-    message = get_object_or_404(Email,
-        mailinglist=mlist, message_id_hash=message_id_hash)
+    message = get_object_or_404(
+        Email, mailinglist=mlist, message_id_hash=message_id_hash)
 
     value = int(request.POST['vote'])
     message.vote(value, request.user)
@@ -135,8 +136,8 @@ def vote(request, mlist_fqdn, message_id_hash):
             }, request)
 
     votes = message.get_votes()
-    result = { "like": votes["likes"], "dislike": votes["dislikes"],
-               "html": html, }
+    result = {"like": votes["likes"], "dislike": votes["dislikes"],
+              "html": html}
     return HttpResponse(json.dumps(result),
                         content_type='application/javascript')
 
@@ -156,8 +157,8 @@ def reply(request, mlist_fqdn, message_id_hash):
         subject = form.cleaned_data["subject"]
         headers = {}
     else:
-        message = get_object_or_404(Email,
-            mailinglist=mlist, message_id_hash=message_id_hash)
+        message = get_object_or_404(
+            Email, mailinglist=mlist, message_id_hash=message_id_hash)
         subject = reply_subject(message.subject)
         headers = {"In-Reply-To": "<%s>" % message.message_id,
                    "References": "<%s>" % message.message_id, }
@@ -185,15 +186,17 @@ def reply(request, mlist_fqdn, message_id_hash):
                                       request.user.last_name),
             "sender_email": form.cleaned_data["sender"] or request.user.email,
             "content": form.cleaned_data["message"],
-            "level": message.thread_depth, # no need to increment, level = thread_depth - 1
+            # no need to increment, level = thread_depth - 1
+            "level": message.thread_depth,
         }
         t = loader.get_template('hyperkitty/ajax/temp_message.html')
-        html = t.render({ 'email': email_reply }, request)
+        html = t.render({'email': email_reply}, request)
     # TODO: make the message below translatable.
     result = {"result": "Your reply has been sent and is being processed.",
               "message_html": html}
     if subscribed_now:
-        result['result'] += "\n  You have been subscribed to {} list.".format(mlist_fqdn)
+        result['result'] += (
+            "\n  You have been subscribed to {} list.".format(mlist_fqdn))
     return HttpResponse(json.dumps(result),
                         content_type="application/javascript")
 
@@ -216,9 +219,11 @@ def new_message(request, mlist_fqdn):
             except PostingFailed, e:
                 messages.error(request, str(e))
             except ModeratedListException, e:
-                return HttpResponse(str(e), content_type="text/plain", status=403)
+                return HttpResponse(
+                    str(e), content_type="text/plain", status=403)
             else:
-                messages.success(request, "The message has been sent successfully.")
+                messages.success(
+                    request, "The message has been sent successfully.")
                 redirect_url = reverse('hk_archives_with_month', kwargs={
                     "mlist_fqdn": mlist_fqdn,
                     'year': today.year, 'month': today.month})
@@ -245,8 +250,8 @@ def delete(request, mlist_fqdn, threadid=None, message_id_hash=None):
         thread = get_object_or_404(Thread, thread_id=threadid)
         message = None
     elif message_id_hash is not None:
-        message = get_object_or_404(Email,
-            mailinglist=mlist, message_id_hash=message_id_hash)
+        message = get_object_or_404(
+            Email, mailinglist=mlist, message_id_hash=message_id_hash)
         thread = None
     else:
         raise SuspiciousOperation
@@ -268,16 +273,19 @@ def delete(request, mlist_fqdn, threadid=None, message_id_hash=None):
                 try:
                     email.delete()
                 except DatabaseError as e:
-                    form.add_error("email",
-                        _("Could not delete message %(msg_id_hash)s: %(error)s")
+                    form.add_error(
+                        "email",
+                        _("Could not delete message %(msg_id_hash)s: "
+                          "%(error)s")
                         % {"msg_id_hash": email.message_id_hash, "error": e})
                     continue
-                logger.info("Deleted email %s (%s)", email.pk, email.message_id)
+                logger.info("Deleted email %s (%s)",
+                            email.pk, email.message_id)
                 thread_ids.append(thread_id)
             if thread_ids:
                 messages.success(
                     request, _("Successfully deleted %(count)s messages.")
-                             % {"count": len(thread_ids)})
+                    % {"count": len(thread_ids)})
             if not form.has_error("email"):
                 if len(set(thread_ids)) == 1:
                     try:
@@ -298,7 +306,6 @@ def delete(request, mlist_fqdn, threadid=None, message_id_hash=None):
     context = {
         "mlist": mlist,
         "form": form,
-        #'months_list': get_months(mlist),
     }
     if thread is not None:
         context.update({

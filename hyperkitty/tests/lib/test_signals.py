@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 2014-2015 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -18,8 +19,6 @@
 #
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
-
-# pylint: disable=too-many-public-methods,invalid-name
 
 from __future__ import absolute_import, print_function, unicode_literals
 
@@ -43,7 +42,7 @@ class EventsTestCase(TestCase):
         new_thread.connect(self._store_events)
 
     def _store_events(self, sender, **kwargs):
-        self.events.append( (sender, kwargs) )
+        self.events.append((sender, kwargs))
 
     def _make_message(self, msg_id="dummy"):
         msg = Message()
@@ -56,18 +55,17 @@ class EventsTestCase(TestCase):
     def test_new_email_new_thread(self):
         msg = self._make_message()
         add_to_list("example-list", msg)
-        #print(repr(self.events))
         self.assertEqual(len(self.events), 2)
         # The new_thread signal is received before the new_email signal,
         # because it is emitted by a listener of the new_email signal, but it
         # does not really matter.
-        ## new_thread
+        # # new_thread
         self.assertTrue("thread" in self.events[0][1])
         thread = self.events[0][1]["thread"]
         self.assertTrue(isinstance(thread, Thread))
         self.assertEqual(thread.thread_id, get_message_id_hash("dummy"))
         self.assertEqual(thread.emails.count(), 1)
-        ## new_email
+        # # new_email
         self.assertTrue("email" in self.events[1][1])
         email = self.events[1][1]["email"]
         self.assertTrue(isinstance(email, Email))
@@ -93,21 +91,11 @@ class EventsTestCase(TestCase):
         self.assertEqual(email.thread.thread_id, "dummy")
         self.assertEqual(email.thread.emails.count(), 2)
 
-
-    #def test_catch_exceptions(self):
-    #    def boom(sender, **kwargs):
-    #        raise ValueError
-    #    new_email.connect(boom)
-    #    msg = self._make_message()
-    #    try:
-    #        add_to_list("example-list", msg)
-    #    except Exception as e:
-    #        self.fail(e)
-
     def test_do_not_catch_exceptions(self):
         class SpecificError(Exception):
             pass
-        def boom(sender, **kwargs): # pylint: disable=unused-argument
+
+        def boom(sender, **kwargs):
             raise SpecificError
         new_email.connect(boom)
         msg = self._make_message()

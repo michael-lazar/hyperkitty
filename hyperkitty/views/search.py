@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -31,7 +32,6 @@ from hyperkitty.lib.paginator import paginate
 from hyperkitty.lib.view_helpers import is_mlist_authorized
 
 
-
 def search(request):
     """ Returns messages corresponding to a query """
     mlist_fqdn = request.GET.get("mlist")
@@ -46,8 +46,6 @@ def search(request):
             return render(request, "hyperkitty/errors/private.html", {
                             "mlist": mlist,
                           }, status=403)
-
-
     query = ''
     results = EmptySearchQuerySet()
     sqs = RelatedSearchQuerySet()
@@ -85,13 +83,13 @@ def search(request):
     emails = paginate(results, page_num=request.GET.get('page'))
     for email in emails:
         if request.user.is_authenticated():
-            email.object.myvote = email.object.votes.filter(user=request.user).first()
+            email.object.myvote = email.object.votes.filter(
+                user=request.user).first()
         else:
             email.object.myvote = None
 
-
     context = {
-        'mlist' : mlist,
+        'mlist': mlist,
         'form': form,
         'emails': emails,
         'query': query,
