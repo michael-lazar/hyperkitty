@@ -26,8 +26,9 @@ from django.views.generic import RedirectView
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^$', RedirectView.as_view(url=reverse_lazy('hyperkitty.views.index.index'))),
-    #url(r'^postorius/', include('postorius.urls')),
+    url(r'^$', RedirectView.as_view(
+        url=reverse_lazy('hyperkitty.views.index.index'))),
+    # url(r'^postorius/', include('postorius.urls')),
     url(r'^hyperkitty/', include('hyperkitty.urls')),
     # Social Auth
     url(r'', include('social.apps.django_app.urls', namespace='social')),
@@ -36,11 +37,3 @@ urlpatterns = [
     # Django admin
     url(r'^admin/', include(admin.site.urls)),
 ]
-
-
-# See the hyperkitty.middleware.SSLRedirect class
-SSL_URLS = (
-    "hyperkitty.urls",
-    "social.apps.django_app.urls",
-    "django_browserid.urls",
-    )

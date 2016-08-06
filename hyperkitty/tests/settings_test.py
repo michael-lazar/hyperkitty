@@ -33,7 +33,10 @@ ADMINS = (
 ALLOWED_HOSTS = []
 # And for BrowserID too, see
 # http://django-browserid.rtfd.org/page/user/settings.html#django.conf.settings.BROWSERID_AUDIENCES
-BROWSERID_AUDIENCES = ["http://localhost", "http://localhost:8000"]
+BROWSERID_AUDIENCES = [
+    "http://localhost",               # Only useful in debug mode
+    "http://localhost:8000",          # Only useful in debug mode
+]
 
 # Mailman API credentials
 MAILMAN_REST_API_URL = 'http://localhost:8001'
@@ -45,6 +48,7 @@ MAILMAN_ARCHIVER_FROM = ('127.0.0.1', '::1')
 # Application definition
 
 INSTALLED_APPS = (
+    'hyperkitty',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -55,7 +59,6 @@ INSTALLED_APPS = (
     # 'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'hyperkitty',
     'social.apps.django_app.default',
     'rest_framework',
     'django_gravatar',
@@ -101,8 +104,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'social.apps.django_app.context_processors.backends',
                 'social.apps.django_app.context_processors.login_redirect',
-                'hyperkitty.context_processors.export_settings',
-                'hyperkitty.context_processors.postorius_info',
+                'hyperkitty.context_processors.common',
             ],
         },
     },
@@ -197,9 +199,11 @@ LOGIN_URL = 'hk_user_login'
 LOGIN_REDIRECT_URL = 'hk_root'
 LOGOUT_URL = 'hk_user_logout'
 
-# Use the email as identifier, but truncate it because the User.username field
-# is only 30 chars long.
-BROWSERID_USERNAME_ALGO = lambda email: email[:30]  # flake8: noqa
+# Use the email username as identifier, but truncate it because
+# the User.username field is only 30 chars long.
+def username(email):
+    return email.rsplit('@', 1)[0][:30]
+BROWSERID_USERNAME_ALGO = username
 BROWSERID_VERIFY_CLASS = "django_browserid.views.Verify"
 
 
@@ -272,8 +276,14 @@ COMPRESS_ENABLED = False
 # Empty the precompilers mapping for testing: django-compressor will run them
 # even if compress_enabled is false, no idea why
 COMPRESS_PRECOMPILERS = ()
+# On a production setup, setting COMPRESS_OFFLINE to True will bring a
+# significant performance improvement, as CSS files will not need to be
+# recompiled on each requests. It means running an additional "compress"
+# management command after each code upgrade.
+# http://django-compressor.readthedocs.io/en/latest/usage/#offline-compression
 # COMPRESS_OFFLINE = True
-# needed for debug mode
+
+# Needed for debug mode
 # INTERNAL_IPS = ('127.0.0.1',)
 
 
