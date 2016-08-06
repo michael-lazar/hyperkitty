@@ -18,7 +18,6 @@
 
 from django import template
 
-# pylint: disable-msg=unused-argument
 
 register = template.Library()
 
@@ -47,10 +46,11 @@ def bootstrap_form(context, form, button=None):
         button=button,
         )
 
+
 @register.inclusion_tag('hyperkitty/fragments/bootstrap/form-horizontal.html',
                         takes_context=True)
-def bootstrap_form_horizontal(context, form, size_left=2, size_right=8,
-                           button=None):
+def bootstrap_form_horizontal(
+        context, form, size_left=2, size_right=8, button=None):
     return dict(
         form=form,
         size_left=size_left,

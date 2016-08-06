@@ -121,7 +121,6 @@ class PostForm(forms.Form):
     #                              widget=AttachmentFileInput)
 
 
-
 class CategoryForm(forms.Form):
     category = forms.ChoiceField(label="", required=False)
 

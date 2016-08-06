@@ -61,7 +61,7 @@ class LoginView(View):
                                   'process': request.GET.get('process')})
         return render(request, self.template_name, {'form': form})
 
-    def post(self, request, *args, **kwargs):  # pylint: disable-msg=unused-argument
+    def post(self, request, *args, **kwargs):
         data = dict(list(request.GET.items()) + list(request.POST.items()))
         if self.provider.endpoint:
             data['openid'] = self.provider.endpoint
@@ -91,7 +91,7 @@ class LoginView(View):
             # see https://github.com/necaris/python3-openid/issues/1
             except (UnicodeDecodeError, DiscoveryFailure) as e:
                 if request.method == 'POST':
-                    form._errors["openid"] = form.error_class([e])  # pylint: disable-msg=protected-access
+                    form._errors["openid"] = form.error_class([e])
                 else:
                     return render_authentication_error(
                         request, self.provider.id, exception=e)
