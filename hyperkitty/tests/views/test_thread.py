@@ -32,11 +32,11 @@ from bs4 import BeautifulSoup
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django_mailman3.tests.utils import get_flash_messages
 
 from hyperkitty.lib.incoming import add_to_list
 from hyperkitty.models import MailingList, Thread, Tag, Tagging, Email
-from hyperkitty.tests.utils import (
-    TestCase, SearchEnabledTestCase, get_flash_messages)
+from hyperkitty.tests.utils import TestCase, SearchEnabledTestCase
 
 
 class ReattachTestCase(SearchEnabledTestCase):

@@ -33,6 +33,7 @@ BuildRequires:  python-networkx
 BuildRequires:  python-enum34
 BuildRequires:  python-django-haystack
 BuildRequires:  python-django-extensions
+BuildRequires:  python-django-mailman3
 BuildRequires:  python-lockfile
 # Unit tests only
 BuildRequires:  python-beautifulsoup4
@@ -61,6 +62,7 @@ Requires:       python-networkx
 Requires:       python-enum34
 Requires:       python-django-haystack
 Requires:       python-django-extensions
+Requires:       python-django-mailman3
 Requires:       python-lockfile
 Requires:       numpy
 

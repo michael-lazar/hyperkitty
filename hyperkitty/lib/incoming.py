@@ -28,12 +28,12 @@ import re
 from django.conf import settings
 from django.dispatch import receiver
 from django.utils import timezone
+from django_mailman3.lib.scrub import Scrubber
 from mailmanclient import MailmanConnectionError
 
 from hyperkitty.lib.signals import new_email, new_thread
 from hyperkitty.lib.utils import (
     get_ref, parseaddr, parsedate, header_to_unicode, get_message_id)
-from hyperkitty.lib.scrub import Scrubber
 from hyperkitty.lib.analysis import compute_thread_order_and_depth
 from hyperkitty.models import (
     MailingList, Sender, Email, Attachment, Thread, ArchivePolicy)
@@ -120,7 +120,7 @@ def add_to_list(list_name, message):
             ((utcoffset.days * 24 * 60 * 60) + utcoffset.seconds) / 60)
 
     # Content
-    scrubber = Scrubber(list_name, message)
+    scrubber = Scrubber(message)
     # warning: scrubbing modifies the msg in-place
     email.content, attachments = scrubber.scrub()
     # timeit("4 after email content, before signals")

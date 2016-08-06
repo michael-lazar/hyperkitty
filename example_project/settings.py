@@ -52,6 +52,7 @@ MAILMAN_ARCHIVER_FROM = ('127.0.0.1', '::1')
 
 INSTALLED_APPS = (
     'hyperkitty',
+    'django_mailman3',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:

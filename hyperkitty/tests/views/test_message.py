@@ -33,13 +33,14 @@ from django.core.urlresolvers import reverse
 from django.core import mail
 from django.utils import timezone
 from django_gravatar.helpers import get_gravatar_url
+from django_mailman3.tests.utils import get_flash_messages
 
 from hyperkitty.lib.utils import get_message_id_hash
 from hyperkitty.lib.incoming import add_to_list
 from hyperkitty.models.email import Email
 from hyperkitty.models.mailinglist import MailingList
 from hyperkitty.models.thread import Thread
-from hyperkitty.tests.utils import TestCase, get_flash_messages
+from hyperkitty.tests.utils import TestCase
 
 
 class MessageViewsTestCase(TestCase):
