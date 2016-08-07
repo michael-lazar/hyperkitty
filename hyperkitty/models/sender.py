@@ -26,9 +26,9 @@ from __future__ import absolute_import, unicode_literals, print_function
 from urllib2 import HTTPError
 
 from django.db import models
+from django_mailman3.lib.mailman import get_mailman_client
 from mailmanclient import MailmanConnectionError
 
-from hyperkitty.lib.mailman import get_mailman_client
 
 import logging
 logger = logging.getLogger(__name__)

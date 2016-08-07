@@ -28,8 +28,8 @@ from traceback import format_exc
 
 from mock import Mock
 from django.contrib.auth.models import User
+from django_mailman3.tests.utils import FakeMMList, FakeMMMember
 from hyperkitty.lib.incoming import add_to_list
-from hyperkitty.lib.mailman import FakeMMList, FakeMMMember
 from hyperkitty.models import MailingList, Email
 from hyperkitty.tests.utils import TestCase
 

@@ -34,13 +34,14 @@ from django.contrib import messages
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect
 from django.utils.timezone import get_current_timezone
+from django_mailman3.lib.mailman import (
+    get_mailman_client, get_mailman_user, get_mailman_user_id)
+from django_mailman3.lib.paginator import paginate
 
 from hyperkitty.models import (
     Favorite, LastView, MailingList, Sender, Email, Vote, Profile)
 from hyperkitty.forms import UserProfileForm
 from hyperkitty.lib.view_helpers import is_mlist_authorized
-from hyperkitty.lib.paginator import paginate
-from hyperkitty.lib.mailman import get_mailman_client
 
 
 import logging
@@ -56,7 +57,7 @@ def user_profile(request):
         # that creates it for new users, but HyperKitty may be added to an
         # existing Django project with existing users.
         profile = Profile.objects.create(user=request.user)
-    mm_user = profile.get_mailman_user()
+    mm_user = get_mailman_user(request.user)
 
     if request.method == 'POST':
         form = UserProfileForm(request.POST)
@@ -142,7 +143,7 @@ def votes(request):
 @login_required
 def subscriptions(request):
     profile = request.user.hyperkitty_profile
-    mm_user_id = profile.get_mailman_user_id()
+    mm_user_id = get_mailman_user_id(request.user)
     subs = []
     for mlist_id in profile.get_subscriptions():
         try:
@@ -258,11 +259,7 @@ def posts(request, user_id):
     # Get the messages and paginate them
     emails = Email.objects.filter(
         mailinglist=mlist, sender__mailman_id=user_id)
-    try:
-        page_num = int(request.GET.get('page', "1"))
-    except ValueError:
-        page_num = 1
-    emails = paginate(emails, page_num)
+    emails = paginate(emails, request.GET.get("page"))
 
     for email in emails:
         email.myvote = email.votes.filter(user=request.user).first()

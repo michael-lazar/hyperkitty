@@ -32,10 +32,10 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.timezone import now, utc
+from django_mailman3.lib.mailman import get_mailman_client
 from mailmanclient import MailmanConnectionError
 
 from hyperkitty.lib.cache import cache
-from hyperkitty.lib.mailman import get_mailman_client
 from .sender import Sender
 from .thread import Thread
 

@@ -79,8 +79,9 @@ class TestCase(DjangoTestCase):
             mailmanclient.MailmanConnectionError()
         self.mailman_client.get_list.side_effect = \
             mailmanclient.MailmanConnectionError()
-        self._mm_client_patcher = patch("hyperkitty.lib.mailman.MailmanClient",
-                                        lambda *a: self.mailman_client)
+        self._mm_client_patcher = patch(
+            "django_mailman3.lib.mailman.MailmanClient",
+            lambda *a: self.mailman_client)
         self._mm_client_patcher.start()
 
     def _override_setting(self, key, value):

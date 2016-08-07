@@ -33,10 +33,10 @@ from mock import Mock
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django_mailman3.tests.utils import FakeMMList, FakeMMMember
 
 from hyperkitty.lib.utils import get_message_id_hash
 from hyperkitty.lib.incoming import add_to_list
-from hyperkitty.lib.mailman import FakeMMList, FakeMMMember
 from hyperkitty.models import (
     LastView, MailingList, Thread, Email, Favorite)
 from hyperkitty.tests.utils import TestCase

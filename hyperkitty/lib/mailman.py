@@ -25,8 +25,8 @@ from __future__ import absolute_import, unicode_literals
 from urllib2 import HTTPError
 
 from django.conf import settings
-from django.utils.timezone import now
-from mailmanclient import Client as MailmanClient, MailmanConnectionError
+from django_mailman3.lib.mailman import get_mailman_client
+from mailmanclient import MailmanConnectionError
 
 from hyperkitty.lib.cache import cache
 
@@ -36,16 +36,6 @@ logger = logging.getLogger(__name__)
 
 class ModeratedListException(Exception):
     pass
-
-
-def get_mailman_client():
-    # easier to patch during unit tests
-    client = MailmanClient(
-        '%s/3.0' %
-        settings.MAILMAN_REST_API_URL,
-        settings.MAILMAN_REST_API_USER,
-        settings.MAILMAN_REST_API_PASS)
-    return client
 
 
 def subscribe(list_address, user, email=None, display_name=None):
@@ -88,47 +78,6 @@ def subscribe(list_address, user, email=None, display_name=None):
                     email, list_address)
 
     return subscribed_now
-
-
-class FakeMMList:
-    def __init__(self, name):
-        self.fqdn_listname = name
-        self.display_name = name.partition("@")[0]
-        self.list_id = name.replace("@", ".")
-        self.settings = {
-            "description": "",
-            "subject_prefix": "[%s] " % self.display_name,
-            "created_at": now().isoformat(),
-            "archive_policy": "public",
-            }
-
-
-class FakeMMMember:
-    def __init__(self, list_id, address):
-        self.list_id = list_id
-        self.address = address
-
-
-class FakeMMPage():
-
-    def __init__(self, entries=None, count=20, page=1):
-        self.entries = entries or []
-        self._count = count
-        self._page = page
-
-    def __iter__(self):
-        first = (self._page - 1) * self._count
-        last = self._page * self._count
-        for entry in self.entries[first:last]:
-            yield entry
-
-    @property
-    def has_previous(self):
-        return self._page > 1
-
-    @property
-    def has_next(self):
-        return self._count * self._page < len(self.entries)
 
 
 def get_new_lists_from_mailman():
@@ -190,38 +139,3 @@ def sync_with_mailman(overwrite=False):
         prev_count = count
         logger.info("%d emails left to refresh, checked %d",
                     count, lower_bound)
-
-
-def add_address_to_mailman_user(user, address):
-    """Associate a verified address with a Mailman user."""
-    logger.debug("Associating address %s with user %s in Mailman",
-                 address, user.username)
-    from hyperkitty.models import Profile
-    try:
-        profile = Profile.objects.get(user_id=user.id)
-    except Profile.DoesNotExist:
-        # Create the profile if it does not exist. There's a signal receiver
-        # that creates it for new users, but HyperKitty may be added to an
-        # existing Django project with existing users.
-        profile = Profile.objects.create(user=user)
-    mm_user = profile.get_mailman_user()
-    if mm_user is None:
-        logger.info("Could not find or create a Mailman user for %s",
-                    user.username)
-        return
-    existing_addresses = [unicode(addr) for addr in mm_user.addresses]
-    if address not in existing_addresses:
-        # Associate it with the user.
-        try:
-            mm_address = mm_user.add_address(address, absorb_existing=True)
-            mm_address.verify()
-            logger.debug("Associated address %s with %s",
-                         address, user.username)
-        except HTTPError as e:
-            logger.warning("Can't add %s to %s: %s",
-                           address, user.username, e)
-    else:
-        # Already associated, just mark it verified.
-        mm_address = get_mailman_client().get_address(address)
-        if mm_address.verified_on is None:
-            mm_address.verify()

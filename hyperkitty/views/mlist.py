@@ -34,12 +34,13 @@ from django.utils import formats, timezone
 from django.utils.dateformat import format as date_format
 from django.utils.translation import gettext as _
 from django.views.decorators.cache import cache_page
+from django_mailman3.lib.mailman import get_mailman_user_id
+from django_mailman3.lib.paginator import paginate
 
 from hyperkitty.models import Favorite, MailingList
 from hyperkitty.lib.view_helpers import (
     get_category_widget, get_months, get_display_dates, daterange,
     check_mlist_private)
-from hyperkitty.lib.paginator import paginate
 
 
 @check_mlist_private
@@ -94,7 +95,7 @@ def _thread_list(request, mlist, threads,
                  template_name='hyperkitty/thread_list.html',
                  extra_context=None):
     threads = paginate(threads, request.GET.get('page'),
-                       results_per_page=request.GET.get('count'))
+                       request.GET.get('count'))
     for thread in threads:
         # Favorites
         thread.favorite = False
@@ -169,7 +170,7 @@ def overview(request, mlist_fqdn=None):
     if request.user.is_authenticated():
         favorites = [f.thread for f in Favorite.objects.filter(
             thread__mailinglist=mlist, user=request.user)]
-        mm_user_id = request.user.hyperkitty_profile.get_mailman_user_id()
+        mm_user_id = get_mailman_user_id(request.user)
         threads_posted_to = []
         if mm_user_id is not None:
             for thread in threads:

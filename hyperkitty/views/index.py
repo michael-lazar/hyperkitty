@@ -28,8 +28,8 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.conf import settings
 from django.http import HttpResponse
+from django_mailman3.lib.paginator import paginate
 
-from hyperkitty.lib.paginator import paginate
 from hyperkitty.lib.view_helpers import show_mlist, is_mlist_authorized
 from hyperkitty.models import MailingList
 
@@ -62,7 +62,7 @@ def index(request):
                             content_type="text/plain", status=500)
 
     mlists = paginate(mlists, request.GET.get('page'),
-                      results_per_page=request.GET.get('count'))
+                      request.GET.get('count'))
 
     # Permissions
     for mlist in mlists:

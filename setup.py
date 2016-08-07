@@ -38,7 +38,6 @@ REQUIRES = [
     "django-haystack>=2.5.0",
     "django-extensions>=1.3.7",
     "lockfile>=0.9.1",
-    "django-allauth",
 ]
 
 

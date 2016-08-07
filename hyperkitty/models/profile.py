@@ -31,11 +31,11 @@ from django.contrib import admin
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django_mailman3.lib.mailman import get_mailman_user
 from mailmanclient import MailmanConnectionError
 from allauth.account.models import EmailAddress
 
 from hyperkitty.lib.cache import cache
-from hyperkitty.lib.mailman import get_mailman_client
 from .email import Email
 
 
@@ -73,46 +73,9 @@ class Profile(models.Model):
         dislikes = votes.filter(value=-1).count()
         return likes, dislikes
 
-    def get_mailman_user(self):
-        # Only cache the user_id, not the whole user instance, because
-        # mailmanclient is not pickle-safe
-        cache_key = "User:%s:mailman_user_id" % self.id
-        user_id = cache.get(cache_key)
-        try:
-            mm_client = get_mailman_client()
-            if user_id is None:
-                try:
-                    mm_user = mm_client.get_user(self.user.email)
-                except HTTPError as e:
-                    if e.code != 404:
-                        raise  # will be caught down there
-                    mm_user = mm_client.create_user(
-                        self.user.email, self.user.get_full_name())
-                    # XXX The email is not set as verified, because we don't
-                    # know if the registration that was used verified it.
-                    logger.info("Created Mailman user for %s (%s)",
-                                self.user.username, self.user.email)
-                cache.set(cache_key, mm_user.user_id, None)
-                return mm_user
-            else:
-                return mm_client.get_user(user_id)
-        except (HTTPError, MailmanConnectionError) as e:
-            logger.warning(
-                "Error getting or creating the Mailman user of %s (%s): %s",
-                self.user.username, self.user.email, e)
-            return None
-
-    def get_mailman_user_id(self):
-        # TODO: Optimization: look in the cache first, if not found call
-        # get_mailman_user() as before
-        mm_user = self.get_mailman_user()
-        if mm_user is None:
-            return None
-        return unicode(mm_user.user_id)
-
     def get_subscriptions(self):
         def _get_value():
-            mm_user = self.get_mailman_user()
+            mm_user = get_mailman_user(self.user)
             if mm_user is None:
                 return {}
             subscriptions = dict([

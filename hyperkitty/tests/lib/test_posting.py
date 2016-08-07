@@ -26,10 +26,10 @@ import uuid
 from django.contrib.auth.models import User
 from django.test.client import RequestFactory
 from django.core import mail
+from django_mailman3.tests.utils import FakeMMList, FakeMMMember
 from mock import Mock, patch
 
 from hyperkitty.lib import posting
-from hyperkitty.lib.mailman import FakeMMList, FakeMMMember
 from hyperkitty.models import MailingList
 from hyperkitty.tests.utils import TestCase
 

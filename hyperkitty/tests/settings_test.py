@@ -323,6 +323,10 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'django_mailman3.lib.mailman': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+        },
     },
     'formatters': {
         'verbose': {
