@@ -16,7 +16,7 @@ BuildRequires:  python-devel
 BuildRequires:  python-sphinx
 # Unit tests in %%check
 BuildRequires:  django-gravatar2
-BuildRequires:  django-rest-framework >= 2.2.0
+BuildRequires:  python-django-rest-framework >= 2.2.0
 BuildRequires:  python-social-auth
 BuildRequires:  django-crispy-forms
 BuildRequires:  python-django-compressor
@@ -46,7 +46,7 @@ BuildRequires:  hardlink
 
 Requires:       django-gravatar2
 Requires:       python-social-auth
-Requires:       django-rest-framework >= 2.2.0
+Requires:       python-django-rest-framework >= 2.2.0
 Requires:       django-crispy-forms
 Requires:       python-django-compressor
 Requires:       python-rjsmin
