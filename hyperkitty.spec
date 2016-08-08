@@ -31,7 +31,7 @@ BuildRequires:  python-django >= 1.8
 BuildRequires:  python-dateutil
 BuildRequires:  python-networkx
 BuildRequires:  python-enum34
-BuildRequires:  python-django-haystack
+BuildRequires:  python-django-haystack >= 2.5.0
 BuildRequires:  python-django-extensions
 BuildRequires:  python-django-mailman3
 BuildRequires:  python-lockfile
@@ -60,7 +60,7 @@ Requires:       python-django >= 1.8
 Requires:       python-dateutil
 Requires:       python-networkx
 Requires:       python-enum34
-Requires:       python-django-haystack
+Requires:       python-django-haystack >= 2.5.0
 Requires:       python-django-extensions
 Requires:       python-django-mailman3
 Requires:       python-lockfile
