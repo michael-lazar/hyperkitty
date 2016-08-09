@@ -70,7 +70,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.github',
     'allauth.socialaccount.providers.gitlab',
     'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.facebook',
+    #'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.twitter',
     'allauth.socialaccount.providers.stackexchange',
 )
@@ -246,6 +246,34 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 ACCOUNT_UNIQUE_EMAIL  = True
+
+SOCIALACCOUNT_PROVIDERS = {
+    'openid': {
+        'SERVERS': [
+            dict(id='yahoo',
+                 name='Yahoo',
+                 openid_url='http://me.yahoo.com'),
+        ],
+    },
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+    },
+    'facebook': {
+       'METHOD': 'oauth2',
+       'SCOPE': ['email'],
+       'FIELDS': [
+           'email',
+           'name',
+           'first_name',
+           'last_name',
+           'locale',
+           'timezone',
+           ],
+       'VERSION': 'v2.4',
+    },
+}
+
 
 #
 # Gravatar

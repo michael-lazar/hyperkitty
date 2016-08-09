@@ -27,7 +27,10 @@
         <li role="presentation" {% if subpage == "subscriptions" %} class="active" {% endif %}>
             <a href="{% url "hk_user_subscriptions" %}">{% trans "Subscriptions" %}</a>
         </li>
-        <li role="presentation" {% if subpage == "social" %} class="active" {% endif %}>
+        <li role="presentation" {% if form.password2 %} class="active" {% endif %}>
+            <a href="{% url "account_change_password" %}">{% trans "Change Password" %}</a>
+        </li>
+        <li role="presentation" {% if form.accounts %} class="active" {% endif %}>
             <a href="{% url "socialaccount_connections" %}">{% trans "Account Connections" %}</a>
         </li>
     </ul>
