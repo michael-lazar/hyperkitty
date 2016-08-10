@@ -36,40 +36,8 @@
 }
 
 
-ul.socialaccount_providers {
-    @extend .list-inline;
-}
-
-.socialaccount_ballot {
-    .login-or {
-        clear: both;
-        margin: 1em 0;
-        font-size: 120%;
-        font-weight: bold;
-    }
-}
-
-
 //=== User profile page ==/
 .user-profile {
-    h1 {
-        margin-bottom: 1em;
-    }
-    h3 {
-        margin-top: 2em;
-    }
-
-    div.gravatar {
-        font-size: 95%;
-        img {
-            @include square(150px);
-        }
-    }
-
-    .user-profile-content {
-        padding-top: 2em;
-    }
-
     tr.list-address {
         font-weight: bold;
         background: $rowBorderColor;
