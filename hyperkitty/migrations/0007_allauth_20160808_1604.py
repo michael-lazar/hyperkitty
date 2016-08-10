@@ -16,14 +16,11 @@ def populate_emailaddress(apps, schema_editor):
     User = apps.get_model("auth", "User")
     EmailAddress = apps.get_model("account", "EmailAddress")
     for user in User.objects.all():
-        try:
+        if not EmailAddress.objects.filter(email=user.email).exists():
             EmailAddress.objects.create(
                 email=user.email, user=user,
                 verified=True, primary=True,
                 )
-        except IntegrityError as e:
-            print("Can't create EmailAddress for %s: %s"
-                  % (user.username, e))
 
 
 def migrate_social_users(apps, schema_editor):
@@ -45,18 +42,17 @@ def migrate_social_users(apps, schema_editor):
             WHERE provider = %s
             """, (provider_old,))
         for row in cursor:
-            try:
+            uid, user_id, last_login, date_joined = row
+            if not SocialAccount.objects.filter(
+                    provider=provider_new, uid=uid).exists():
                 SocialAccount.objects.create(
                         provider=provider_new,
-                        uid=row[0],
-                        user_id=row[1],
-                        last_login=row[2],
-                        date_joined=row[3],
+                        uid=uid,
+                        user_id=user_id,
+                        last_login=last_login,
+                        date_joined=date_joined,
                         extra_data={},
                     )
-            except IntegrityError as e:
-                print("Can't create SocialAccount for %s: %s"
-                      % (row.uid, e))
 
 
 class Migration(migrations.Migration):
