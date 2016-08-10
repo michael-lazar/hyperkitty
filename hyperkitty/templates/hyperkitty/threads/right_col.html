@@ -27,9 +27,9 @@
         </a>
     </p>
 
-    {% if postorius_installed %}
+    {% if 'postorius' in INSTALLED_APPS %}
     <p class="postorius">
-      <a class="btn btn-default btn-sm" href="{{ postorius_installed }}/{{ mlist.name }}">
+      <a class="btn btn-default btn-sm" href="{% url 'list_summary' mlist.list_id %}">
         <i class="fa fa-fw fa-inbox"></i>
         Manage subscription</a>
     </p>

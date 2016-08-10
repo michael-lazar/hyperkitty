@@ -86,7 +86,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'hyperkitty.middleware.TimezoneMiddleware',
+    'django_mailman3.middleware.TimezoneMiddleware',
 )
 
 ROOT_URLCONF = 'hyperkitty.tests.urls_test'
@@ -108,6 +108,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django_mailman3.context_processors.common',
                 'hyperkitty.context_processors.common',
             ],
         },

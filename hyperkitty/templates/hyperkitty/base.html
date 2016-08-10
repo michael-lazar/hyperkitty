@@ -78,16 +78,16 @@
                         <span class="fa fa-bars"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="loginDropdownMenu">
-                        {% if postorius_installed %}
+                        {% if 'postorius' in INSTALLED_APPS %}
                         <li role="presentation">
-                            <a role="menuitem" tabindex="-1" class="postorius" href="{{ postorius_installed }}">{% trans 'Manage lists' %}</a>
+                            <a role="menuitem" tabindex="-1" class="postorius" href="{% url 'list_index' %}">{% trans 'Manage lists' %}</a>
                         </li>
                         {% endif %}
                         {% if user.is_authenticated %}
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ logout_url }}?next={% url 'hk_root' %}">{% trans "Logout" %}</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url LOGOUT_URL %}?next={% url 'hk_root' %}">{% trans "Logout" %}</a></li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'hk_user_profile' %}">{{ user.email|truncatechars:"35" }}</a></li>
                         {% else %}
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{{ login_url }}?next={{next|default:request.path|urlencode}}">{% trans "Login" %}</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url LOGIN_URL %}?next={{next|default:request.path|urlencode}}">{% trans "Login" %}</a></li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'account_signup' %}?next={{next|default:request.path|urlencode}}">{% trans "Sign Up" %}</a></li>
                         {% endif %}
                     </ul>
@@ -95,20 +95,20 @@
                 <!-- show regular list items for larger viewports (no dropdown)-->
                 <ul class="nav navbar-nav navbar-right hidden-sm auth">
                     {% if user.is_authenticated %}
-                        <li><a href="{{ logout_url }}?next={% url 'hk_root' %}">{% trans "Logout" %}</a></li>
+                        <li><a href="{% url LOGOUT_URL %}?next={% url 'hk_root' %}">{% trans "Logout" %}</a></li>
                         <li><a href="{% url 'hk_user_profile' %}">{{ user.email|truncatechars:"35" }}</a></li>
                     {% else %}
-                        <li><a href="{{ login_url }}?next={{next|default:request.path|urlencode}}">{% trans "Login" %}</a></li>
+                        <li><a href="{% url LOGIN_URL %}?next={{next|default:request.path|urlencode}}">{% trans "Login" %}</a></li>
                         <li><a href="{% url 'account_signup' %}?next={{next|default:request.path|urlencode}}">{% trans "Sign Up" %}</a></li>
                     {% endif %}
                 </ul>
 
-                {% if postorius_installed %}
+                {% if 'postorius' in INSTALLED_APPS %}
                 <ul class="nav navbar-nav navbar-right"><li>
                     {% if mlist %}
-                    <a href="{{ postorius_installed }}/{{ mlist.name }}">{% trans 'Manage this list' %}</a>
+                    <a href="{% url 'list_summary' mlist.list_id %}">{% trans 'Manage this list' %}</a>
                     {% else %}
-                    <a href="{{ postorius_installed }}">{% trans 'Manage lists' %}</a>
+                    <a href="{% url 'list_index' %}">{% trans 'Manage lists' %}</a>
                     {% endif %}
                 </li></ul>
                 {% endif %}

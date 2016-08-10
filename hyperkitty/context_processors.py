@@ -30,9 +30,7 @@ from hyperkitty import VERSION
 def common(request):
     extra_context = {}
     extra_context.update(export_settings(request))
-    extra_context.update(postorius_info(request))
     extra_context["paginator_per_page_options"] = [10, 50, 100, 200]
-    extra_context["site_name"] = get_current_site(request).name
     return extra_context
 
 
@@ -41,17 +39,4 @@ def export_settings(request):
     extra_context = dict(
         (name.lower(), getattr(settings, name, None)) for name in exports)
     extra_context["HYPERKITTY_VERSION"] = VERSION
-    extra_context["login_url"] = resolve_url(settings.LOGIN_URL)
-    extra_context["logout_url"] = resolve_url(settings.LOGOUT_URL)
     return extra_context
-
-
-def postorius_info(request):
-    postorius_url = False
-    if "postorius" in settings.INSTALLED_APPS:
-        try:
-            postorius_url = reverse("postorius.views.list.list_index")
-            postorius_url = postorius_url.rstrip("/")
-        except NoReverseMatch:
-            pass
-    return {"postorius_installed": postorius_url}
