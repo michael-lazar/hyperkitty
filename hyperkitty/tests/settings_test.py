@@ -65,7 +65,7 @@ INSTALLED_APPS = (
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'hyperkitty.lib.fedora',
+    'django_mailman3.lib.auth.fedora',
     'allauth.socialaccount.providers.openid',
     'allauth.socialaccount.providers.github',
     'allauth.socialaccount.providers.gitlab',
