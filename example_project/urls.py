@@ -28,8 +28,8 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^$', RedirectView.as_view(
         url=reverse_lazy('hyperkitty.views.index.index'))),
-    # url(r'^postorius/', include('postorius.urls')),
     url(r'^hyperkitty/', include('hyperkitty.urls')),
+    # url(r'^postorius/', include('postorius.urls')),
     url(r'^accounts/', include('allauth.urls')),
     # Django admin
     url(r'^admin/', include(admin.site.urls)),
