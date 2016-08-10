@@ -34,11 +34,11 @@ from mock import Mock
 from bs4 import BeautifulSoup
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django_mailman3.lib.cache import cache
 from django_mailman3.tests.utils import FakeMMList, FakeMMMember
 
 from hyperkitty.models import (
     MailingList, ArchivePolicy, Sender, Thread, Favorite, Email)
-from hyperkitty.lib.cache import cache
 from hyperkitty.lib.incoming import add_to_list
 from hyperkitty.tests.utils import TestCase
 

@@ -28,8 +28,8 @@ from django.db.models.signals import post_delete, pre_save
 from django.contrib import admin
 from django.dispatch import receiver
 from django.utils.timezone import now, utc
+from django_mailman3.lib.cache import cache
 
-from hyperkitty.lib.cache import cache
 from hyperkitty.lib.signals import new_thread
 from .common import get_votes
 from .sender import Sender

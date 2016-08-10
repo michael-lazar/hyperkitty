@@ -29,10 +29,10 @@ from django.http import Http404
 from django.utils.timezone import utc
 from django.utils.decorators import available_attrs
 from django.shortcuts import render
+from django_mailman3.lib.cache import cache
 
 from hyperkitty.models import ThreadCategory, MailingList, Profile
 from hyperkitty.forms import CategoryForm
-from hyperkitty.lib.cache import cache
 from hyperkitty.lib.posting import get_sender
 
 

@@ -29,13 +29,12 @@ import tempfile
 from unittest import SkipTest
 
 import mailmanclient
-from mock import Mock, patch
 from django.test import RequestFactory, TestCase as DjangoTestCase
 from django.conf import settings
 from django.contrib.messages.storage.cookie import CookieStorage
 from django.core.management import call_command
-
-from hyperkitty.lib.cache import cache
+from django_mailman3.lib.cache import cache
+from mock import Mock, patch
 
 
 def setup_logging(tmpdir):

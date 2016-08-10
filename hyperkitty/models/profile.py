@@ -26,16 +26,16 @@ from urllib2 import HTTPError
 
 
 import pytz
+from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django_mailman3.lib.cache import cache
 from django_mailman3.lib.mailman import get_mailman_user
 from mailmanclient import MailmanConnectionError
-from allauth.account.models import EmailAddress
 
-from hyperkitty.lib.cache import cache
 from .email import Email
 
 
