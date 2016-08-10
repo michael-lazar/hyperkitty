@@ -30,6 +30,7 @@ urlpatterns = [
         url=reverse_lazy('hyperkitty.views.index.index'))),
     url(r'^hyperkitty/', include('hyperkitty.urls')),
     # url(r'^postorius/', include('postorius.urls')),
+    url(r'', include('django_mailman3.urls')),
     url(r'^accounts/', include('allauth.urls')),
     # Django admin
     url(r'^admin/', include(admin.site.urls)),

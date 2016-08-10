@@ -25,5 +25,6 @@ from django.conf.urls import include, url
 
 urlpatterns = [
     url(r'', include('hyperkitty.urls')),
+    url(r'', include('django_mailman3.urls')),
     url(r'^accounts/', include('allauth.urls')),
 ]

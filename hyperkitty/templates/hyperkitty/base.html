@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load compress %}
 {% load staticfiles %}
+{% load gravatar %}
 <!DOCTYPE HTML>
 <html>
     <head>
@@ -82,21 +83,42 @@
                         <li role="presentation">
                             <a role="menuitem" tabindex="-1" class="postorius" href="{% url 'list_index' %}">{% trans 'Manage lists' %}</a>
                         </li>
+                        <li role="separator" class="divider"></li>
                         {% endif %}
                         {% if user.is_authenticated %}
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url LOGOUT_URL %}?next={% url 'hk_root' %}">{% trans "Logout" %}</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'hk_user_profile' %}">{{ user.email|truncatechars:"35" }}</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'mm_user_profile' %}">{% trans 'Account' %}</a></li>
+                            {% if 'postorius' in INSTALLED_APPS %}
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'ps_user_profile' %}">{% trans 'Mailman settings' %}</a></li>
+                            {% endif %}
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'hk_user_profile' %}">{% trans 'Posting activity' %}</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url LOGOUT_URL %}?next={% url 'hk_root' %}">{% trans "Logout" %}</a></li>
                         {% else %}
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url LOGIN_URL %}?next={{next|default:request.path|urlencode}}">{% trans "Login" %}</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'account_signup' %}?next={{next|default:request.path|urlencode}}">{% trans "Sign Up" %}</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url LOGIN_URL %}?next={{next|default:request.path|urlencode}}">{% trans "Login" %}</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'account_signup' %}?next={{next|default:request.path|urlencode}}">{% trans "Sign Up" %}</a></li>
                         {% endif %}
                     </ul>
                 </div>
-                <!-- show regular list items for larger viewports (no dropdown)-->
+                <!-- larger viewports -->
                 <ul class="nav navbar-nav navbar-right hidden-sm auth">
                     {% if user.is_authenticated %}
-                        <li><a href="{% url LOGOUT_URL %}?next={% url 'hk_root' %}">{% trans "Logout" %}</a></li>
-                        <li><a href="{% url 'hk_user_profile' %}">{{ user.email|truncatechars:"35" }}</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+                               role="button" aria-haspopup="true" aria-expanded="false">
+                                {% gravatar user.email 20 %}
+                                {{ user.username|truncatechars:"35" }}
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{% url 'mm_user_profile' %}">{% trans 'Account' %}</a></li>
+                                {% if 'postorius' in INSTALLED_APPS %}
+                                <li><a href="{% url 'ps_user_profile' %}">{% trans 'Mailman settings' %}</a></li>
+                                {% endif %}
+                                <li><a href="{% url 'hk_user_profile' %}">{% trans 'Posting activity' %}</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="{% url LOGOUT_URL %}?next={% url 'hk_root' %}">{% trans "Logout" %}</a></li>
+                            </ul>
+                        </li>
                     {% else %}
                         <li><a href="{% url LOGIN_URL %}?next={{next|default:request.path|urlencode}}">{% trans "Login" %}</a></li>
                         <li><a href="{% url 'account_signup' %}?next={{next|default:request.path|urlencode}}">{% trans "Sign Up" %}</a></li>

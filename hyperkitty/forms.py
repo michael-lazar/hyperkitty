@@ -26,15 +26,6 @@ from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-from hyperkitty.models.profile import Profile
-
-
-class UserProfileForm(forms.Form):
-    first_name = forms.CharField()
-    last_name = forms.CharField()
-    timezone = forms.ChoiceField(label="Time zone",
-                                 choices=Profile.TIMEZONES)
-
 
 class TextInputWithButton(forms.TextInput):
     """

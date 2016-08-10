@@ -1,0 +1,17 @@
+{% extends "hyperkitty/user_profile/base.html" %}
+{% load i18n %}
+
+
+{% block user_profile_content %}
+
+    {% if last_posts %}
+    <ul>
+        {% for post in last_posts %}
+        <li>{{ post }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p><em>{% trans "no posts" %}</em></p>
+    {% endif %}
+
+{% endblock %}

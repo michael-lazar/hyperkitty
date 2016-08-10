@@ -25,7 +25,6 @@ from __future__ import absolute_import, unicode_literals, print_function
 from urllib2 import HTTPError
 
 
-import pytz
 from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib import admin
@@ -46,10 +45,7 @@ logger = logging.getLogger(__name__)
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 related_name="hyperkitty_profile")
-
     karma = models.IntegerField(default=1)
-    TIMEZONES = sorted([(tz, tz) for tz in pytz.common_timezones])
-    timezone = models.CharField(max_length=100, choices=TIMEZONES, default=u"")
 
     def __unicode__(self):
         return u'%s' % (unicode(self.user))

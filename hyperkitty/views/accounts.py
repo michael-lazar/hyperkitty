@@ -27,20 +27,17 @@ from urllib2 import HTTPError
 import dateutil.parser
 import mailmanclient
 
-from django.conf import settings
-from django.core.urlresolvers import reverse, NoReverseMatch
+from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect
-from django.utils.timezone import get_current_timezone
 from django_mailman3.lib.mailman import (
-    get_mailman_client, get_mailman_user, get_mailman_user_id)
+    get_mailman_client, get_mailman_user_id)
 from django_mailman3.lib.paginator import paginate
 
 from hyperkitty.models import (
-    Favorite, LastView, MailingList, Sender, Email, Vote, Profile)
-from hyperkitty.forms import UserProfileForm
+    Favorite, LastView, MailingList, Sender, Email, Vote)
 from hyperkitty.lib.view_helpers import is_mlist_authorized
 
 
@@ -50,60 +47,10 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def user_profile(request):
-    try:
-        profile = Profile.objects.get(user=request.user)
-    except Profile.DoesNotExist:
-        # Create the profile if it does not exist. There's a signal receiver
-        # that creates it for new users, but HyperKitty may be added to an
-        # existing Django project with existing users.
-        profile = Profile.objects.create(user=request.user)
-    mm_user = get_mailman_user(request.user)
-
-    if request.method == 'POST':
-        form = UserProfileForm(request.POST)
-        if form.is_valid():
-            request.user.first_name = form.cleaned_data["first_name"]
-            request.user.last_name = form.cleaned_data["last_name"]
-            profile.timezone = form.cleaned_data["timezone"]
-            request.user.save()
-            profile.save()
-            # Now update the display name in Mailman
-            if mm_user is not None:
-                mm_user.display_name = "%s %s" % (
-                        request.user.first_name, request.user.last_name)
-                mm_user.save()
-            messages.success(request, "The profile was successfully updated.")
-            return redirect(reverse('hk_user_profile'))
-    else:
-        form = UserProfileForm(initial={
-                "first_name": request.user.first_name,
-                "last_name": request.user.last_name,
-                "timezone": get_current_timezone(),
-                })
-
-    # Emails
-    other_addresses = profile.addresses[:]
-    other_addresses.remove(request.user.email)
-
-    # Extract the gravatar_url used by django_gravatar2.  The site
-    # administrator could alternatively set this to http://cdn.libravatar.org/
-    gravatar_url = getattr(settings, 'GRAVATAR_URL', 'http://www.gravatar.com')
-    gravatar_shortname = '.'.join(gravatar_url.split('.')[-2:]).strip('/')
-
-    context = {
-        'user_profile': profile,
-        'form': form,
-        'other_addresses': other_addresses,
-        'gravatar_url': gravatar_url,
-        'gravatar_shortname': gravatar_shortname,
-        'subpage': 'account',
-    }
-    try:
-        # Try to get Postorius' profile url
-        context['profile_url'] = reverse('user_profile')
-    except NoReverseMatch:
-        pass
-    return render(request, "hyperkitty/user_profile/account.html", context)
+    return render(request, 'hyperkitty/user_profile/profile.html', {
+                "last_posts": [],
+                "subpage": "profile",
+            })
 
 
 @login_required

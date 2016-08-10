@@ -2,18 +2,18 @@
 {% load i18n %}
 
 {% block head_title %}
-{% trans "User Profile" %} - {{ block.super }}
+{% trans "User posting activity" %} - {{ block.super }}
 {% endblock %}
 
 {% block content %}
 
 <div class="user-profile">
 
-    <h1>{% trans "User profile" %} <small>{% trans "for" %} {{ user }}</small></h1>
+    <h1>{% trans "User posting activity" %} <small>{% trans "for" %} {{ user }}</small></h1>
 
     <ul class="nav nav-tabs">
-        <li role="presentation" {% if subpage == "account" %} class="active" {% endif %}>
-            <a href="{% url "hk_user_profile" %}">{% trans "Account" %}</a>
+        <li role="presentation" {% if subpage == "profile" %} class="active" {% endif %}>
+            <a href="{% url "hk_user_profile" %}">{% trans "Posting activity" %}</a>
         </li>
         <li role="presentation" {% if subpage == "favorites" %} class="active" {% endif %}>
             <a href="{% url "hk_user_favorites" %}">{% trans "Favorites" %}</a>
@@ -26,12 +26,6 @@
         </li>
         <li role="presentation" {% if subpage == "subscriptions" %} class="active" {% endif %}>
             <a href="{% url "hk_user_subscriptions" %}">{% trans "Subscriptions" %}</a>
-        </li>
-        <li role="presentation" {% if form.password2 %} class="active" {% endif %}>
-            <a href="{% url "account_change_password" %}">{% trans "Change Password" %}</a>
-        </li>
-        <li role="presentation" {% if form.accounts %} class="active" {% endif %}>
-            <a href="{% url "socialaccount_connections" %}">{% trans "Account Connections" %}</a>
         </li>
     </ul>
 
