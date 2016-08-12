@@ -1,27 +1,21 @@
-django18:
+image: maxking/mailman-ci-runner
+
+django-1.8:
   script:
   - tox -e django18
-  tags:
-  - sqlite
-  - gcc
 
-#django19:
-#  script:
-#  - tox -e django19
-#  tags:
-#  - sqlite
-#  - gcc
+django-1.9:
+  script:
+  - tox -e django19
+
+django-1.10:
+  script:
+  - tox -e django19
 
 lint:
   script:
   - tox -e lint
-  tags:
-  - sqlite
-  - gcc
 
 docs:
   script:
   - tox -e docs
-  tags:
-  - sqlite
-  - gcc
