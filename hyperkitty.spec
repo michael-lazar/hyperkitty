@@ -15,7 +15,7 @@ BuildArch:      noarch
 BuildRequires:  python-devel
 BuildRequires:  python-sphinx
 # Unit tests in %%check
-BuildRequires:  django-gravatar2
+BuildRequires:  python-django-gravatar2
 BuildRequires:  python-django-rest-framework >= 2.2.0
 BuildRequires:  python-social-auth
 BuildRequires:  django-crispy-forms
@@ -44,7 +44,7 @@ BuildRequires:  python-whoosh
 BuildRequires:  checkpolicy, selinux-policy-devel, /usr/share/selinux/devel/policyhelp
 BuildRequires:  hardlink
 
-Requires:       django-gravatar2
+Requires:       python-django-gravatar2
 Requires:       python-social-auth
 Requires:       python-django-rest-framework >= 2.2.0
 Requires:       django-crispy-forms
