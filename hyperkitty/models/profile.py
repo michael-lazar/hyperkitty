@@ -22,8 +22,6 @@
 
 from __future__ import absolute_import, unicode_literals, print_function
 
-from urllib2 import HTTPError
-
 
 from allauth.account.models import EmailAddress
 from django.conf import settings
@@ -33,7 +31,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django_mailman3.lib.cache import cache
 from django_mailman3.lib.mailman import get_mailman_user
-from mailmanclient import MailmanConnectionError
 
 from .email import Email
 

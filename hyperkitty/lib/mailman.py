@@ -24,7 +24,6 @@ from __future__ import absolute_import, unicode_literals
 
 from urllib2 import HTTPError
 
-from django.conf import settings
 from django_mailman3.lib.cache import cache
 from django_mailman3.lib.mailman import get_mailman_client
 from mailmanclient import MailmanConnectionError

@@ -29,9 +29,8 @@ import mailmanclient
 
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 from django.http import Http404, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django_mailman3.lib.mailman import (
     get_mailman_client, get_mailman_user_id)
 from django_mailman3.lib.paginator import paginate

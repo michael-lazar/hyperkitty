@@ -21,9 +21,6 @@
 #
 
 from django.conf import settings
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.urlresolvers import reverse, NoReverseMatch
-from django.shortcuts import resolve_url
 from hyperkitty import VERSION
 
 
