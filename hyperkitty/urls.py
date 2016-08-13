@@ -21,7 +21,7 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from django.conf.urls import url, include
+from django.conf.urls import include, url
 from django.views.generic.base import TemplateView
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -35,17 +35,6 @@ from hyperkitty.views import (
 
 
 # flake8: noqa
-
-
-# User profile
-profile_patterns = [
-    url(r'^$', accounts.user_profile, name='hk_user_profile'),
-    url(r'^favorites$', accounts.favorites, name='hk_user_favorites'),
-    url(r'^last_views$', accounts.last_views, name='hk_user_last_views'),
-    url(r'^votes$', accounts.votes, name='hk_user_votes'),
-    url(r'^subscriptions$', accounts.subscriptions,
-        name='hk_user_subscriptions'),
-]
 
 
 # List archives and overview
@@ -63,6 +52,7 @@ list_patterns = [
 ]
 
 
+# Messages
 message_patterns = [
     url(r'^$', message.index, name='hk_message_index'),
     url(r'^attachment/(?P<counter>\d+)/(?P<filename>.+)$',
@@ -121,7 +111,14 @@ urlpatterns = [
     url(r'^find-list$', index.find_list, name='hk_find_list'),
 
     # User profile
-    url(r'^profile/', include(profile_patterns)),
+    url(r'^profile/', include([
+        url(r'^$', accounts.user_profile, name='hk_user_profile'),
+        url(r'^favorites$', accounts.favorites, name='hk_user_favorites'),
+        url(r'^last_views$', accounts.last_views, name='hk_user_last_views'),
+        url(r'^votes$', accounts.votes, name='hk_user_votes'),
+        url(r'^subscriptions$', accounts.subscriptions,
+            name='hk_user_subscriptions'),
+    ])),
 
     # Users
     url(r'^users/$', users.users, name='hk_users_overview'),
