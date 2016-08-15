@@ -370,3 +370,13 @@ function setup_reattach() {
         });
     }).submit();
 }
+
+
+/*
+ * Handle click events
+ */
+function handle_font_click() {
+    $(document).on("click", ".toggle-font", function() {
+        $(this).parents('.email').find('.email-body').toggleClass('fixed')
+    });
+}

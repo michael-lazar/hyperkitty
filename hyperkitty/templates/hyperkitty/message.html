@@ -44,3 +44,14 @@
 </div>
 
 {% endblock %}
+
+{% block additionaljs %}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        setup_emails_list();
+        handle_font_click();
+    });
+</script>
+
+{% endblock %}

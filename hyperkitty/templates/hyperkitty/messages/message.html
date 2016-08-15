@@ -53,8 +53,9 @@
 
         </div>
         <div class="messagelink right">
-            (<a href="{% url 'hk_message_index' mlist_fqdn=email.mailinglist.name message_id_hash=email.message_id_hash %}"
-                title="{{ email.subject }}">{% trans "permalink" %}</a>)
+            <span class="fa fa-font cursor-pointer toggle-font"></span>
+            <a href="{% url 'hk_message_index' mlist_fqdn=email.mailinglist.name message_id_hash=email.message_id_hash %}"
+               title="{{ email.subject }}"><i class="fa fa-link"></i></a>
         </div>
 
         {% if email.changed_subject %}
