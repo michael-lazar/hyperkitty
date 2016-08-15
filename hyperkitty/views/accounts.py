@@ -27,6 +27,7 @@ from urllib2 import HTTPError
 import dateutil.parser
 import mailmanclient
 
+from allauth.account.models import EmailAddress
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
@@ -46,10 +47,20 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def user_profile(request):
-    return render(request, 'hyperkitty/user_profile/profile.html', {
-                "last_posts": [],
-                "subpage": "profile",
-            })
+    # Get the messages and paginate them
+    email_addresses = EmailAddress.objects.filter(
+        user=request.user).values("email")
+    last_posts = Email.objects.filter(
+        sender__address__in=email_addresses).order_by("-date")
+    last_posts = paginate(last_posts,
+                          request.GET.get("lppage"),
+                          request.GET.get("lpcount", "10"))
+
+    context = {
+        "last_posts": last_posts,
+        "subpage": "profile",
+    }
+    return render(request, "hyperkitty/user_profile/profile.html", context)
 
 
 @login_required
