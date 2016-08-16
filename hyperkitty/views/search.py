@@ -24,6 +24,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 from django.shortcuts import render
 from django.http import Http404
+from django_mailman3.lib.mailman import get_subscriptions
 from django_mailman3.lib.paginator import paginate
 from haystack.query import EmptySearchQuerySet, RelatedSearchQuerySet
 from haystack.forms import SearchForm
@@ -57,7 +58,7 @@ def search(request):
         excluded_mlists = MailingList.objects.filter(
             archive_policy=ArchivePolicy.private.value)
         if request.user.is_authenticated():
-            subscriptions = request.user.hyperkitty_profile.get_subscriptions()
+            subscriptions = get_subscriptions(request.user)
             excluded_mlists = excluded_mlists.exclude(
                 list_id__in=subscriptions.keys())
         excluded_mlists = excluded_mlists.values_list("name", flat=True)

@@ -261,8 +261,6 @@ class PrivateArchivesTestCase(TestCase):
         # session = self.client.session
         # session["subscribed"] = ["list@example.com"]
         # session.save()
-        # self.user.hyperkitty_profile.get_subscriptions = \
-        #     lambda: ["list@example.com"]
         response = self.client.get(url, query)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Dummy message")

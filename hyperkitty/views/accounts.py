@@ -33,7 +33,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
 from django.shortcuts import render
 from django_mailman3.lib.mailman import (
-    get_mailman_client, get_mailman_user_id)
+    get_mailman_client, get_mailman_user_id, get_subscriptions)
 from django_mailman3.lib.paginator import paginate
 
 from hyperkitty.models import (
@@ -102,7 +102,7 @@ def subscriptions(request):
     profile = request.user.hyperkitty_profile
     mm_user_id = get_mailman_user_id(request.user)
     subs = []
-    for mlist_id in profile.get_subscriptions():
+    for mlist_id in get_subscriptions(request.user):
         try:
             mlist = MailingList.objects.get(list_id=mlist_id)
         except MailingList.DoesNotExist:

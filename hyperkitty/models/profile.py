@@ -66,23 +66,6 @@ class Profile(models.Model):
         dislikes = votes.filter(value=-1).count()
         return likes, dislikes
 
-    def get_subscriptions(self):
-        def _get_value():
-            mm_user = get_mailman_user(self.user)
-            if mm_user is None:
-                return {}
-            subscriptions = dict([
-                (member.list_id, member.address)
-                for member in mm_user.subscriptions
-                ])
-            return subscriptions
-        # TODO: how should this be invalidated? Subscribe to a signal in
-        # mailman when a new subscription occurs? Or store in the session?
-        return cache.get_or_set(
-            "User:%s:subscriptions" % self.id,
-            _get_value, 60, version=2)  # 1 minute
-        # TODO: increase the cache duration when we have Mailman signals
-
     def get_first_post(self, mlist):
         return self.emails.filter(
             mailinglist=mlist).order_by("archived_date").first()

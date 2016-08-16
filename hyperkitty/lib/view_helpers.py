@@ -30,6 +30,7 @@ from django.utils.timezone import utc
 from django.utils.decorators import available_attrs
 from django.shortcuts import render
 from django_mailman3.lib.cache import cache
+from django_mailman3.lib.mailman import get_subscriptions
 
 from hyperkitty.models import ThreadCategory, MailingList, Profile
 from hyperkitty.forms import CategoryForm
@@ -155,14 +156,7 @@ def is_mlist_authorized(request, mlist):
     if not request.user.is_authenticated():
         return False
     # Private list and logged-in user: check subscriptions
-    try:
-        profile = Profile.objects.get(user_id=request.user.id)
-    except Profile.DoesNotExist:
-        # Create the profile if it does not exist. There's a signal receiver
-        # that creates it for new users, but HyperKitty may be added to an
-        # existing Django project with existing users.
-        profile = Profile.objects.create(user=request.user)
-    if mlist.list_id in profile.get_subscriptions():
+    if mlist.list_id in get_subscriptions(request.user):
         return True
     else:
         return False
