@@ -32,7 +32,7 @@ from django.shortcuts import render
 from django_mailman3.lib.cache import cache
 from django_mailman3.lib.mailman import get_subscriptions
 
-from hyperkitty.models import ThreadCategory, MailingList, Profile
+from hyperkitty.models import ThreadCategory, MailingList
 from hyperkitty.forms import CategoryForm
 from hyperkitty.lib.posting import get_sender
 
@@ -141,9 +141,10 @@ def check_mlist_private(func):
         except MailingList.DoesNotExist:
             raise Http404("No archived mailing-list by that name.")
         if not is_mlist_authorized(request, mlist):
-            return render(request, "hyperkitty/errors/private.html", {
-                            "mlist": mlist,
-                          }, status=403)
+            return render(
+                request, "hyperkitty/errors/private.html", {
+                    "mlist": mlist,
+                }, status=403)
         return func(request, *args, **kwargs)
     return inner
 
