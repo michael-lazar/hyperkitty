@@ -26,7 +26,7 @@ Refresh the recent threads cache for each mailing list.
 from __future__ import absolute_import, print_function, unicode_literals
 
 from django_extensions.management.jobs import BaseJob
-from hyperkitty.lib.cache import cache
+from django_mailman3.lib.cache import cache
 from hyperkitty.models import MailingList
 
 

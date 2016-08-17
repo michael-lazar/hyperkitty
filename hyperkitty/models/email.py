@@ -37,9 +37,9 @@ from django.db.models.signals import (
     post_init, pre_save, post_save, pre_delete, post_delete)
 from django.dispatch import receiver
 from django.utils.timezone import now, get_fixed_timezone
+from django_mailman3.lib.cache import cache
 
 from hyperkitty.lib.analysis import compute_thread_order_and_depth
-from hyperkitty.lib.cache import cache
 from .common import get_votes
 from .mailinglist import MailingList
 from .thread import Thread

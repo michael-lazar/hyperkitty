@@ -22,7 +22,7 @@
 
 from __future__ import absolute_import, unicode_literals, print_function
 
-from hyperkitty.lib.cache import cache
+from django_mailman3.lib.cache import cache
 
 
 def get_votes(instance):

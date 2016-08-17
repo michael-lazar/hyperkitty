@@ -2,15 +2,15 @@ image: maxking/mailman-ci-runner
 
 django-1.8:
   script:
-  - tox -e django18
+  - tox -e django18-head-coverage
 
 django-1.9:
   script:
-  - tox -e django19
+  - tox -e django19-head-coverage
 
 django-1.10:
   script:
-  - tox -e django19
+  - tox -e django110-head-coverage
 
 lint:
   script:

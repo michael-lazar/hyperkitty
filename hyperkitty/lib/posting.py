@@ -25,6 +25,7 @@ import re
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import EmailMessage
+from django_mailman3.lib.mailman import get_subscriptions
 from mailmanclient import MailmanConnectionError
 
 from hyperkitty.lib import mailman
@@ -41,7 +42,7 @@ def get_sender(request, mlist):
     # Fallback to the logged-in user
     address = request.user.email
     # Try to get the email used to susbscribe to the list
-    subscriptions = request.user.hyperkitty_profile.get_subscriptions()
+    subscriptions = get_subscriptions(request.user)
     if mlist.list_id in subscriptions:
         address = subscriptions[mlist.list_id]
     return address

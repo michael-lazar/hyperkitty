@@ -28,14 +28,15 @@ import uuid
 from email.message import Message
 from traceback import format_exc
 
+from allauth.account.models import EmailAddress
 from mock import Mock
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test.utils import override_settings
+from django_mailman3.tests.utils import FakeMMList, FakeMMMember
 
 from hyperkitty.lib.utils import get_message_id_hash
 from hyperkitty.lib.incoming import add_to_list
-from hyperkitty.lib.mailman import FakeMMList, FakeMMMember
 from hyperkitty.models import (
     LastView, MailingList, Thread, Email, Favorite)
 from hyperkitty.tests.utils import TestCase
@@ -46,6 +47,8 @@ class AccountViewsTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
             'testuser', 'test@example.com', 'testPass')
+        EmailAddress.objects.create(
+            user=self.user, verified=True, email='test@example.com')
 
     def _send_message(self):
         msg = Message()
@@ -57,7 +60,7 @@ class AccountViewsTestCase(TestCase):
 
     def test_login_page(self):
         # Try to access the login page
-        response = self.client.get(reverse("hk_user_login"))
+        response = self.client.get(reverse(settings.LOGIN_URL))
         self.assertEqual(response.status_code, 200)
 
     def test_redirect_to_login(self):
@@ -65,7 +68,7 @@ class AccountViewsTestCase(TestCase):
         response = self.client.get(reverse("hk_user_profile"))
         self.assertRedirects(
             response,
-            "%s?next=%s" % (reverse('hk_user_login'),
+            "%s?next=%s" % (reverse(settings.LOGIN_URL),
                             reverse("hk_user_profile")))
 
     def test_profile(self):
@@ -103,32 +106,18 @@ class AccountViewsTestCase(TestCase):
         self.assertContains(response, "This is you.", count=1)
         self.assertContains(response, "Edit your private profile", count=1)
 
-    @override_settings(USE_INTERNAL_AUTH=True)
     def test_registration_redirect(self):
         self.client.login(username='testuser', password='testPass')
         # If the user if already logged in, redirect to index page...
         # Don't let him register again
-        response = self.client.get(reverse('hk_user_registration'))
+        response = self.client.get(reverse('account_signup'))
         self.assertRedirects(response, reverse('hk_root'))
 
         # Access the user registration page after logging out and try to
         # register now
         self.client.logout()
-        response = self.client.get(reverse('hk_user_registration'))
+        response = self.client.get(reverse('account_signup'))
         self.assertEqual(response.status_code, 200)
-
-    @override_settings(USE_INTERNAL_AUTH=True)
-    def test_registration(self):
-        response = self.client.get(reverse('hk_user_registration'))
-        self.assertEqual(response.status_code, 200)
-        response = self.client.post(
-            reverse("hk_user_registration"),
-            {"username": "newtestuser",
-             "email": "newtestuser@example.com",
-             "password1": "test", "password2": "test"})
-        self.assertRedirects(response, reverse('hk_root'))
-        response = self.client.get(reverse('hk_root'))
-        self.assertContains(response, "newtestuser@example.com")
 
     def test_votes(self):
         self.client.login(username='testuser', password='testPass')

@@ -38,30 +38,6 @@
 
 //=== User profile page ==/
 .user-profile {
-    h1 {
-        margin-bottom: 1em;
-    }
-    h3 {
-        margin-top: 2em;
-    }
-
-    div.gravatar {
-        font-size: 95%;
-        img {
-            @include square(150px);
-        }
-    }
-
-    .tab-pane {
-        padding-top: 1em;
-    }
-
-    .ajaxloader {
-        margin-top: 0;
-        margin-left: 0;
-        position: absolute;
-    }
-
     tr.list-address {
         font-weight: bold;
         background: $rowBorderColor;
@@ -76,6 +52,10 @@ table.user-data {
     }
     tr.gravatar td {
         vertical-align: middle;
+    }
+    tr:first-child > td,
+    tr:first-child > th {
+        border-top: 0;
     }
 }
 

@@ -26,9 +26,9 @@ from datetime import datetime
 from email.message import Message
 
 from django.utils.timezone import utc
+from django_mailman3.tests.utils import FakeMMList
 
 from hyperkitty.lib.incoming import add_to_list
-from hyperkitty.lib.mailman import FakeMMList
 from hyperkitty.models import MailingList, Thread, ArchivePolicy
 from hyperkitty.tests.utils import TestCase
 

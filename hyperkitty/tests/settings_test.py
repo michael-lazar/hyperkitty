@@ -28,15 +28,11 @@ ADMINS = (
      # ('HyperKitty Admin', 'root@localhost'),
 )
 
+SITE_ID = 1
+
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.8/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
-# And for BrowserID too, see
-# http://django-browserid.rtfd.org/page/user/settings.html#django.conf.settings.BROWSERID_AUDIENCES
-BROWSERID_AUDIENCES = [
-    "http://localhost",               # Only useful in debug mode
-    "http://localhost:8000",          # Only useful in debug mode
-]
 
 # Mailman API credentials
 MAILMAN_REST_API_URL = 'http://localhost:8001'
@@ -57,18 +53,26 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    # 'django.contrib.sites',
+    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'social.apps.django_app.default',
     'rest_framework',
     'django_gravatar',
-    'crispy_forms',
     'paintstore',
     'compressor',
-    'django_browserid',
     'haystack',
     'django_extensions',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'django_mailman3.lib.auth.fedora',
+    'allauth.socialaccount.providers.openid',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.gitlab',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.twitter',
+    'allauth.socialaccount.providers.stackexchange',
 )
 
 
@@ -82,10 +86,11 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'hyperkitty.middleware.TimezoneMiddleware',
+    'django_mailman3.middleware.TimezoneMiddleware',
 )
 
 ROOT_URLCONF = 'hyperkitty.tests.urls_test'
+
 
 TEMPLATES = [
     {
@@ -103,15 +108,14 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'social.apps.django_app.context_processors.backends',
-                'social.apps.django_app.context_processors.login_redirect',
+                'django_mailman3.context_processors.common',
                 'hyperkitty.context_processors.common',
             ],
         },
     },
 ]
 
-# WSGI_APPLICATION = 'hyperkitty_standalone.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database
@@ -122,7 +126,7 @@ DATABASES = {
         # Use 'sqlite3', 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'ENGINE': 'django.db.backends.sqlite3',
         # DB name or path to database file if using sqlite3.
-        'NAME': '/path/to/rw/hyperkitty.db',
+        'NAME': os.path.join(BASE_DIR, 'hyperkitty.db'),
         # The following settings are not used with sqlite3:
         'USER': 'hyperkitty',
         'PASSWORD': 'hkpass',
@@ -132,6 +136,14 @@ DATABASES = {
         # PORT: set to empty string for default.
         'PORT': '',
     }
+    # Example for PostgreSQL (recommanded for production):
+    #'default': {
+    #    'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #    'NAME': 'database_name',
+    #    'USER': 'database_user',
+    #    'PASSWORD': 'database_password',
+    #    'HOST': 'localhost',
+    #}
 }
 
 
@@ -142,6 +154,7 @@ DATABASES = {
 # And if your proxy does your SSL encoding for you, set SECURE_PROXY_SSL_HEADER
 # https://docs.djangoproject.com/en/1.8/ref/settings/#secure-proxy-ssl-header
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_SCHEME', 'https')
 
 
 # Internationalization
@@ -160,7 +173,6 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -196,16 +208,22 @@ STATICFILES_FINDERS = (
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 
-LOGIN_URL = 'hk_user_login'
+LOGIN_URL = 'account_login'
 LOGIN_REDIRECT_URL = 'hk_root'
-LOGOUT_URL = 'hk_user_logout'
+LOGOUT_URL = 'account_logout'
 
-# Use the email username as identifier, but truncate it because
-# the User.username field is only 30 chars long.
-def username(email):
-    return email.rsplit('@', 1)[0][:30]
-BROWSERID_USERNAME_ALGO = username
-BROWSERID_VERIFY_CLASS = "django_browserid.views.Verify"
+
+# If you enable internal authentication, this is the address that the emails
+# will appear to be coming from. Make sure you set a valid domain name,
+# otherwise the emails may get rejected.
+# https://docs.djangoproject.com/en/1.8/ref/settings/#default-from-email
+#DEFAULT_FROM_EMAIL = "mailing-lists@you-domain.org"
+
+# If you enable email reporting for error messages, this is where those emails
+# will appear to be coming from. Make sure you set a valid domain name,
+# otherwise the emails may get rejected.
+# https://docs.djangoproject.com/en/1.8/ref/settings/#std:setting-SERVER_EMAIL
+#SERVER_EMAIL = 'root@your-domain.org'
 
 
 # Compatibility with Bootstrap 3
@@ -214,41 +232,21 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
 
-# Django Crispy Forms
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
-CRISPY_FAIL_SILENTLY = not DEBUG
-
 
 #
 # Social auth
 #
 AUTHENTICATION_BACKENDS = (
-    # 'social.backends.open_id.OpenIdAuth',
-    # http://python-social-auth.readthedocs.org/en/latest/backends/google.html
-    # 'social.backends.google.GoogleOpenId',
-    # 'social.backends.google.GoogleOAuth2',
-    # 'social.backends.twitter.TwitterOAuth',
-    # 'social.backends.yahoo.YahooOpenId',
-    # 'django_browserid.auth.BrowserIDBackend',
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-# http://python-social-auth.readthedocs.org/en/latest/pipeline.html#authentication-pipeline
-SOCIAL_AUTH_PIPELINE = (
-    'social.pipeline.social_auth.social_details',
-    'social.pipeline.social_auth.social_uid',
-    'social.pipeline.social_auth.auth_allowed',
-    'social.pipeline.social_auth.social_user',
-    'social.pipeline.user.get_username',
-    # Associates the current social details with another user account with
-    # a similar email address. Disabled by default, enable with care:
-    # http://python-social-auth.readthedocs.org/en/latest/use_cases.html#associate-users-by-email
-    # 'social.pipeline.social_auth.associate_by_email',
-    'social.pipeline.user.create_user',
-    'social.pipeline.social_auth.associate_user',
-    'social.pipeline.social_auth.load_extra_data',
-    'social.pipeline.user.user_details',
-)
+# Django Allauth
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
+ACCOUNT_UNIQUE_EMAIL  = True
 
 
 #
@@ -326,6 +324,10 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'django_mailman3.lib.mailman': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+        },
     },
     'formatters': {
         'verbose': {
@@ -338,15 +340,28 @@ LOGGING = {
     },
 }
 
+
+# Using the cache infrastructure can significantly improve performance on a
+# production setup. This is an example with a local Memcached server.
+#CACHES = {
+#    'default': {
+#        'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
+#        'LOCATION': '127.0.0.1:11211',
+#    }
+#}
+
+
+# When DEBUG is True, don't actually send emails to the SMTP server, just store
+# them in a directory. This way you won't accidentally spam your mailing-lists
+# while you're fiddling with the code.
+if DEBUG == True:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'emails')
+
+
 #
 # HyperKitty-specific
 #
-
-APP_NAME = 'List Archives'
-
-# Allow authentication with the internal user database?
-# By default, only a login through Persona or your email provider is allowed.
-USE_INTERNAL_AUTH = False
 
 # Only display mailing-lists from the same virtual host as the webserver
 FILTER_VHOST = False

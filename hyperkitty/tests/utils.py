@@ -29,13 +29,12 @@ import tempfile
 from unittest import SkipTest
 
 import mailmanclient
-from mock import Mock, patch
 from django.test import RequestFactory, TestCase as DjangoTestCase
 from django.conf import settings
 from django.contrib.messages.storage.cookie import CookieStorage
 from django.core.management import call_command
-
-from hyperkitty.lib.cache import cache
+from django_mailman3.lib.cache import cache
+from mock import Mock, patch
 
 
 def setup_logging(tmpdir):
@@ -79,8 +78,9 @@ class TestCase(DjangoTestCase):
             mailmanclient.MailmanConnectionError()
         self.mailman_client.get_list.side_effect = \
             mailmanclient.MailmanConnectionError()
-        self._mm_client_patcher = patch("hyperkitty.lib.mailman.MailmanClient",
-                                        lambda *a: self.mailman_client)
+        self._mm_client_patcher = patch(
+            "django_mailman3.lib.mailman.MailmanClient",
+            lambda *a: self.mailman_client)
         self._mm_client_patcher.start()
 
     def _override_setting(self, key, value):

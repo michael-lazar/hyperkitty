@@ -28,12 +28,10 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^$', RedirectView.as_view(
         url=reverse_lazy('hyperkitty.views.index.index'))),
-    # url(r'^postorius/', include('postorius.urls')),
     url(r'^hyperkitty/', include('hyperkitty.urls')),
-    # Social Auth
-    url(r'', include('social.apps.django_app.urls', namespace='social')),
-    # BrowserID
-    url(r'', include('django_browserid.urls')),
+    # url(r'^postorius/', include('postorius.urls')),
+    url(r'', include('django_mailman3.urls')),
+    url(r'^accounts/', include('allauth.urls')),
     # Django admin
     url(r'^admin/', include(admin.site.urls)),
 ]

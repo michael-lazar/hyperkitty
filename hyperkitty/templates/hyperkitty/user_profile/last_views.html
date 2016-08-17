@@ -1,5 +1,9 @@
+{% extends "hyperkitty/user_profile/base.html" %}
 {% load i18n %}
 {% load hk_generic %}
+
+
+{% block user_profile_content %}
 
     {% if last_views %}
         <table class="table table-bordered table-condensed hidden-sm hidden-md hidden-lg">
@@ -76,3 +80,5 @@
     {% else %}
         <p>{% trans "Nothing read yet." %}</p>
     {% endif %}
+
+{% endblock %}

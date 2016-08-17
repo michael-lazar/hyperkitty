@@ -19,4 +19,7 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
+from __future__ import absolute_import, unicode_literals
+
 VERSION = "1.0.4"
+default_app_config = 'hyperkitty.apps.HyperKittyConfig'

@@ -34,12 +34,12 @@ from mock import Mock
 from bs4 import BeautifulSoup
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django_mailman3.lib.cache import cache
+from django_mailman3.tests.utils import FakeMMList, FakeMMMember
 
 from hyperkitty.models import (
     MailingList, ArchivePolicy, Sender, Thread, Favorite, Email)
-from hyperkitty.lib.cache import cache
 from hyperkitty.lib.incoming import add_to_list
-from hyperkitty.lib.mailman import FakeMMList, FakeMMMember
 from hyperkitty.tests.utils import TestCase
 
 
@@ -261,8 +261,6 @@ class PrivateArchivesTestCase(TestCase):
         # session = self.client.session
         # session["subscribed"] = ["list@example.com"]
         # session.save()
-        # self.user.hyperkitty_profile.get_subscriptions = \
-        #     lambda: ["list@example.com"]
         response = self.client.get(url, query)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Dummy message")

@@ -24,11 +24,10 @@ from __future__ import absolute_import, unicode_literals
 
 from urllib2 import HTTPError
 
-from django.conf import settings
-from django.utils.timezone import now
-from mailmanclient import Client as MailmanClient, MailmanConnectionError
+from django_mailman3.lib.cache import cache
+from django_mailman3.lib.mailman import get_mailman_client
+from mailmanclient import MailmanConnectionError
 
-from hyperkitty.lib.cache import cache
 
 import logging
 logger = logging.getLogger(__name__)
@@ -36,16 +35,6 @@ logger = logging.getLogger(__name__)
 
 class ModeratedListException(Exception):
     pass
-
-
-def get_mailman_client():
-    # easier to patch during unit tests
-    client = MailmanClient(
-        '%s/3.0' %
-        settings.MAILMAN_REST_API_URL,
-        settings.MAILMAN_REST_API_USER,
-        settings.MAILMAN_REST_API_PASS)
-    return client
 
 
 def subscribe(list_address, user, email=None, display_name=None):
@@ -88,47 +77,6 @@ def subscribe(list_address, user, email=None, display_name=None):
                     email, list_address)
 
     return subscribed_now
-
-
-class FakeMMList:
-    def __init__(self, name):
-        self.fqdn_listname = name
-        self.display_name = name.partition("@")[0]
-        self.list_id = name.replace("@", ".")
-        self.settings = {
-            "description": "",
-            "subject_prefix": "[%s] " % self.display_name,
-            "created_at": now().isoformat(),
-            "archive_policy": "public",
-            }
-
-
-class FakeMMMember:
-    def __init__(self, list_id, address):
-        self.list_id = list_id
-        self.address = address
-
-
-class FakeMMPage():
-
-    def __init__(self, entries=None, count=20, page=1):
-        self.entries = entries or []
-        self._count = count
-        self._page = page
-
-    def __iter__(self):
-        first = (self._page - 1) * self._count
-        last = self._page * self._count
-        for entry in self.entries[first:last]:
-            yield entry
-
-    @property
-    def has_previous(self):
-        return self._page > 1
-
-    @property
-    def has_next(self):
-        return self._count * self._page < len(self.entries)
 
 
 def get_new_lists_from_mailman():
@@ -190,53 +138,3 @@ def sync_with_mailman(overwrite=False):
         prev_count = count
         logger.info("%d emails left to refresh, checked %d",
                     count, lower_bound)
-
-
-def add_user_to_mailman(user, details, *args, **kwargs):
-    """
-    On social_auth login, create the Mailman user and associate any secondary
-    email addresses with it.
-    """
-    from hyperkitty.models import Profile
-    try:
-        profile = Profile.objects.get(user_id=user.id)
-    except Profile.DoesNotExist:
-        # Create the profile if it does not exist. There's a signal receiver
-        # that creates it for new users, but HyperKitty may be added to an
-        # existing Django project with existing users.
-        profile = Profile.objects.create(user=user)
-    mm_user = profile.get_mailman_user()
-    if mm_user is None:
-        return
-    mm_client = get_mailman_client()
-    # Set the primary email as verified
-    try:
-        mm_address = mm_client.get_address(user.email)
-    except HTTPError as e:
-        logger.warning("Can't set primary email %s as verified: %s",
-                       user.email, e)
-    else:
-        if mm_address.verified_on is None:
-            mm_address.verify()
-    # Set the secondary email as verified
-    try:
-        secondary_email = details["secondary_email"]
-    except KeyError:
-        return
-    existing_address = [addr for addr in mm_user.addresses
-                        if unicode(addr) == secondary_email]
-    if not existing_address:
-        try:
-            mm_address = mm_user.add_address(
-                secondary_email, absorb_existing=True)
-            # The address has been verified by the social auth provider.
-            mm_address.verify()
-            logger.debug("Associated secondary address %s with %s",
-                         secondary_email, user.email)
-        except HTTPError as e:
-            logger.warning("Can't add %s to %s: %s",
-                           secondary_email, user.email, e)
-    elif existing_address[0].verified_on is None:
-        # The address is registered but not verified, we assume that the social
-        # auth provider verifies the addresses, so set it as verified.
-        existing_address[0].verify()

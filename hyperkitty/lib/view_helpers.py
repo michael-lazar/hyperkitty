@@ -29,10 +29,11 @@ from django.http import Http404
 from django.utils.timezone import utc
 from django.utils.decorators import available_attrs
 from django.shortcuts import render
+from django_mailman3.lib.cache import cache
+from django_mailman3.lib.mailman import get_subscriptions
 
-from hyperkitty.models import ThreadCategory, MailingList, Profile
+from hyperkitty.models import ThreadCategory, MailingList
 from hyperkitty.forms import CategoryForm
-from hyperkitty.lib.cache import cache
 from hyperkitty.lib.posting import get_sender
 
 
@@ -140,9 +141,10 @@ def check_mlist_private(func):
         except MailingList.DoesNotExist:
             raise Http404("No archived mailing-list by that name.")
         if not is_mlist_authorized(request, mlist):
-            return render(request, "hyperkitty/errors/private.html", {
-                            "mlist": mlist,
-                          }, status=403)
+            return render(
+                request, "hyperkitty/errors/private.html", {
+                    "mlist": mlist,
+                }, status=403)
         return func(request, *args, **kwargs)
     return inner
 
@@ -155,14 +157,7 @@ def is_mlist_authorized(request, mlist):
     if not request.user.is_authenticated():
         return False
     # Private list and logged-in user: check subscriptions
-    try:
-        profile = Profile.objects.get(user_id=request.user.id)
-    except Profile.DoesNotExist:
-        # Create the profile if it does not exist. There's a signal receiver
-        # that creates it for new users, but HyperKitty may be added to an
-        # existing Django project with existing users.
-        profile = Profile.objects.create(user=request.user)
-    if mlist.list_id in profile.get_subscriptions():
+    if mlist.list_id in get_subscriptions(request.user):
         return True
     else:
         return False

@@ -27,6 +27,7 @@ import json
 import uuid
 from email.message import Message
 
+from allauth.account.models import EmailAddress
 from mock import Mock, patch
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -176,10 +177,13 @@ class MessageViewsTestCase(TestCase):
         self.user.first_name = "Django"
         self.user.last_name = "User"
         self.user.save()
+        EmailAddress.objects.create(
+            user=self.user, verified=True, email="testuser@example.com")
+        EmailAddress.objects.create(
+            user=self.user, verified=True, email="otheremail@example.com")
         mm_user = Mock()
         self.mailman_client.get_user.side_effect = lambda name: mm_user
         mm_user.user_id = uuid.uuid1().int
-        mm_user.addresses = ["testuser@example.com", "otheremail@example.com"]
         mm_user.subscriptions = []
         mlist = MailingList.objects.get(name="list@example.com")
         url = reverse('hk_message_reply', args=("list@example.com",
@@ -245,10 +249,13 @@ class MessageViewsTestCase(TestCase):
         self.user.first_name = "Django"
         self.user.last_name = "User"
         self.user.save()
+        EmailAddress.objects.create(
+            user=self.user, verified=True, email="testuser@example.com")
+        EmailAddress.objects.create(
+            user=self.user, verified=True, email="otheremail@example.com")
         mm_user = Mock()
         self.mailman_client.get_user.side_effect = lambda name: mm_user
         mm_user.user_id = uuid.uuid1().int
-        mm_user.addresses = ["testuser@example.com", "otheremail@example.com"]
         mm_user.subscriptions = []
         mlist = MailingList.objects.get(name="list@example.com")
         url = reverse('hk_message_new', args=["list@example.com"])

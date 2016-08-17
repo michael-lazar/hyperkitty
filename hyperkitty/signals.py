@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
+# Copyright (C) 2015-2016 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
 #
@@ -16,24 +16,7 @@
 # You should have received a copy of the GNU General Public License along with
 # HyperKitty.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Author: Aamir Khan <syst3m.w0rm@gmail.com>
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from django.conf import settings
-from hyperkitty import VERSION
-
-
-def common(request):
-    extra_context = {}
-    extra_context.update(export_settings(request))
-    extra_context["paginator_per_page_options"] = [10, 50, 100, 200]
-    return extra_context
-
-
-def export_settings(request):
-    exports = ["USE_MOCKUPS"]
-    extra_context = dict(
-        (name.lower(), getattr(settings, name, None)) for name in exports)
-    extra_context["HYPERKITTY_VERSION"] = VERSION
-    return extra_context
+from __future__ import absolute_import, unicode_literals

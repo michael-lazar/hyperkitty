@@ -22,19 +22,14 @@
 
 from __future__ import absolute_import, unicode_literals, print_function
 
-from urllib2 import HTTPError
 
-
+from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from mailmanclient import MailmanConnectionError
-import pytz
 
-from hyperkitty.lib.cache import cache
-from hyperkitty.lib.mailman import get_mailman_client
 from .email import Email
 
 
@@ -45,10 +40,7 @@ logger = logging.getLogger(__name__)
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 related_name="hyperkitty_profile")
-
     karma = models.IntegerField(default=1)
-    TIMEZONES = sorted([(tz, tz) for tz in pytz.common_timezones])
-    timezone = models.CharField(max_length=100, choices=TIMEZONES, default=u"")
 
     def __unicode__(self):
         return u'%s' % (unicode(self.user))
@@ -60,15 +52,10 @@ class Profile(models.Model):
 
     @property
     def addresses(self):
-        addresses = set([self.user.email])
-        mm_user = self.get_mailman_user()
-        if mm_user:
-            # TODO: caching?
-            # (mailman client returns str, must convert to deduplicate)
-            addresses.update([unicode(a) for a in mm_user.addresses])
-        addresses = list(addresses)
-        addresses.sort()
-        return addresses
+        return list(EmailAddress.objects.filter(
+            user=self.user).filter(
+            verified=True).order_by("email").values_list(
+            "email", flat=True))
 
     def get_votes_in_list(self, list_name):
         # TODO: Caching ?
@@ -76,60 +63,6 @@ class Profile(models.Model):
         likes = votes.filter(value=1).count()
         dislikes = votes.filter(value=-1).count()
         return likes, dislikes
-
-    def get_mailman_user(self):
-        # Only cache the user_id, not the whole user instance, because
-        # mailmanclient is not pickle-safe
-        cache_key = "User:%s:mailman_user_id" % self.id
-        user_id = cache.get(cache_key)
-        try:
-            mm_client = get_mailman_client()
-            if user_id is None:
-                try:
-                    mm_user = mm_client.get_user(self.user.email)
-                except HTTPError as e:
-                    if e.code != 404:
-                        raise  # will be caught down there
-                    mm_user = mm_client.create_user(
-                        self.user.email, self.user.get_full_name())
-                    # XXX The email is not set as verified, because we don't
-                    # know if the registration that was used verified it.
-                    logger.info("Created Mailman user for %s (%s)",
-                                self.user.username, self.user.email)
-                cache.set(cache_key, mm_user.user_id, None)
-                return mm_user
-            else:
-                return mm_client.get_user(user_id)
-        except (HTTPError, MailmanConnectionError) as e:
-            logger.warning(
-                "Error getting or creating the Mailman user of %s (%s): %s",
-                self.user.username, self.user.email, e)
-            return None
-
-    def get_mailman_user_id(self):
-        # TODO: Optimization: look in the cache first, if not found call
-        # get_mailman_user() as before
-        mm_user = self.get_mailman_user()
-        if mm_user is None:
-            return None
-        return unicode(mm_user.user_id)
-
-    def get_subscriptions(self):
-        def _get_value():
-            mm_user = self.get_mailman_user()
-            if mm_user is None:
-                return {}
-            subscriptions = dict([
-                (member.list_id, member.address)
-                for member in mm_user.subscriptions
-                ])
-            return subscriptions
-        # TODO: how should this be invalidated? Subscribe to a signal in
-        # mailman when a new subscription occurs? Or store in the session?
-        return cache.get_or_set(
-            "User:%s:subscriptions" % self.id,
-            _get_value, 60, version=2)  # 1 minute
-        # TODO: increase the cache duration when we have Mailman signals
 
     def get_first_post(self, mlist):
         return self.emails.filter(

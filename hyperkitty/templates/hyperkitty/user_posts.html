@@ -4,7 +4,7 @@
 {% load hk_generic %}
 
 
-{% block title %}
+{% block head_title %}
 {% trans "Messages by" %} {{ fullname }}{% if mlist %} - {{ mlist.display_name|default:mlist.name }} {% endif %} - {{ block.super }}
 {% endblock %}
 

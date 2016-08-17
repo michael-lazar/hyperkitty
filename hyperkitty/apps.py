@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 1998-2012 by the Free Software Foundation, Inc.
+# Copyright (C) 2015-2016 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
 #
@@ -19,21 +19,14 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
+from __future__ import absolute_import, unicode_literals
 
-# https://docs.djangoproject.com/en/dev/topics/i18n/timezones/
-
-from django.utils import timezone
-from django.core.exceptions import ObjectDoesNotExist
+from django.apps import AppConfig
 
 
-class TimezoneMiddleware(object):
+class HyperKittyConfig(AppConfig):
+    name = 'hyperkitty'
+    verbose_name = "HyperKitty"
 
-    def process_request(self, request):
-        if not request.user.is_authenticated():
-            return
-        try:
-            profile = request.user.hyperkitty_profile
-        except ObjectDoesNotExist:
-            return
-        if profile.timezone:
-            timezone.activate(profile.timezone)
+    def ready(self):
+        import hyperkitty.signals  # flake8: noqa

@@ -1,5 +1,9 @@
+{% extends "hyperkitty/user_profile/base.html" %}
 {% load i18n %}
 {% load hk_generic %}
+
+
+{% block user_profile_content %}
 
     {% if subscriptions %}
     <table class="table table-bordered table-condensed subscriptions hidden-sm hidden-md hidden-lg">
@@ -71,3 +75,5 @@
     {% else %}
     <p><em>{% trans "no subscriptions" %}</em></p>
     {% endif %}
+
+{% endblock %}

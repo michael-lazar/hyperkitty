@@ -24,140 +24,43 @@ from __future__ import absolute_import, unicode_literals
 
 from urllib2 import HTTPError
 
-from django.conf import settings
-from django.core.urlresolvers import reverse, NoReverseMatch
-from django.core.exceptions import SuspiciousOperation
-from django.contrib.auth import login, get_backends
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import login as django_login_view
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from django.utils.http import is_safe_url
-from django.utils.timezone import get_current_timezone
-from django.http import Http404, HttpResponse
-from social.backends.base import BaseAuth as SocialAuthBackend
 import dateutil.parser
 import mailmanclient
 
+from allauth.account.models import EmailAddress
+from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
+from django.http import Http404, HttpResponse
+from django.shortcuts import render
+from django_mailman3.lib.mailman import (
+    get_mailman_client, get_mailman_user_id, get_subscriptions)
+from django_mailman3.lib.paginator import paginate
+
 from hyperkitty.models import (
-    Favorite, LastView, MailingList, Sender, Email, Vote, Profile)
-from hyperkitty.forms import (
-    InternalAuthenticationForm, RegistrationForm, UserProfileForm)
+    Favorite, LastView, MailingList, Sender, Email, Vote)
 from hyperkitty.lib.view_helpers import is_mlist_authorized
-from hyperkitty.lib.paginator import paginate
-from hyperkitty.lib.mailman import get_mailman_client
 
 
 import logging
 logger = logging.getLogger(__name__)
 
 
-def login_view(request, *args, **kwargs):
-    if "extra_context" not in kwargs:
-        kwargs["extra_context"] = {}
-    if "backends" not in kwargs["extra_context"]:
-        kwargs["extra_context"]["social_backends"] = []
-    # Note: sorry but I really find the .setdefault() method non-obvious and
-    # harder to re-read that the lines above.
-    for backend in get_backends():
-        if not isinstance(backend, SocialAuthBackend):
-            continue  # It should be checked using duck-typing instead
-        kwargs["extra_context"]["social_backends"].append(backend.name)
-    kwargs["authentication_form"] = InternalAuthenticationForm
-    return django_login_view(request, *args, **kwargs)
-
-
 @login_required
 def user_profile(request):
-    try:
-        profile = Profile.objects.get(user=request.user)
-    except Profile.DoesNotExist:
-        # Create the profile if it does not exist. There's a signal receiver
-        # that creates it for new users, but HyperKitty may be added to an
-        # existing Django project with existing users.
-        profile = Profile.objects.create(user=request.user)
-    mm_user = profile.get_mailman_user()
-
-    if request.method == 'POST':
-        form = UserProfileForm(request.POST)
-        if form.is_valid():
-            request.user.first_name = form.cleaned_data["first_name"]
-            request.user.last_name = form.cleaned_data["last_name"]
-            profile.timezone = form.cleaned_data["timezone"]
-            request.user.save()
-            profile.save()
-            # Now update the display name in Mailman
-            if mm_user is not None:
-                mm_user.display_name = "%s %s" % (
-                        request.user.first_name, request.user.last_name)
-                mm_user.save()
-            messages.success(request, "The profile was successfully updated.")
-            return redirect(reverse('hk_user_profile'))
-    else:
-        form = UserProfileForm(initial={
-                "first_name": request.user.first_name,
-                "last_name": request.user.last_name,
-                "timezone": get_current_timezone(),
-                })
-
-    # Emails
-    other_addresses = profile.addresses[:]
-    other_addresses.remove(request.user.email)
-
-    # Extract the gravatar_url used by django_gravatar2.  The site
-    # administrator could alternatively set this to http://cdn.libravatar.org/
-    gravatar_url = getattr(settings, 'GRAVATAR_URL', 'http://www.gravatar.com')
-    gravatar_shortname = '.'.join(gravatar_url.split('.')[-2:]).strip('/')
+    # Get the messages and paginate them
+    email_addresses = EmailAddress.objects.filter(
+        user=request.user).values("email")
+    last_posts = Email.objects.filter(
+        sender__address__in=email_addresses).order_by("-date")
+    last_posts = paginate(last_posts,
+                          request.GET.get("lppage"),
+                          request.GET.get("lpcount", "10"))
 
     context = {
-        'user_profile': profile,
-        'form': form,
-        'other_addresses': other_addresses,
-        'gravatar_url': gravatar_url,
-        'gravatar_shortname': gravatar_shortname,
+        "last_posts": last_posts,
+        "subpage": "profile",
     }
-    try:
-        # Try to get Postorius' profile url
-        context['profile_url'] = reverse('user_profile')
-    except NoReverseMatch:
-        pass
-    return render(request, "hyperkitty/user_profile.html", context)
-
-
-def user_registration(request):
-    if not settings.USE_INTERNAL_AUTH:
-        raise SuspiciousOperation
-    try:
-        redirect_to = request.GET["next"]
-    except KeyError:
-        try:
-            redirect_to = request.POST["next"]
-        except KeyError:
-            redirect_to = reverse("hk_root")
-    if not is_safe_url(url=redirect_to, host=request.get_host()):
-        redirect_to = settings.LOGIN_REDIRECT_URL
-    if request.user.is_authenticated():
-        # Already registered, redirect back to index page
-        return redirect(redirect_to)
-
-    if request.POST:
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            user.backend = "django.contrib.auth.backends.ModelBackend"
-            logger.info("New registered user: %s (%s)",
-                        user.username, user.email)
-            if user.is_active:
-                login(request, user)
-                return redirect(redirect_to)
-    else:
-        form = RegistrationForm()
-
-    context = {
-        'form': form,
-        'next': redirect_to,
-    }
-    return render(request, 'hyperkitty/register.html', context)
+    return render(request, "hyperkitty/user_profile/profile.html", context)
 
 
 @login_required
@@ -166,8 +69,9 @@ def favorites(request):
     favs = Favorite.objects.filter(
         user=request.user).order_by("-thread__date_active")
     favs = paginate(favs, request.GET.get('favpage'))
-    return render(request, 'hyperkitty/ajax/favorites.html', {
+    return render(request, 'hyperkitty/user_profile/favorites.html', {
                 "favorites": favs,
+                "subpage": "favorites",
             })
 
 
@@ -177,8 +81,9 @@ def last_views(request):
     lviews = LastView.objects.filter(
         user=request.user).order_by("-view_date")
     lviews = paginate(lviews, request.GET.get('lvpage'))
-    return render(request, 'hyperkitty/ajax/last_views.html', {
+    return render(request, 'hyperkitty/user_profile/last_views.html', {
                 "last_views": lviews,
+                "subpage": "last_views",
             })
 
 
@@ -186,17 +91,18 @@ def last_views(request):
 def votes(request):
     all_votes = paginate(
         request.user.votes.all(), request.GET.get('vpage'))
-    return render(request, 'hyperkitty/ajax/votes.html', {
+    return render(request, 'hyperkitty/user_profile/votes.html', {
                 "votes": all_votes,
+                "subpage": "votes",
             })
 
 
 @login_required
 def subscriptions(request):
     profile = request.user.hyperkitty_profile
-    mm_user_id = profile.get_mailman_user_id()
+    mm_user_id = get_mailman_user_id(request.user)
     subs = []
-    for mlist_id in profile.get_subscriptions():
+    for mlist_id in get_subscriptions(request.user):
         try:
             mlist = MailingList.objects.get(list_id=mlist_id)
         except MailingList.DoesNotExist:
@@ -227,8 +133,9 @@ def subscriptions(request):
             "likestatus": likestatus,
             "all_posts_url": all_posts_url,
         })
-    return render(request, 'hyperkitty/ajax/user_subscriptions.html', {
+    return render(request, 'hyperkitty/user_profile/subscriptions.html', {
                 "subscriptions": subs,
+                "subpage": "subscriptions",
             })
 
 
@@ -309,11 +216,7 @@ def posts(request, user_id):
     # Get the messages and paginate them
     emails = Email.objects.filter(
         mailinglist=mlist, sender__mailman_id=user_id)
-    try:
-        page_num = int(request.GET.get('page', "1"))
-    except ValueError:
-        page_num = 1
-    emails = paginate(emails, page_num)
+    emails = paginate(emails, request.GET.get("page"))
 
     for email in emails:
         email.myvote = email.votes.filter(user=request.user).first()

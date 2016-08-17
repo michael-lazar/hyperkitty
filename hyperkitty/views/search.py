@@ -24,11 +24,12 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 from django.shortcuts import render
 from django.http import Http404
+from django_mailman3.lib.mailman import get_subscriptions
+from django_mailman3.lib.paginator import paginate
 from haystack.query import EmptySearchQuerySet, RelatedSearchQuerySet
 from haystack.forms import SearchForm
 
 from hyperkitty.models import MailingList, ArchivePolicy
-from hyperkitty.lib.paginator import paginate
 from hyperkitty.lib.view_helpers import is_mlist_authorized
 
 
@@ -57,7 +58,7 @@ def search(request):
         excluded_mlists = MailingList.objects.filter(
             archive_policy=ArchivePolicy.private.value)
         if request.user.is_authenticated():
-            subscriptions = request.user.hyperkitty_profile.get_subscriptions()
+            subscriptions = get_subscriptions(request.user)
             excluded_mlists = excluded_mlists.exclude(
                 list_id__in=subscriptions.keys())
         excluded_mlists = excluded_mlists.values_list("name", flat=True)
@@ -80,7 +81,7 @@ def search(request):
     else:
         form = SearchForm(searchqueryset=sqs, load_all=True)
 
-    emails = paginate(results, page_num=request.GET.get('page'))
+    emails = paginate(results, request.GET.get('page'))
     for email in emails:
         if request.user.is_authenticated():
             email.object.myvote = email.object.votes.filter(
