@@ -10,6 +10,9 @@ License:        GPLv3
 URL:            https://gitlab.com/mailman/hyperkitty
 Source0:        http://pypi.python.org/packages/source/H/%{pypi_name}/%{pypi_name}-%{version}%{?prerel:dev}.tar.gz
 
+# Patch settings to use the FHS
+Patch0:         hyperkitty-fhs.patch
+
 BuildArch:      noarch
 
 BuildRequires:  python-devel
@@ -91,6 +94,8 @@ This is the SELinux module for %{name}, install it if you are using SELinux.
 
 %prep
 %setup -q -n %{pypi_name}-%{version}%{?prerel:dev}
+%patch0 -p0
+
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 # remove shebang on manage.py
@@ -138,29 +143,20 @@ cp -p example_project/{manage,settings,urls,wsgi}.py \
 touch --reference example_project/manage.py \
     %{buildroot}%{_sysconfdir}/%{name}/sites/default/__init__.py
 # Apache HTTPd config file
-mkdir -p %{buildroot}/%{_sysconfdir}/httpd/conf.d/
-sed -e 's,/path/to/project/static,%{_localstatedir}/lib/%{name}/sites/default/static,g' \
-    -e 's,/path/to/project,%{_sysconfdir}/%{name}/sites/default,g' \
-     example_project/apache.conf \
-     > %{buildroot}/%{_sysconfdir}/httpd/conf.d/hyperkitty.conf
+install -p -m 644 -D example_project/apache.conf \
+     %{buildroot}/%{_sysconfdir}/httpd/conf.d/hyperkitty.conf
 touch --reference example_project/apache.conf \
     %{buildroot}/%{_sysconfdir}/httpd/conf.d/hyperkitty.conf
 # SQLite databases directory, static files and fulltext_index
 mkdir -p %{buildroot}%{_localstatedir}/lib/%{name}/sites/default/static
 mkdir -p %{buildroot}%{_localstatedir}/lib/%{name}/sites/default/db
 mkdir -p %{buildroot}%{_localstatedir}/lib/%{name}/sites/default/fulltext_index
-sed -i -e 's,/path/to/rw,%{_localstatedir}/lib/%{name}/sites/default/db,g' \
-       -e 's,^BASE_DIR = .*$,BASE_DIR = "%{_localstatedir}/lib/%{name}/sites/default",g' \
-    %{buildroot}%{_sysconfdir}/%{name}/sites/default/settings.py
-touch --reference example_project/settings.py \
-    %{buildroot}%{_sysconfdir}/%{name}/sites/default/settings.py
 # Cron jobs
 mkdir -p %{buildroot}%{_sysconfdir}/cron.d
-sed -e 's,/path/to/project,%{_sysconfdir}/%{name}/sites/default,g' \
-    example_project/crontab \
-    > %{buildroot}%{_sysconfdir}/cron.d/%{name}
-touch --reference example_project/crontab \
+install -p -m 644 -D example_project/crontab \
     %{buildroot}%{_sysconfdir}/cron.d/%{name}
+# Logs
+mkdir -p %{buildroot}%{_localstatedir}/log/%{name}/
 
 # SELinux
 for selinuxvariant in %{selinux_variants}; do
@@ -219,6 +215,7 @@ fi
 %dir %{_localstatedir}/lib/%{name}/sites/default/static
 %attr(755,apache,apache) %{_localstatedir}/lib/%{name}/sites/default/db
 %attr(755,apache,apache) %{_localstatedir}/lib/%{name}/sites/default/fulltext_index
+%attr(755,apache,apache) %{_localstatedir}/log/%{name}/
 
 %files selinux
 %defattr(-,root,root,0755)
@@ -227,6 +224,9 @@ fi
 
 
 %changelog
+* Wed Aug 17 2016 Aurelien Bompard <abompard@fedoraproject.org> - 1.0.4-1
+- version 1.0.4
+
 * Mon Nov 25 2013 Aurelien Bompard <abompard@fedoraproject.org> - 0.1.7-0.1
 - add SELinux policy module, according to:
   http://fedoraproject.org/wiki/SELinux_Policy_Modules_Packaging_Draft
