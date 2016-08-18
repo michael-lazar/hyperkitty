@@ -46,7 +46,7 @@ function setup_index(url_template) {
         var url = url_template
             .replace(/PLACEHOLDER@PLACEHOLDER/, listname)
             .replace(/PLACEHOLDER%40PLACEHOLDER/, listname);
-        ajax_chart(url, listrows.find("div.chart"), {height: 30});
+        return ajax_chart(url, listrows.find("div.chart"), {height: 30});
     }
 
     // Filter
@@ -95,8 +95,12 @@ function setup_index(url_template) {
     setup_back_to_top_link(220); // set offset to 220 for link to appear
 
     // Update list graphs for all lists
-    var list_rows = $(".all-lists table.lists tr.list");
+    var list_rows = $(".all-lists table.lists tr.list"),
+        deferred = $.Deferred();
+    deferred.resolve();
     $.each(list_names, function(index, list_name) {
-        show_ajax_chart(list_rows.filter('[data-list-name="' + list_name + '"]'));
+        deferred = deferred.then(function () {
+            return show_ajax_chart(list_rows.filter('[data-list-name="' + list_name + '"]'));
+        });
     });
 }

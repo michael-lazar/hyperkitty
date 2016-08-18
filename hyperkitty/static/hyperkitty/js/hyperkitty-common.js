@@ -214,7 +214,7 @@ function ajax_chart(url, elements, props) {
     if (elements.find("svg.chart-data")) {
         elements.find("svg.chart-data").remove();
     }
-    $.ajax({
+    return $.ajax({
         dataType: "json",
         url: url,
         success: function(data) {
