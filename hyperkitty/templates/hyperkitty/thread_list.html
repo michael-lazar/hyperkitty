@@ -70,19 +70,6 @@
 {% block additionaljs %}
 <script>
 $(document).ready(function() {
-    $('span.expander').expander({
-        slicePoint: 500,
-        userCollapseText : '\n[View Less]',
-        expandText : '\n[View More]',
-        beforeExpand: function() {
-            $(this).removeClass("collapsed");
-            $(this).addClass("expanded");
-        },
-        onCollapse: function() {
-            $(this).removeClass("expanded");
-            $(this).addClass("collapsed");
-        }
-    });
     setup_category();
     
     // onchange event for month_list select (seen only in tiny/xs viewports)

@@ -93,20 +93,6 @@
 {% block additionaljs %}
 <script>
 $(document).ready(function() {
-    $('span.expander').expander({
-        slicePoint: 500,
-        userCollapseText : '\n[View Less]',
-        expandText : '\n[View More]',
-        beforeExpand: function() {
-            $(this).removeClass("collapsed");
-            $(this).addClass("expanded");
-        },
-        onCollapse: function() {
-            $(this).removeClass("expanded");
-            $(this).addClass("collapsed");
-        }
-    });
-
     // onchange event for sorting method select
     $('select#sort-search').change(function() {
         $(this).closest('form').submit();

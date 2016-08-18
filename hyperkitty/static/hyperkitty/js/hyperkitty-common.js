@@ -292,6 +292,22 @@ function setup_paginator() {
 }
 
 
+function setup_expander() {
+    $('span.expander').expander({
+        slicePoint: 500,
+        userCollapseText : '\n[View Less]',
+        expandText : '\n[View More]',
+        beforeExpand: function() {
+            $(this).removeClass("collapsed");
+            $(this).addClass("expanded");
+        },
+        onCollapse: function() {
+            $(this).removeClass("expanded");
+            $(this).addClass("collapsed");
+        }
+    });
+}
+
 
 /*
  * Activate
@@ -304,4 +320,5 @@ $(document).ready(function() {
     setup_emails_list();
     setup_send_as();
     setup_paginator();
+    setup_expander();
 });
