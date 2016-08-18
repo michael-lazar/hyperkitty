@@ -74,7 +74,9 @@ function setup_index(url_template) {
     }
     $(".hide-switches input").click(filter_lists);
     filter_lists(); // Filter on page load
-    var find_field = $(".filter-lists input[name='search']");
+
+    // Find field
+    var find_field = $(".filter-lists input");
     find_field.autocomplete({
         minLength: 3,
         source: "find-list",
@@ -82,13 +84,6 @@ function setup_index(url_template) {
             find_field.val(ui.item.value);
             find_field.closest("form").submit();
         },
-    });
-    find_field.closest("form").submit(function(e) {
-        e.preventDefault();
-        var url_tpl = $(this).find("input[name='url-tpl']").val(),
-            list_name = $(this).find("input[name='search']").val(),
-            url = url_tpl.replace('PLACEHOLDER@PLACEHOLDER', list_name);
-        window.location = url;
     });
 
     // Back to top link

@@ -121,13 +121,6 @@ def get_category_widget(request, current_category=None):
     return category, category_form
 
 
-def show_mlist(mlist, request):
-    def get_domain(host):
-        return ".".join(host.split(".")[-2:])
-    return (get_domain(mlist.name.partition("@")[2]) ==
-            get_domain(request.get_host()))
-
-
 # View decorator: check that the list is authorized
 def check_mlist_private(func):
     @wraps(func, assigned=available_attrs(func))

@@ -27,7 +27,7 @@ import datetime
 from django.http import HttpRequest
 from django.utils.timezone import utc
 
-from hyperkitty.lib.view_helpers import get_display_dates, show_mlist
+from hyperkitty.lib.view_helpers import get_display_dates
 from hyperkitty.models import MailingList
 from hyperkitty.tests.utils import TestCase
 
@@ -52,38 +52,3 @@ class GetDisplayDatesTestCase(TestCase):
         begin_date, end_date = get_display_dates('2012', '4', '2')
         self.assertEqual(begin_date, datetime.datetime(2012, 4, 2, tzinfo=utc))
         self.assertEqual(end_date, datetime.datetime(2012, 4, 3, tzinfo=utc))
-
-
-class ShowMlistTestCase(TestCase):
-
-    def _do_test(self, listdomain, vhost, expected):
-        mlist = MailingList.objects.get_or_create(
-            name="test@{}".format(listdomain))[0]
-        req = HttpRequest()
-        req.META["HTTP_HOST"] = vhost
-        self.assertEqual(show_mlist(mlist, req), expected)
-
-    def test_same_domain(self):
-        self._do_test("example.com", "example.com", True)
-        self._do_test("lists.example.com", "lists.example.com", True)
-
-    def test_web_subdomain(self):
-        self._do_test("example.com", "www.example.com", True)
-        self._do_test("example.com", "lists.example.com", True)
-
-    def test_mail_subdomain(self):
-        self._do_test("lists.example.com", "example.com", True)
-
-    def test_different_subdomains(self):
-        self._do_test("lists.example.com", "archives.example.com", True)
-
-    def test_different_domains(self):
-        self._do_test("example.com", "another-example.com", False)
-        self._do_test("lists.example.com", "archives.another-example.com",
-                      False)
-
-    def test_single_component_domain(self):
-        self._do_test("intranet", "intranet", True)
-
-    def test_different_single_component_domain(self):
-        self._do_test("intranet", "extranet", False)

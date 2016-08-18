@@ -24,39 +24,58 @@ from __future__ import absolute_import, unicode_literals
 
 import json
 
-from django.db.models import Q
-from django.shortcuts import render
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from django_mailman3.lib.paginator import paginate
 
-from hyperkitty.lib.view_helpers import show_mlist, is_mlist_authorized
-from hyperkitty.models import MailingList
+from hyperkitty.lib.view_helpers import is_mlist_authorized
+from hyperkitty.models import MailingList, ArchivePolicy
 
 
 def index(request):
-    mlists = [
-        ml for ml in MailingList.objects.all()
-        if not settings.FILTER_VHOST or show_mlist(ml, request)]
+    mlists = MailingList.objects.all()
+    sort_mode = request.GET.get("sort", "popular")
+
+    # Domain filtering
+    if settings.FILTER_VHOST:
+        domain = request.get_host().split(":")[0]
+        if domain.startswith("www."):
+            domain = domain[4:]
+        domain = "@%s" % domain
+        mlists = mlists.filter(name__iendswith=domain)
+
+    # Name filtering
+    name_filter = request.GET.get('name')
+    if name_filter:
+        sort_mode = "name"
+        mlists = mlists.filter(
+            Q(name__icontains=name_filter) |
+            Q(display_name__icontains=name_filter)
+            )
+        if mlists.count() == 1:
+            return redirect(
+                'hk_list_overview', mlist_fqdn=mlists.first().name)
 
     # Sorting
-    sort_mode = request.GET.get('sort')
-    if not sort_mode:
-        sort_mode = "popular"
     if sort_mode == "name":
-        mlists.sort(key=lambda ml: ml.name)
+        mlists = mlists.order_by("name")
     elif sort_mode == "active":
         # Don't show private lists when sorted by activity, to avoid disclosing
         # info about the private list's activity
-        mlists = [ml for ml in mlists if not ml.is_private]
+        mlists = list(mlists.exclude(
+            archive_policy=ArchivePolicy.private.value))
         mlists.sort(key=lambda l: l.recent_threads_count, reverse=True)
     elif sort_mode == "popular":
         # Don't show private lists when sorted by popularity, to avoid
         # disclosing info about the private list's popularity.
-        mlists = [l for l in mlists if not l.is_private]
+        mlists = list(mlists.exclude(
+            archive_policy=ArchivePolicy.private.value))
         mlists.sort(key=lambda l: l.recent_participants_count, reverse=True)
     elif sort_mode == "creation":
-        mlists.sort(key=lambda l: l.created_at, reverse=True)
+        mlists = mlists.order_by("-created_at")
     else:
         return HttpResponse("Wrong search parameter",
                             content_type="text/plain", status=500)
