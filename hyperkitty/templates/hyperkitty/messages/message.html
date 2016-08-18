@@ -140,8 +140,8 @@
                 </ul>
                 {{ reply_form.non_field_errors }}
 
-                <p>{{ reply_form.subject }} {{ reply_form.subject.errors}}</p>
-                <p>{{ reply_form.message }} {{ reply_form.message.errors}}</p>
+                <p class="new-subject">{{ reply_form.subject }} {{ reply_form.subject.errors}}</p>
+                <p class="message-text">{{ reply_form.message }} {{ reply_form.message.errors}}</p>
 
                 {% include "hyperkitty/fragments/send_as.html" with form=reply_form %}
 

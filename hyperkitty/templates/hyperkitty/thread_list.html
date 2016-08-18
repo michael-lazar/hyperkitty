@@ -111,13 +111,6 @@ $(document).ready(function() {
         });
     }
 
-    // Pagination: results per page
-    $('.paginator form').each(function() {
-        var form = $(this);
-        form.find("select").change(function() {form.submit();});
-        form.find("input[type='submit']").hide();
-    });
-
 });
 </script>
 {% endblock %}

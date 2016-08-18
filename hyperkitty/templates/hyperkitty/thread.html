@@ -144,9 +144,8 @@
         setup_category();
         setup_tags();
         setup_favorites();
-        setup_emails_list();
         // Hide quotes by default in the thread view
-        fold_quotes();
+        fold_quotes("div.container");
         // Load the replies
         update_thread_replies("{% url 'hk_thread_replies' threadid=thread.thread_id mlist_fqdn=mlist.name %}?sort={{sort_mode}}&last_view={{last_view|date:'U'}}");
         setup_unreadnavbar("#unreadnavbar");

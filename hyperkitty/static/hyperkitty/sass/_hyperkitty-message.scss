@@ -161,10 +161,11 @@ $oddEmailColor: rgb(238, 238, 238);
             }
         }
         p { margin: 0; }
-        #id_subject {
+        p.new-subject {
+            display: none;
             margin-bottom: 0.5em;
         }
-        #id_message {
+        p.message-text {
             margin-bottom: 0.25em;
         }
         p.buttons {
