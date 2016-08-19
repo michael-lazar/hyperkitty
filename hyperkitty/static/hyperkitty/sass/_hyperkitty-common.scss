@@ -288,19 +288,3 @@ div#months-list {
         fill: steelBlue;
     }
 }
-
-
-//=== Paginator ===/
-.paginator {
-    text-align: center;
-    form {
-        display: inline-block;
-        margin: 0 auto;
-        label {
-            font-weight: normal;
-        }
-    }
-    form.jump-to-page {
-        display: none;
-    }
-}

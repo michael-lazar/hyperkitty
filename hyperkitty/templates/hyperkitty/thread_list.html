@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load gravatar %}
 {% load hk_generic %}
+{% load pagination %}
 
 
 {% block head_title %}
@@ -59,7 +60,7 @@
             <p>{% trans "Sorry no email threads could be found" %} {{ no_results_text }}.</p>
         {% endfor %}
 
-        {% include "hyperkitty/paginator.html" with pager=threads page_jump=True %}
+        {% paginator threads bydate=True %}
 
     </div>
 

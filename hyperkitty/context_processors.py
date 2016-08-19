@@ -27,7 +27,6 @@ from hyperkitty import VERSION
 def common(request):
     extra_context = {}
     extra_context.update(export_settings(request))
-    extra_context["paginator_per_page_options"] = [10, 50, 100, 200]
     return extra_context
 
 

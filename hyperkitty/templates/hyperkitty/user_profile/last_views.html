@@ -1,6 +1,7 @@
 {% extends "hyperkitty/user_profile/base.html" %}
 {% load i18n %}
 {% load hk_generic %}
+{% load pagination %}
 
 
 {% block user_profile_content %}
@@ -76,7 +77,7 @@
             {% endfor %}
             </tbody>
         </table>
-        {% include "hyperkitty/paginator.html" with pager=last_views page_key="lvpage" %}
+        {% paginator last_views qsprefix="lv" bydate=True %}
     {% else %}
         <p>{% trans "Nothing read yet." %}</p>
     {% endif %}

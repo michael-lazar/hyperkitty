@@ -1,6 +1,7 @@
 {% extends "hyperkitty/user_profile/base.html" %}
 {% load i18n %}
 {% load hk_generic %}
+{% load pagination %}
 
 
 {% block user_profile_content %}
@@ -77,7 +78,7 @@
             {% endfor %}
             </tbody>
         </table>
-        {% include "hyperkitty/paginator.html" with pager=votes page_key="vpage" %}
+        {% paginator votes qsprefix="v" bydate=True %}
     {% else %}
         <p>{% trans "No vote yet." %}</p>
     {% endif %}

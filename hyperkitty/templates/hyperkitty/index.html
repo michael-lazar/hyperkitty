@@ -1,6 +1,7 @@
 {% extends "hyperkitty/base.html" %}
 {% load i18n %}
 {% load hk_generic %}
+{% load pagination %}
 {% load staticfiles %}
 
 
@@ -14,7 +15,7 @@
 
 <div class="row header">
     {# This version of the sort-by options shows up on larger screens; hidden-xs and hidden-tn are Bootstrap options to hide it at tiny or small sizes. #}
-    <nav class="right hidden-tn hidden-xs col-sm-6 col-sm-push-6 col-md-4 col-md-push-8">
+    <nav class="sort-mode right hidden-tn hidden-xs col-sm-6 col-sm-push-6 col-md-4 col-md-push-8">
         <ul class="list-unstyled list-inline">
             <li>
                {% if sort_mode == "popular" %}
@@ -266,7 +267,7 @@
 
 </div> <!-- /row, for lists -->
 
-{% include "hyperkitty/paginator.html" with pager=all_lists notbydate=True page_jump=True %}
+{% paginator all_lists %}
 
 <img class="logo" alt="HyperKitty" src="{% static 'hyperkitty/img/logo.png' %}" />
 

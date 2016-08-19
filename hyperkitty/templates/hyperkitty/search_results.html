@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load gravatar %}
 {% load hk_generic %}
+{% load pagination %}
 
 
 {% block head_title %}
@@ -82,7 +83,7 @@
             <p style="font-style:italic;font-size:small;color:#ccc">{% trans "these are not the messages you are looking for" %}</p>
         {% endif %}
 
-        {% include "hyperkitty/paginator.html" with pager=emails notbydate=True %}
+        {% paginator email %}
 
     </div>
 

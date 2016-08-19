@@ -1,6 +1,7 @@
 {% extends "hyperkitty/user_profile/base.html" %}
 {% load i18n %}
 {% load hk_generic %}
+{% load pagination %}
 
 
 {% block user_profile_content %}
@@ -65,7 +66,7 @@
             {% endfor %}
             </tbody>
         </table>
-        {% include "hyperkitty/paginator.html" with pager=favorites page_key="favpage" %}
+        {% paginator favorites qsprefix="fav" bydate=True %}
     {% else %}
         <p>{% trans "No favorites yet." %}</p>
     {% endif %}

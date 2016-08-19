@@ -278,20 +278,6 @@ function setup_send_as() {
     });
 }
 
-
-function setup_paginator() {
-    $("div.container")
-        .on("click", "a.jump-to-page", function(e) {
-            e.preventDefault();
-            $(this).closest(".paginator").find("form.jump-to-page").slideToggle("fast");
-        })
-        .on("change", ".paginator form select", function() {
-            $(this).closest("form").submit();
-        })
-        .find(".paginator form input[type='submit']").hide();
-}
-
-
 function setup_expander() {
     $('span.expander').expander({
         slicePoint: 500,
@@ -319,6 +305,5 @@ $(document).ready(function() {
     setup_flash_messages();
     setup_emails_list();
     setup_send_as();
-    setup_paginator();
     setup_expander();
 });
