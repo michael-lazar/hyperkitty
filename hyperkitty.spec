@@ -28,7 +28,6 @@ BuildRequires:  python-mailman-client
 BuildRequires:  python-robot-detection
 BuildRequires:  pytz
 BuildRequires:  django-paintstore
-BuildRequires:  python-django-browserid
 BuildRequires:  python-django >= 1.8
 BuildRequires:  python-dateutil
 BuildRequires:  python-networkx
@@ -56,7 +55,6 @@ Requires:       python-mailman-client
 Requires:       python-robot-detection
 Requires:       pytz
 Requires:       django-paintstore
-Requires:       python-django-browserid >= 0.10.1
 Requires:       python-django >= 1.8
 Requires:       python-dateutil
 Requires:       python-networkx
