@@ -114,7 +114,7 @@ class FindTestCase(TestCase):
 class DomainFilteringTestCase(TestCase):
 
     def _do_test(self, listdomain, vhost, expected):
-        mlist = MailingList.objects.get_or_create(
+        MailingList.objects.get_or_create(
             name="test@{}".format(listdomain))[0]
         response = self.client.get(reverse("hk_root"), HTTP_HOST=vhost)
         self.assertEqual(

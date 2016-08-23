@@ -24,11 +24,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import datetime
 
-from django.http import HttpRequest
 from django.utils.timezone import utc
 
 from hyperkitty.lib.view_helpers import get_display_dates
-from hyperkitty.models import MailingList
 from hyperkitty.tests.utils import TestCase
 
 

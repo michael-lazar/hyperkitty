@@ -25,7 +25,6 @@ from __future__ import absolute_import, unicode_literals
 import json
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
