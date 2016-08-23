@@ -107,7 +107,7 @@
                         {% else %}
                             <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url LOGIN_URL %}?next={{next|default:request.path|urlencode}}">
                                 <span class="fa fa-sign-in"></span>
-                                {% trans "Login" %}
+                                {% trans "Sign In" %}
                             </a></li>
                             <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'account_signup' %}?next={{next|default:request.path|urlencode}}">
                                 <span class="fa fa-user-plus"></span>
@@ -151,7 +151,7 @@
                     {% else %}
                         <li><a href="{% url LOGIN_URL %}?next={{next|default:request.path|urlencode}}">
                             <span class="fa fa-sign-in"></span>
-                            {% trans "Login" %}
+                            {% trans "Sign In" %}
                         </a></li>
                         <li><a href="{% url 'account_signup' %}?next={{next|default:request.path|urlencode}}">
                             <span class="fa fa-user-plus"></span>

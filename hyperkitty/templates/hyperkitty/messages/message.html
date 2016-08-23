@@ -94,7 +94,7 @@
             {% trans "Reply" %}
         </a>
         {% else %}
-        <a class="reply reply-mailto" title="{% trans 'Login to reply online' %}"
+        <a class="reply reply-mailto" title="{% trans "Sign in to reply online" %}"
            href="mailto:{{ email.mailinglist.name }}?Subject={{ email.subject|reply_subject|urlencode }}&amp;In-Reply-To=&lt;{{ email.message_id|urlencode }}&gt;">
             <i class="fa fa-reply"></i>
             {% trans "Reply" %}
