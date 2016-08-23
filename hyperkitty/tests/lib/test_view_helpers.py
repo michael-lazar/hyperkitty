@@ -40,7 +40,7 @@ class GetDisplayDatesTestCase(TestCase):
     def test_month_december(self):
         try:
             begin_date, end_date = get_display_dates('2012', '12', None)
-        except ValueError, e:
+        except ValueError as e:
             self.fail(e)
         self.assertEqual(
             begin_date, datetime.datetime(2012, 12, 1, tzinfo=utc))

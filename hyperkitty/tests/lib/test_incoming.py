@@ -105,7 +105,7 @@ class TestAddToList(TestCase):
         msg.set_payload("Dummy message")
         try:
             add_to_list("example-list", msg)
-        except IntegrityError, e:
+        except IntegrityError as e:
             self.fail(e)
         self.assertEqual(Email.objects.count(), 1)
         stored_msg = Email.objects.all()[0]
@@ -134,7 +134,7 @@ class TestAddToList(TestCase):
         msg.set_payload("Dummy message")
         try:
             add_to_list("example-list", msg)
-        except ValueError, e:
+        except ValueError as e:
             self.assertEqual(e.__class__.__name__, "ValueError")
         else:
             self.fail("No ValueError was raised")
@@ -155,7 +155,7 @@ class TestAddToList(TestCase):
         try:
             self.assertRaises(
                 DuplicateMessage, add_to_list, "example-list", msg)
-        except UnicodeDecodeError, e:
+        except UnicodeDecodeError as e:
             self.fail("Died on a non-ascii header message: %s" % unicode(e))
         self.assertEqual(mlist.emails.count(), 1)
 
@@ -165,7 +165,7 @@ class TestAddToList(TestCase):
             msg = message_from_file(email_file)
         try:
             add_to_list("example-list", msg)
-        except IntegrityError, e:
+        except IntegrityError as e:
             self.fail(e)
         self.assertEqual(Email.objects.count(), 1)
         self.assertEqual(Attachment.objects.count(), 1)
@@ -232,7 +232,7 @@ class TestAddToList(TestCase):
         msg.set_payload("Dummy message")
         try:
             add_to_list("example-list", msg)
-        except IntegrityError, e:
+        except IntegrityError as e:
             self.fail(e)
         self.assertEqual(Email.objects.count(), 1)
         stored_msg = Email.objects.all()[0]

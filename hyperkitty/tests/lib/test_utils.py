@@ -145,7 +145,7 @@ class TestUtils(TestCase):
         for h_in, h_expected in testdata:
             try:
                 h_out = utils.header_to_unicode(h_in)
-            except UnicodeDecodeError, e:
+            except UnicodeDecodeError as e:
                 self.fail(e)
             self.assertEqual(h_out, h_expected)
             self.assertTrue(isinstance(h_out, unicode))
@@ -203,7 +203,7 @@ class TestUtils(TestCase):
         msg.set_payload("Dummy message")
         try:
             name, email = utils.parseaddr(msg["From"])
-        except AttributeError, e:
+        except AttributeError as e:
             self.fail(e)
         self.assertEqual(name, '')
         self.assertEqual(email, '')

@@ -23,7 +23,7 @@
 from __future__ import absolute_import, unicode_literals, print_function
 
 
-from urllib2 import HTTPError
+from six.moves.urllib.error import HTTPError
 
 from django.db import models
 from django_mailman3.lib.mailman import get_mailman_client

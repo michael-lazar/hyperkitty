@@ -28,7 +28,7 @@ import mailbox
 import datetime
 import tempfile
 import gzip
-from cStringIO import StringIO
+from django.utils.six.moves import cStringIO as StringIO
 
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404

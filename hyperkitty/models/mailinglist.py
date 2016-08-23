@@ -24,7 +24,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 import datetime
 from enum import Enum
-from urllib2 import HTTPError
+from six.moves.urllib.error import HTTPError
 
 import dateutil.parser
 from django.conf import settings

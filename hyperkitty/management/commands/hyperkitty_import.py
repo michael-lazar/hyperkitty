@@ -110,7 +110,7 @@ class DbImporter(object):
             return False
         try:
             date = parse_date(date)
-        except ValueError, e:
+        except ValueError as e:
             if self.verbose:
                 self.stderr.write(
                     "Can't parse date string in message {}: {}. "
@@ -237,7 +237,7 @@ class Command(BaseCommand):
                 if options["since"].tzinfo is None:
                     options["since"] = options["since"].replace(
                         tzinfo=tz.tzlocal())
-            except ValueError, e:
+            except ValueError as e:
                 raise CommandError("invalid value for '--since': %s" % e)
 
     def handle(self, *args, **options):
