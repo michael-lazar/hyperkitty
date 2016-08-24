@@ -5,6 +5,9 @@ HyperKitty - Archiver for GNU Mailman v3
 .. image:: https://gitlab.com/mailman/hyperkitty/badges/master/build.svg
     :target: https://gitlab.com/mailman/hyperkitty/commits/master
 
+.. image:: https://gitlab.com/mailman/hyperkitty/badges/master/coverage.svg?job=coverage
+    :target: https://gitlab.com/mailman/hyperkitty/commits/master
+
 .. image:: https://readthedocs.org/projects/hyperkitty/badge
     :target: https://hyperkitty.readthedocs.io
 
