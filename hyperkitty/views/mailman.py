@@ -32,6 +32,8 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.utils.http import urlunquote
 from django.views.decorators.csrf import csrf_exempt
+from django_mailman3.models import MailDomain
+from six.moves.urllib.parse import urljoin
 
 from hyperkitty.lib.incoming import add_to_list, DuplicateMessage
 from hyperkitty.lib.utils import get_message_id_hash
@@ -68,21 +70,28 @@ def key_and_ip_auth(func):
 
 
 def _get_url(mlist_fqdn, msg_id=None):
-    # I don't think we can use HttpRequest.build_absolute_uri() because the
-    # mailman API may be accessed via localhost
+    # We can't use HttpRequest.build_absolute_uri() because the mailman API may
+    # be accessed via localhost.
     # https://docs.djangoproject.com/en/dev/ref/request-response/#django.http.HttpRequest.build_absolute_uri
     # https://docs.djangoproject.com/en/dev/ref/contrib/sites/#getting-the-current-domain-for-full-urls
     # result = urljoin(public_url, urlunquote(
     #                  reverse('hk_list_overview', args=[mlist_fqdn])))
-    # So we return the relative URL and let the admin configure the public URL
-    # in Mailman.
+    # We use the MailDomain association from django_mailman3 to find out the
+    # proper domain.
     if msg_id is None:
         url = reverse('hk_list_overview', args=[mlist_fqdn])
     else:
         msg_hash = get_message_id_hash(msg_id.strip().strip("<>"))
         url = reverse('hk_message_index', kwargs={
             "mlist_fqdn": mlist_fqdn, "message_id_hash": msg_hash})
-    return urlunquote(url)
+    relative_url = urlunquote(url)
+    mail_domain = mlist_fqdn.split("@")[1]
+    try:
+        domain = MailDomain.objects.get(
+            mail_domain=mail_domain).site.domain
+    except MailDomain.DoesNotExist:
+        domain = mail_domain
+    return urljoin("https://%s" % domain, relative_url)
 
 
 @key_and_ip_auth
