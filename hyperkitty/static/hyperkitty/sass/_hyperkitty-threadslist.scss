@@ -181,3 +181,17 @@
         margin-bottom: 0.5em;
     }
 }
+
+
+// for small screen sizes
+@media (max-width: 767px) {
+
+// for monthly thread list, to align 
+// collapsed right column underneath
+// left in smaller screen width
+.thread-email {
+	.thread-date {
+		margin-top: 1.5em;
+	}
+  }
+}

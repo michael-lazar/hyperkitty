@@ -7,7 +7,7 @@
 
             <div class="thread-info">
                     <div class="thread-email row">
-						<div class="col-tn-1 sender gravatar">
+						<div class="hidden-tn hidden-xxs hidden-xs col-sm-1 sender gravatar">
 							{% if starting_email.sender.address %}
 							{% gravatar starting_email.sender.address 120 %}
 							<br />
@@ -16,7 +16,7 @@
 							{% endif %}
 							<!-- {{ starting_email.sender.name|escapeemail }} -->
 						</div>
-						<div class="col-tn-8">
+						<div class="col-tn-12 col-sm-6">
 							<span class="thread-title">
 								<a name="{{thread.thread_id}}"
 									href="{% url 'hk_thread' threadid=thread.thread_id mlist_fqdn=mlist.name %}"
@@ -33,16 +33,16 @@
 								</a>
 							</span>
 							<div>by {{ thread.starting_email.sender.name }}</div>
-							<span class="expander collapsed" style="color: #999">
+							<span class="expander collapsed hidden-tn hidden-xxs hidden-xs" style="color: #999">
 								{{ starting_email.content|urlizetrunc:76|escapeemaillinks }}
 							</span>
 						</div>
-						<div class="col-tn-3">
-							<span class="thread-date"
+                        <div class="col-tn-4 col-sm-3 thread-date"
 								title="{{ thread.date_active|date:'l, j F Y H:i:s' }}">
 								<i class="fa fa-clock-o" title="{% trans 'Most recent thread activity' %}"></i>
 								{{ thread.date_active|timesince }}
-							</span>
+						</div>
+						<div class="col-tn-7 col-sm-4">
 							<ul class="list-unstyled list-stats">
 								<li>
 									<i class="fa fa-user"></i>
