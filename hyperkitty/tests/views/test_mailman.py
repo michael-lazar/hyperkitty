@@ -41,13 +41,19 @@ class PrivateListTestCase(TestCase):
     def test_get_url_default_domain(self):
         self.assertEqual(
             _get_url("test@example.com", "<message-id>"),
-            "https://example.com/list/test@example.com/message/"
-            "3F32NJAOW2XVHJWKZ73T2EPICEIAB3LI/")
+            "https://example.com" + reverse('hk_message_index', kwargs={
+                "mlist_fqdn": "test@example.com",
+                "message_id_hash": "3F32NJAOW2XVHJWKZ73T2EPICEIAB3LI"
+            }))
 
     def test_get_url_with_domain(self):
         site = Site.objects.create(name="Example", domain="lists.example.org")
         MailDomain.objects.create(site=site, mail_domain="example.com")
         self.assertEqual(
             _get_url("test@example.com", "<message-id>"),
-            "https://lists.example.org/list/test@example.com/message/"
-            "3F32NJAOW2XVHJWKZ73T2EPICEIAB3LI/")
+            "https://lists.example.org" + reverse('hk_message_index', kwargs={
+                "mlist_fqdn": "test@example.com",
+                "message_id_hash": "3F32NJAOW2XVHJWKZ73T2EPICEIAB3LI"
+            }))
+            #"https://lists.example.org/list/test@example.com/message/"
+            #"3F32NJAOW2XVHJWKZ73T2EPICEIAB3LI/")
