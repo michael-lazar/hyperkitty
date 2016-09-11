@@ -29,10 +29,15 @@ import tempfile
 from unittest import SkipTest
 
 import mailmanclient
-from django.test import RequestFactory, TestCase as DjangoTestCase
+from django.apps import apps
 from django.conf import settings
 from django.contrib.messages.storage.cookie import CookieStorage
 from django.core.management import call_command
+from django.db import connection
+from django.db.migrations import Migration, RunSQL, RunPython
+from django.db.migrations.executor import MigrationExecutor
+from django.test import (
+    RequestFactory, TestCase as DjangoTestCase, TransactionTestCase)
 from django_mailman3.lib.cache import cache
 from mock import Mock, patch
 
@@ -111,6 +116,46 @@ class SearchEnabledTestCase(TestCase):
 
     def _post_teardown(self):
         super(SearchEnabledTestCase, self)._post_teardown()
+
+
+class MigrationTestCase(TransactionTestCase):
+    """
+    Inpired by https://www.caktusgroup.com/blog/2016/02/02/writing-unit-tests-django-migrations/
+    """
+
+    migrate_from = None
+    migrate_to = None
+
+    @property
+    def app(self):
+        return apps.get_containing_app_config(type(self).__module__).name
+
+    def _pre_setup(self):
+        super(MigrationTestCase, self)._pre_setup()
+        assert self.migrate_from and self.migrate_to, \
+            "TestCase '{}' must define migrate_from and migrate_to properties".format(type(self).__name__)
+        self.migrate_from = [(self.app, self.migrate_from)]
+        self.migrate_to = [(self.app, self.migrate_to)]
+        self.executor = MigrationExecutor(connection)
+        self.old_apps = self.executor.loader.project_state(self.migrate_from).apps
+        # Make non-reversible operations reversible.
+        for migration, _backwards in self.executor.migration_plan(self.migrate_from):
+            for operation in migration.operations:
+                if not operation.reversible:
+                    if isinstance(operation, RunPython):
+                        operation.reverse_code = lambda *a: None
+                    if isinstance(operation, RunSQL):
+                        operation.reverse_sql = []
+        # Reverse to the original migration.
+        self.executor.migrate(self.migrate_from)
+
+    def migrate(self):
+        """Run the migration to test and return the new apps."""
+        # Either reset the migration graph, or use a new instance of
+        # MigrationExecutor.
+        self.executor.loader.build_graph()
+        self.executor.migrate(self.migrate_to)
+        return self.executor.loader.project_state(self.migrate_to).apps
 
 
 def get_test_file(*fileparts):
