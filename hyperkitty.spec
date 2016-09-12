@@ -20,7 +20,6 @@ BuildRequires:  python-sphinx
 # Unit tests in %%check
 BuildRequires:  python-django-gravatar2
 BuildRequires:  python-django-rest-framework >= 2.2.0
-BuildRequires:  python-social-auth
 BuildRequires:  python-django-compressor
 BuildRequires:  python-rjsmin
 BuildRequires:  sassc
@@ -47,7 +46,6 @@ BuildRequires:  checkpolicy, selinux-policy-devel, /usr/share/selinux/devel/poli
 BuildRequires:  hardlink
 
 Requires:       python-django-gravatar2
-Requires:       python-social-auth
 Requires:       python-django-rest-framework >= 2.2.0
 Requires:       python-django-compressor
 Requires:       python-rjsmin
