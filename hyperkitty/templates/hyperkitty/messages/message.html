@@ -53,9 +53,12 @@
 
         </div>
         <div class="messagelink right">
-            <span class="fa fa-font cursor-pointer toggle-font"></span>
+            <span class="fa fa-font cursor-pointer toggle-font"
+                  title="{% trans "Display in fixed font" %}"
+                  data-toggle="tooltip" data-placement="bottom"></span>
             <a href="{% url 'hk_message_index' mlist_fqdn=email.mailinglist.name message_id_hash=email.message_id_hash %}"
-               title="{{ email.subject }}"><i class="fa fa-link"></i></a>
+               title="{% trans "Permalink for this message" %}"
+               data-toggle="tooltip" data-placement="bottom"><i class="fa fa-link"></i></a>
         </div>
 
         {% if email.changed_subject %}
@@ -67,7 +70,7 @@
     </div> <!-- /email-header: gravatar, author-info, date, peramlink, changed_subject -->
 
     <div class="email-body {% if email.display_fixed %}fixed{% endif %}">
-        {{ email.content|snip_quoted|snip_pgp|wordwrap:90|urlizetrunc:76|escapeemaillinks }}
+{{ email.content|snip_quoted|snip_pgp|wordwrap:90|urlizetrunc:76|escapeemaillinks }}
     </div>
 
     {% if unfolded and email.attachments.count %}

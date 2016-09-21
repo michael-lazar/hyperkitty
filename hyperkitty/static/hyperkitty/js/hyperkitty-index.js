@@ -23,9 +23,6 @@
 
 function setup_index(url_template) {
 
-    // Setup tooltips
-    $('[data-toggle="tooltip"]').tooltip();
-
     var list_names = [];
     // Collect list names
     $(".all-lists table.lists tr.list").each(function() {
