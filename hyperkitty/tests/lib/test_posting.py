@@ -24,8 +24,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import uuid
 from django.contrib.auth.models import User
-from django.test.client import RequestFactory
 from django.core import mail
+from django.test.client import RequestFactory
+from django.utils import six
 from django_mailman3.tests.utils import FakeMMList, FakeMMMember
 from mock import Mock, patch
 
@@ -125,3 +126,15 @@ class PostingTestCase(TestCase):
             self.fail(e)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, subject.replace("\n ", " "))
+
+    def test_get_sender_is_string(self):
+        # The get_sender function must always return a string
+        from mailmanclient._client import Address
+        self.mm_user.addresses = [
+            Address(None, None, dict(email="testuser@example.com")),
+            ]
+        self.mm_user.subscriptions = [
+            FakeMMMember(self.mlist.list_id, self.mm_user.addresses[0]),
+        ]
+        addr = posting.get_sender(self.request, self.mlist)
+        self.assertTrue(isinstance(addr, six.string_types))

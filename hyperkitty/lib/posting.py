@@ -45,7 +45,7 @@ def get_sender(request, mlist):
     subscriptions = get_subscriptions(request.user)
     if mlist.list_id in subscriptions:
         address = subscriptions[mlist.list_id]
-    return address
+    return str(address)
 
 
 def get_from(request, address):
