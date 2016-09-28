@@ -110,6 +110,7 @@ def subscriptions(request):
         posts_count = likes = dislikes = 0
         first_post = all_posts_url = None
         if mlist is not None:
+            list_name = mlist.name
             posts_count = profile.emails.filter(
                 mailinglist__name=mlist.name).count()
             likes, dislikes = profile.get_votes_in_list(mlist.name)
@@ -118,13 +119,15 @@ def subscriptions(request):
                 all_posts_url = "%s?list=%s" % (
                     reverse("hk_user_posts", args=[mm_user_id]),
                     mlist.name)
+        else:
+            list_name = get_mailman_client().get_list(mlist_id).fqdn_listname
         likestatus = "neutral"
         if likes - dislikes >= 10:
             likestatus = "likealot"
         elif likes - dislikes > 0:
             likestatus = "like"
         subs.append({
-            "list_name": mlist.name if mlist else mlist_id,
+            "list_name": list_name,
             "mlist": mlist,
             "posts_count": posts_count,
             "first_post": first_post,

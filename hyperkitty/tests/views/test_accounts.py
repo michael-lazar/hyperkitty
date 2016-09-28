@@ -295,3 +295,19 @@ class SubscriptionsTestCase(TestCase):
                     % reverse("hk_user_posts", args=[self.mm_user.user_id]),
             }])
         self.assertContains(response, "test@example.com", status_code=200)
+
+    def test_list_not_archived(self):
+        self.mm_user.subscriptions = [
+            FakeMMMember("test.example.com", self.user.email),
+        ]
+        self.client.login(username='testuser', password='testPass')
+        response = self.client.get(reverse("hk_user_subscriptions"))
+        self.assertContains(response, "test@example.com", status_code=200)
+        self.assertEqual(
+            response.context["subscriptions"], [{
+                'first_post': None, 'posts_count': 0,
+                'likes': 0, 'dislikes': 0, 'likestatus': 'neutral',
+                'mlist': None,
+                'all_posts_url': None,
+                'list_name': "test@example.com",
+            }])

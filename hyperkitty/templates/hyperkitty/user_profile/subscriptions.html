@@ -11,7 +11,7 @@
         {% for sub in subscriptions %}
             {% ifchanged sub.list_name %}
             <tr class="list-address">
-                <td><a href="{% url 'hk_list_overview' sub.list_name %}">{{ sub.list_name }}</a></td>
+                <td><a href="{% url 'hk_list_overview' mlist_fqdn=sub.list_name %}">{{ sub.list_name }}</a></td>
             </tr>
             {% endifchanged %}
             <tr>
@@ -49,7 +49,7 @@
         {% for sub in subscriptions %}
             <tr>
                 <td>
-                    <a href="{% url 'hk_list_overview' sub.list_name %}">{{ sub.list_name }}</a>
+                    <a href="{% url 'hk_list_overview' mlist_fqdn=sub.list_name %}">{{ sub.list_name }}</a>
                 </td>
                 {% if sub.first_post %}
                 <td>
