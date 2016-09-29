@@ -55,5 +55,3 @@ class PrivateListTestCase(TestCase):
                 "mlist_fqdn": "test@example.com",
                 "message_id_hash": "3F32NJAOW2XVHJWKZ73T2EPICEIAB3LI"
             }))
-            #"https://lists.example.org/list/test@example.com/message/"
-            #"3F32NJAOW2XVHJWKZ73T2EPICEIAB3LI/")
