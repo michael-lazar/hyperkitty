@@ -70,6 +70,13 @@
         </div>
 
 
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+        {% for error in form.q.errors %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endfor %}
+
         {% if query %}
             {% for email in emails %}
                 <!--<div class="search-result">-->

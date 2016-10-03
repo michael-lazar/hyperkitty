@@ -22,10 +22,14 @@
 
 from __future__ import absolute_import, unicode_literals, print_function
 
-from django.shortcuts import render
+from django.conf import settings
+from django.forms import ValidationError
 from django.http import Http404
+from django.shortcuts import render
+from django.utils.translation import ugettext as _
 from django_mailman3.lib.mailman import get_subscriptions
 from django_mailman3.lib.paginator import paginate
+from haystack import DEFAULT_ALIAS
 from haystack.query import EmptySearchQuerySet, RelatedSearchQuerySet
 from haystack.forms import SearchForm
 
@@ -81,7 +85,23 @@ def search(request):
     else:
         form = SearchForm(searchqueryset=sqs, load_all=True)
 
-    emails = paginate(results, request.GET.get('page'))
+    try:
+        emails = paginate(results, request.GET.get('page'))
+    except Exception as e:
+        backend = settings.HAYSTACK_CONNECTIONS[DEFAULT_ALIAS]["ENGINE"]
+        if backend == "haystack.backends.whoosh_backend.WhooshEngine":
+            from whoosh.qparser.common import QueryParserError
+            search_exception = QueryParserError
+        if backend == "xapian_backend.XapianEngine":
+            from xapian import QueryParserError
+            search_exception = QueryParserError
+        if not isinstance(e, search_exception):
+            raise
+        emails = paginate([])
+        form.add_error("q", ValidationError(
+            _('Parsing error: %(error)s'),
+            params={"error": e}, code="parse",
+            ))
     for email in emails:
         if request.user.is_authenticated():
             email.object.myvote = email.object.votes.filter(

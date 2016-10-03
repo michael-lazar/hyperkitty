@@ -24,7 +24,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import uuid
 from email.message import Message
 
-from mock import Mock
+from mock import Mock, patch
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django_mailman3.tests.utils import FakeMMList, FakeMMMember
@@ -195,3 +195,18 @@ class SearchViewsTestCase(SearchEnabledTestCase):
             self.assertNotContains(
                 response, "someone-else@example.com",
                 msg_prefix="With query %r" % query, status_code=200)
+
+    def test_parse_error(self):
+        from whoosh.qparser.common import QueryParserError
+
+        class CrashingIterator(list):
+            def __len__(self):
+                raise QueryParserError("dummy parsing failure")
+            query = Mock()
+
+        with patch("hyperkitty.views.search.SearchForm.search") as form_search:
+            form_search.return_value = CrashingIterator()
+            response = self.client.get(reverse("hk_search"), {"q": "FAIL"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "alert-danger")
+        self.assertContains(response, "dummy parsing failure")
