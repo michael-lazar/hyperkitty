@@ -7,29 +7,29 @@ stages:
 django-1.8:
   stage: test
   script:
-  - tox -e django18-head
+  - tox -e py27-django18-head
 
 django-1.9:
   stage: test
   script:
-  - tox -e django19-head
+  - tox -e py27-django19-head
 
 django-1.10:
   stage: test
   script:
-  - tox -e django110-head
+  - tox -e py27-django110-head
 
 lint:
   stage: quality-assurance
   script:
-  - tox -e lint
+  - tox -e py27-lint
 
 docs:
   stage: quality-assurance
   script:
-  - tox -e docs
+  - tox -e py27-docs
 
 coverage:
   stage: quality-assurance
   script:
-    - tox -e django110-coverage-head
+    - tox -e py27-django110-coverage-head
