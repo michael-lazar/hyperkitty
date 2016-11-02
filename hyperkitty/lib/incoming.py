@@ -141,24 +141,23 @@ def add_to_list(list_name, message):
             # re-use parent's thread-id
             email.parent = ref_msg
             email.thread_id = ref_msg.thread_id
-            ref_msg.thread.date_active = email.date
-            ref_msg.thread.save()
+            thread = ref_msg.thread
 
     thread_created = False
     if email.thread_id is None:
         # Create the thread if not found
-        thread = Thread.objects.create(
+        thread, thread_created = Thread.objects.get_or_create(
             mailinglist=email.mailinglist,
-            thread_id=email.message_id_hash,
-            date_active=email.date)
-        thread_created = True
+            thread_id=email.message_id_hash)
         email.thread = thread
 
     email.save()  # must save before setting the thread.starting_email
 
+    thread.date_active = email.date
     if thread_created:
         thread.starting_email = email
-        thread.save()
+    thread.save()
+    if thread_created:
         new_thread.send("Mailman", thread=thread)
         # signal_results = new_thread.send_robust("Mailman", thread=thread)
         # for receiver, result in signal_results:

@@ -477,3 +477,25 @@ class TestAddToList(TestCase):
         self.assertEqual(
             cache.get("MailingList:example-list:recent_threads_count"),
             len(existing) + 1)
+
+    def test_existing_thread(self):
+        msg = Message()
+        msg["From"] = "dummy@example.com"
+        msg["Subject"] = "Fake Subject"
+        msg["Message-ID"] = "<dummy>"
+        msg["Date"] = "Fri, 02 Nov 2012 16:07:54"
+        msg.set_payload("Fake Message")
+        # Create a thread with the same message_id
+        mlist = MailingList.objects.create(name="example-list")
+        thread = Thread.objects.create(
+            mailinglist=mlist, thread_id=get_message_id_hash("dummy"))
+        # Add the message
+        m_hash = add_to_list("example-list", msg)
+        self.assertEqual(m_hash, thread.thread_id)
+        self.assertEqual(thread.emails.count(), 1)
+        # Get the email
+        try:
+            email = Email.objects.get(message_id="dummy")
+        except Email.DoesNotExist:
+            self.fail("No email found by id")
+        self.assertEqual(email.thread, thread)
