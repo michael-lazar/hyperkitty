@@ -49,6 +49,10 @@ h1 {
     border: 1px solid $rowBorderColor;
 }
 
+.bordered-vertical {
+    border-bottom: 1px solid $rowBorderColor;
+}
+
 .labels {
     font-size: 78%;
     text-transform: uppercase;
@@ -105,7 +109,7 @@ h1 {
 .saved .fa-star, .fa-star.saved {
     color: #ffdd00;
 }
-.notsaved .fa-star, .fa-star.notsaved {
+.notsaved .fa-star-o, .fa-star-o.notsaved {
     color: #999;
 }
 
@@ -128,7 +132,13 @@ h1 {
     @extend .small-bolded-text;
 }
 
-//== font icons (participant, discussion, unread) ===/
+.gravatar-placeholder {
+	width: 120px;
+	height: 120px;
+	background-color: $super-light-grey;
+}
+
+//== font icons (fa-user, fa-comment, unread) ===/
 ul.list-stats {
     margin: 0;
     li {
@@ -140,6 +150,36 @@ ul.list-stats {
     .fa {
         color: #BFBFBF;
     }
+}
+
+.fa-user:before {
+    color: #BFBFBF;
+    font-size: 1.14em;
+    line-height: 1em;
+}
+
+.fa-comment:before {
+    color: #BFBFBF;
+    font-size: 1.14em;
+    line-height: 1em;
+}
+
+//== old icomoon styles ===/
+.participant:before {
+    content: "\e609";
+    color: #BFBFBF;
+    font-size: 1.14em;
+    line-height: 1em;
+}
+
+.discussion:before {
+    content: "\e607";
+    color: #BFBFBF;
+    font-size: 1.14em;
+    line-height: 1em;
+}
+.fa-envelope {
+    color: #BFBFBF;
 }
 
 
