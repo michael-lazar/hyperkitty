@@ -21,7 +21,7 @@
                {% if sort_mode == "popular" %}
                <span class="active">{% trans 'Most popular' %}</span>
                {% else %}
-                <a href="{% url 'hk_root' %}?sort=popular"
+                <a href="{% url 'hk_root' %}?{% add_to_query_string "sort" "popular" %}"
                    data-toggle="tooltip" data-placement="bottom"
                    title="{% trans 'Sort by number of recent participants' %}"
                    >{% trans 'Most popular' %}</a>
@@ -31,7 +31,7 @@
                {% if sort_mode == "active" %}
                <span class="active">{% trans 'Most active' %}</span>
                {% else %}
-               <a href="{% url 'hk_root' %}?sort=active"
+               <a href="{% url 'hk_root' %}?{% add_to_query_string "sort" "active" %}"
                   data-toggle="tooltip" data-placement="bottom"
                   title="{% trans 'Sort by number of recent discussions' %}"
                   >{% trans 'Most active' %}</a>
@@ -41,7 +41,7 @@
                {% if sort_mode == "name" %}
                <span class="active">{% trans 'By name' %}</span>
                {% else %}
-               <a href="{% url 'hk_root' %}?sort=name"
+               <a href="{% url 'hk_root' %}?{% add_to_query_string "sort" "name" %}"
                   data-toggle="tooltip" data-placement="bottom"
                   title="{% trans 'Sort alphabetically' %}"
                   >{% trans 'By name' %}</a>
@@ -51,7 +51,7 @@
                {% if sort_mode == "creation" %}
                <span class="active">{% trans 'Newest' %}</span>
                {% else %}
-                <a href="{% url 'hk_root' %}?sort=creation"
+                <a href="{% url 'hk_root' %}?{% add_to_query_string "sort" "creation" %}"
                    data-toggle="tooltip" data-placement="bottom"
                    title="{% trans 'Sort by list creation date' %}"
                    >{% trans 'Newest' %}</a>
@@ -69,16 +69,16 @@
         </button>
         <ul class="dropdown-menu" role="menu">
             <li>
-                <a href="{% url 'hk_root' %}?sort=popular">{% trans 'Most popular' %}</a>
+                <a href="{% url 'hk_root' %}?{% add_to_query_string "sort" "popular" %}">{% trans 'Most popular' %}</a>
             </li>
             <li>
-                <a href="{% url 'hk_root' %}?sort=active">{% trans 'Most active' %}</a>
+                <a href="{% url 'hk_root' %}?{% add_to_query_string "sort" "active" %}">{% trans 'Most active' %}</a>
             </li>
             <li>
-                <a href="{% url 'hk_root' %}?sort=name">{% trans 'By name' %}</a>
+                <a href="{% url 'hk_root' %}?{% add_to_query_string "sort" "name" %}">{% trans 'By name' %}</a>
             </li>
             <li>
-                <a href="{% url 'hk_root' %}?sort=creation">{% trans 'Newest' %}</a>
+                <a href="{% url 'hk_root' %}?{% add_to_query_string "sort" "creation" %}">{% trans 'Newest' %}</a>
             </li>
         </ul>
     </div>
