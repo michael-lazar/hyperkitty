@@ -52,4 +52,4 @@ class Tag(models.Model):
     def __unicode__(self):
         return 'Tag %s' % (unicode(self.name))
 
-admin.site.register(Tag)
+admin.site.register(Tag)  # noqa: E305

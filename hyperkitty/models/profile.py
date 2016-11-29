@@ -68,7 +68,7 @@ class Profile(models.Model):
         return self.emails.filter(
             mailinglist=mlist).order_by("archived_date").first()
 
-admin.site.register(Profile)
+admin.site.register(Profile)  # noqa: E305
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

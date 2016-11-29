@@ -36,4 +36,4 @@ class Favorite(models.Model):
         return u"%s is a favorite of %s" % (
             unicode(self.thread), unicode(self.user))
 
-admin.site.register(Favorite)
+admin.site.register(Favorite)  # noqa: E305

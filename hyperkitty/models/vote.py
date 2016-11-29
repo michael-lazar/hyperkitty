@@ -53,7 +53,7 @@ class Vote(models.Model):
     def on_pre_delete(self):
         self._clean_cache()
 
-admin.site.register(Vote)
+admin.site.register(Vote)  # noqa: E305
 
 
 @receiver(pre_save, sender=Vote)

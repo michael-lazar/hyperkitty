@@ -44,4 +44,4 @@ class ThreadCategoryAdmin(admin.ModelAdmin):
         return super(ThreadCategoryAdmin, self).save_model(
                      request, obj, form, change)
 
-admin.site.register(ThreadCategory, ThreadCategoryAdmin)
+admin.site.register(ThreadCategory, ThreadCategoryAdmin)  # noqa: E305

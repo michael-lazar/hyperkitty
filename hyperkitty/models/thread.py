@@ -192,4 +192,4 @@ class LastView(models.Model):
         else:
             return self.thread.emails.filter(date__gt=self.view_date).count()
 
-admin.site.register(LastView)
+admin.site.register(LastView)  # noqa: E305
