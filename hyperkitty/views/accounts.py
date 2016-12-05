@@ -171,9 +171,9 @@ def public_profile(request, user_id):
     # This is only used for the Gravatar. No email display on the public
     # profile, we have enough spam as it is, thank you very much.
     try:
-        email = unicode(mm_user.addresses[0])
+        addresses = [unicode(addr) for addr in mm_user.addresses]
     except (KeyError, IndexError):
-        email = None
+        addresses = []
     fullname = mm_user.display_name
     if not fullname:
         fullname = Sender.objects.filter(mailman_id=user_id).exclude(
@@ -193,7 +193,7 @@ def public_profile(request, user_id):
         "likes": likes,
         "dislikes": dislikes,
         "likestatus": likestatus,
-        "email": email,
+        "addresses": addresses,
         "is_user": is_user,
     }
     return render(request, "hyperkitty/user_public_profile.html", context)

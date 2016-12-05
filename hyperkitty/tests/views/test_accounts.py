@@ -82,12 +82,14 @@ class AccountViewsTestCase(TestCase):
         response = self.client.get(reverse("hk_public_user_profile",
                                    args=[user_id.int]))
         self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Email addresses:")
 
     def test_public_profile_anonymous(self):
         user_id = uuid.uuid1()
         response = self.client.get(reverse("hk_public_user_profile",
                                    args=[user_id.int]))
         self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Email addresses:")
 
     def test_public_profile_as_oneself(self):
         user_id = uuid.uuid1()
@@ -105,6 +107,27 @@ class AccountViewsTestCase(TestCase):
         self.assertTrue(response.context["is_user"])
         self.assertContains(response, "This is you.", count=1)
         self.assertContains(response, "Edit your private profile", count=1)
+
+    def test_public_profile_as_superuser(self):
+        user_id = uuid.uuid1()
+        self.user.is_superuser = True
+        self.user.save()
+        self.client.login(username='testuser', password='testPass')
+        self.mailman_client.get_list.side_effect = \
+            lambda name: FakeMMList(name)
+        mm_user = Mock()
+        self.mailman_client.get_user.side_effect = lambda name: mm_user
+        mm_user.user_id = user_id.int
+        mm_user.created_on = None
+        mm_user.addresses = [
+            "some-user-1@example.com", "some-user-2@example.com",
+            ]
+        response = self.client.get(reverse("hk_public_user_profile",
+                                   args=[user_id.int]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Email addresses:", count=1)
+        self.assertContains(response, "some-user-1@example.com", count=1)
+        self.assertContains(response, "some-user-2@example.com", count=1)
 
     def test_registration_redirect(self):
         self.client.login(username='testuser', password='testPass')
