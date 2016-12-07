@@ -27,7 +27,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^$', RedirectView.as_view(
-        url=reverse_lazy('hyperkitty.views.index.index'))),
+        url=reverse_lazy('hk_root'))),
     url(r'^hyperkitty/', include('hyperkitty.urls')),
     # url(r'^postorius/', include('postorius.urls')),
     url(r'', include('django_mailman3.urls')),
