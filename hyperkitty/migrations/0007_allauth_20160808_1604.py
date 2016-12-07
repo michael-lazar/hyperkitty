@@ -33,7 +33,7 @@ def migrate_social_users(apps, schema_editor):
     cursor = connection.cursor()
     try:
         cursor.execute("SELECT 1 from social_auth_usersocialauth")
-    except utils.OperationalError:
+    except (utils.OperationalError, utils.ProgrammingError):
         # No social_auth table, stop here.
         return
     for provider_old, provider_new in PROVIDERS_MAP.items():
