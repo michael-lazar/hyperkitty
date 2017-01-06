@@ -14,7 +14,6 @@
                                 {% else %}
                                         <div class="gravatar-placeholder">&nbsp;</div>
                                 {% endif %}
-                                <!-- {{ starting_email.sender.name|escapeemail }} -->
                         </div>
                         <div class="col-tn-12 col-sm-10 col-md-7 col-lg-8">
                                 <span class="thread-title">
@@ -32,7 +31,11 @@
                                         {{ starting_email.subject|strip_subject:mlist }}
                                 </a>
                                 </span>
-                                <div>by {{ thread.starting_email.sender.name }}</div>
+                                <div>
+                                    {% blocktrans with name=thread.starting_email.sender.name|escapeemail %}
+                                        by {{ name }}
+                                    {% endblocktrans %}
+                                </div>
                                 <span class="expander collapsed hidden-tn hidden-xxs hidden-xs" style="color: #999">
                                         {{ starting_email.content|urlizetrunc:76|escapeemaillinks }}
                                 </span>
