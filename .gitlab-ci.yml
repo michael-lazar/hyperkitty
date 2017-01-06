@@ -22,12 +22,12 @@ django-1.10:
 lint:
   stage: quality-assurance
   script:
-  - tox -e py27-lint
+  - tox -e lint
 
 docs:
   stage: quality-assurance
   script:
-  - tox -e py27-docs
+  - tox -e docs
 
 coverage:
   stage: quality-assurance
