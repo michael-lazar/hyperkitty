@@ -86,7 +86,11 @@ def search(request):
         form = SearchForm(searchqueryset=sqs, load_all=True)
 
     try:
-        emails = paginate(results, request.GET.get('page'))
+        emails = paginate(
+            results,
+            request.GET.get('page'),
+            request.GET.get('count'),
+            )
     except Exception as e:
         backend = settings.HAYSTACK_CONNECTIONS[DEFAULT_ALIAS]["ENGINE"]
         if backend == "haystack.backends.whoosh_backend.WhooshEngine":
