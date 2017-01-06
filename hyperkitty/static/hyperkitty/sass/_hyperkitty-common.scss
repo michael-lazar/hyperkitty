@@ -142,7 +142,7 @@ h1 {
 ul.list-stats {
     margin: 0;
     li {
-        display: inline;
+        display: inline-block;
     }
     li+li {
         padding-left: 0.75em;
@@ -320,6 +320,7 @@ div#months-list {
     position: relative;
     margin: auto;
     padding-top: 3px;
+    background-color: $pre-bg;
     // default behavior is to hide axes
     .axis path, .chart-data .axis line {
         display: none;

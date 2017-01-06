@@ -145,9 +145,9 @@
                         <span class="list-tags">{% trans "inactive" %}</span>
                         {% endif %}
                         <br />
+                        <span class="list-address">{{ mlist.name }}</span>
                         <span class="list-description">{{ mlist.description|default_if_none:"" }}</span>
-                        <span class="list-address hidden">{{ mlist.name }}</span>
-                        <div class="chart">
+                        <div class="chart hidden-xs">
                             <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
                         </div>
                         <ul class="list-stats list-unstyled">
@@ -189,8 +189,8 @@
             <thead class="hidden-xs">
                 <tr>
                     <th class="col-sm-6 col-md-3 col-lg-3">{% trans 'List' %}</th>
-                    <th class="hidden-sm col-md-6 col-lg-6">{% trans 'Description' %}</th>
-                    <th class="col-sm-6 col-md-3 col-lg-3">{% trans 'Activity in the past 30 days' %}</th>
+                    <th class="hidden-sm col-md-5 col-lg-5">{% trans 'Description' %}</th>
+                    <th class="col-sm-6 col-md-4 col-lg-4" colspan=2>{% trans 'Activity in the past 30 days' %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -230,10 +230,7 @@
                     <td class="list-description hidden-sm">
                         {{ mlist.description|default_if_none:"" }}
                     </td>
-                    <td class="activity">
-                        <div class="chart">
-                            <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
-                        </div>
+                    <td class="statistics">
                         <ul class="list-stats list-unstyled">
                             <li>
                                 <i class="fa fa-user"></i>
@@ -254,6 +251,11 @@
                                 {% trans 'discussions' %}
                             </li>
                         </ul>
+                    </td>
+                    <td class="activity">
+                        <div class="chart">
+                            <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
+                        </div>
                     </td>
                 </tr>
             {% endfor %}

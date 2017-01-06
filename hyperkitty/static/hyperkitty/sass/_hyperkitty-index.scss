@@ -146,6 +146,10 @@ $headerNavPadding: 7px;
         li:first-child {
             padding-right: 1em;
         }
+        li+li {
+            // Override setting in _hyperkitty-common.scss
+            padding-left: 0;
+        }
     }
     .participant {
         padding-left: 10px;
