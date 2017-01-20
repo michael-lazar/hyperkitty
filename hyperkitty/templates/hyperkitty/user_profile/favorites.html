@@ -21,7 +21,7 @@
                         <a href="{% url 'hk_thread' mlist_fqdn=fav.thread.mailinglist.name threadid=fav.thread.thread_id %}"
                             >{{ starting_email.subject }}</a>
                         <br>
-                        {% trans "Original author:" %} {{ starting_email.sender.name }}
+                        {% trans "Original author:" %} {{ starting_email.sender_name }}
                         <br>
                         {% trans "Started on:" %} {{ starting_email.date|date:"D, j M Y H:i" }}
                         <br>
@@ -55,7 +55,7 @@
                     </td>
                     <td><a href="{% url 'hk_thread' mlist_fqdn=fav.thread.mailinglist.name threadid=fav.thread.thread_id %}"
                             >{{ starting_email.subject }}</a></td>
-                    <td>{{ starting_email.sender.name }}</td>
+                    <td>{{ starting_email.sender_name }}</td>
                     <td>{{ starting_email.date }}</td>
                     <td>{{ fav.thread.date_active|timesince }}</td>
                     <td>

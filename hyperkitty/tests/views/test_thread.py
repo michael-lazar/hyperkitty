@@ -248,6 +248,7 @@ class ThreadTestCase(TestCase):
             response = self.client.get(url)
             soup = BeautifulSoup(response.content, "html.parser")
             tags = soup.find("div", id="tags")
+            self.assertIsNotNone(tags)
             self.assertEqual(len(tags.find_all("li")), 2)
             self.assertEqual(len(tags.find_all("form")), expected_num_form)
         # self.user, user_2 and user_3 should see one removal form

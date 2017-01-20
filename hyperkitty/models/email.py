@@ -58,6 +58,7 @@ class Email(models.Model):
     message_id = models.CharField(max_length=255, db_index=True)
     message_id_hash = models.CharField(max_length=255, db_index=True)
     sender = models.ForeignKey("Sender", related_name="emails")
+    sender_name = models.CharField(max_length=255, null=True, blank=True)
     subject = models.CharField(max_length=512, db_index=True)
     content = models.TextField()
     date = models.DateTimeField(db_index=True)
@@ -151,8 +152,8 @@ class Email(models.Model):
         unixfrom = "From %s %s" % (
             self.sender.address, self.archived_date.strftime("%c"))
         header_from = self.sender.address
-        if self.sender.name and self.sender.name != self.sender.address:
-            header_from = "%s <%s>" % (self.sender.name, header_from)
+        if self.sender_name and self.sender_name != self.sender.address:
+            header_from = "%s <%s>" % (self.sender_name, header_from)
         header_to = self.mailinglist.name
         if escape_addresses:
             header_from = header_from.replace("@", " at ")

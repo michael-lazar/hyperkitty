@@ -36,8 +36,7 @@ from django_mailman3.lib.mailman import (
     get_mailman_client, get_mailman_user_id, get_subscriptions)
 from django_mailman3.lib.paginator import paginate
 
-from hyperkitty.models import (
-    Favorite, LastView, MailingList, Sender, Email, Vote)
+from hyperkitty.models import Favorite, LastView, MailingList, Email, Vote
 from hyperkitty.lib.view_helpers import is_mlist_authorized
 
 
@@ -176,8 +175,9 @@ def public_profile(request, user_id):
         addresses = []
     fullname = mm_user.display_name
     if not fullname:
-        fullname = Sender.objects.filter(mailman_id=user_id).exclude(
-            name="").values_list("name", flat=True).first()
+        fullname = Email.objects.filter(sender__mailman_id=user_id).exclude(
+                sender_name="", sender_name__isnull=True
+            ).values_list("sender_name", flat=True).first()
     if mm_user.created_on is not None:
         creation = dateutil.parser.parse(mm_user.created_on)
     else:
@@ -214,8 +214,10 @@ def posts(request, user_id):
                             "mlist": mlist,
                           }, status=403)
 
-    fullname = Sender.objects.filter(mailman_id=user_id).exclude(
-        name="").values_list("name", flat=True).first()
+    fullname = Email.objects.filter(
+            sender__mailman_id=user_id, sender_name__isnull=False
+        ).exclude(sender_name="").values_list(
+        "sender_name", flat=True).first()
     # Get the messages and paginate them
     emails = Email.objects.filter(
         mailinglist=mlist, sender__mailman_id=user_id)

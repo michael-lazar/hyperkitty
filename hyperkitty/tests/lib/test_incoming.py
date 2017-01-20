@@ -278,7 +278,7 @@ class TestAddToList(TestCase):
                 msg.set_payload("Dummy message")
                 add_to_list("example-list", msg)
         mlist = MailingList.objects.get(name="example-list")
-        result = [(p.name, p.address, p.count) for p in
+        result = [(p["name"], p["address"], p["count"]) for p in
                   mlist.top_posters]
         self.assertEqual(expected, result)
 
@@ -290,7 +290,7 @@ class TestAddToList(TestCase):
         add_to_list("example-list", msg)
         self.assertEqual(Email.objects.count(), 1)
         stored_msg = Email.objects.all()[0]
-        self.assertEqual(stored_msg.sender.name, "Sender Name")
+        self.assertEqual(stored_msg.sender_name, "Sender Name")
 
     def test_no_sender_address(self):
         msg = Message()
@@ -303,7 +303,7 @@ class TestAddToList(TestCase):
             self.fail(e)
         self.assertEqual(Email.objects.count(), 1)
         stored_msg = Email.objects.all()[0]
-        self.assertEqual(stored_msg.sender.name, "Sender Name")
+        self.assertEqual(stored_msg.sender_name, "Sender Name")
         self.assertEqual(stored_msg.sender.address, "sendername@example.com")
 
     def test_no_sender_name_or_address(self):
@@ -317,7 +317,7 @@ class TestAddToList(TestCase):
             self.fail(e)
         self.assertEqual(Email.objects.count(), 1)
         stored_msg = Email.objects.all()[0]
-        self.assertEqual(stored_msg.sender.name, "")
+        self.assertEqual(stored_msg.sender_name, "")
         self.assertEqual(stored_msg.sender.address, "unknown@example.com")
 
     def test_get_sender_name_if_empty(self):
@@ -328,9 +328,9 @@ class TestAddToList(TestCase):
         add_to_list("example-list", msg)
         self.assertEqual(Email.objects.count(), 1)
         stored_msg = Email.objects.all()[0]
-        self.assertEqual(stored_msg.sender.name, "dummy@example.com")
+        self.assertEqual(stored_msg.sender_name, "dummy@example.com")
 
-    def test_update_sender_name(self):
+    def test_dont_update_sender_name(self):
         # This first part is equivalent to the test_get_sender_name test.
         msg = Message()
         msg["From"] = "Sender Name <dummy@example.com>"
@@ -339,7 +339,7 @@ class TestAddToList(TestCase):
         add_to_list("example-list", msg)
         self.assertEqual(Email.objects.count(), 1)
         stored_msg = Email.objects.all()[0]
-        self.assertEqual(stored_msg.sender.name, "Sender Name")
+        self.assertEqual(stored_msg.sender_name, "Sender Name")
         # Send a second message with a different sender name
         msg = Message()
         msg["From"] = "Another Name <dummy@example.com>"
@@ -347,28 +347,10 @@ class TestAddToList(TestCase):
         msg.set_payload("Dummy message")
         add_to_list("example-list", msg)
         self.assertEqual(Email.objects.count(), 2)
-        stored_msg = Email.objects.get(message_id="dummy2")
-        self.assertEqual(stored_msg.sender.name, "Another Name")
-
-    def test_no_update_sender_name_if_empty(self):
-        # This first part is equivalent to the test_get_sender_name test.
-        msg = Message()
-        msg["From"] = "Sender Name <dummy@example.com>"
-        msg["Message-ID"] = "<dummy>"
-        msg.set_payload("Dummy message")
-        add_to_list("example-list", msg)
-        self.assertEqual(Email.objects.count(), 1)
-        stored_msg = Email.objects.all()[0]
-        self.assertEqual(stored_msg.sender.name, "Sender Name")
-        # Send a second message with an empty sender name
-        msg = Message()
-        msg["From"] = "dummy@example.com"
-        msg["Message-ID"] = "<dummy2>"
-        msg.set_payload("Dummy message")
-        add_to_list("example-list", msg)
-        self.assertEqual(Email.objects.count(), 2)
-        stored_msg = Email.objects.get(message_id="dummy2")
-        self.assertEqual(stored_msg.sender.name, "Sender Name")
+        stored_msg_2 = Email.objects.get(message_id="dummy2")
+        self.assertEqual(stored_msg_2.sender_name, "Another Name")
+        # The first sender_name hasn't changed.
+        self.assertEqual(stored_msg.sender_name, "Sender Name")
 
     def test_long_subject(self):
         msg = Message()

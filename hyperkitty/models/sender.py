@@ -36,8 +36,20 @@ logger = logging.getLogger(__name__)
 
 class Sender(models.Model):
     address = models.EmailField(max_length=255, primary_key=True)
-    name = models.CharField(max_length=255)
     mailman_id = models.CharField(max_length=255, null=True, db_index=True)
+
+    @property
+    def name(self):
+        try:
+            return self.emails.order_by("-date").values_list(
+                "sender_name", flat=True)[0]
+        except IndexError:
+            return "(no name)"
+
+    @property
+    def names(self):
+        return self.emails.order_by("-date").values_list(
+            "sender_name", flat=True)
 
     def set_mailman_id(self):
         try:

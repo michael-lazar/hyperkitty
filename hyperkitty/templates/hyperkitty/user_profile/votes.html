@@ -20,7 +20,7 @@
                         <a href="{% url 'hk_message_index' mlist_fqdn=vote.email.mailinglist.name message_id_hash=vote.email.message_id_hash %}"
                             >{{ vote.email.subject }}</a>
                         <br>
-                        {% trans "Original author:" %} {{ vote.email.sender.name }}
+                        {% trans "Original author:" %} {{ vote.email.sender_name }}
                         <br>
                         {% trans "Started on:" %} {{ vote.email.date|date:"D, j M Y H:i" }}
                         <br>
@@ -59,7 +59,7 @@
                     </td>
                     <td><a href="{% url 'hk_message_index' mlist_fqdn=vote.email.mailinglist.name message_id_hash=vote.email.message_id_hash %}"
                             >{{ vote.email.subject }}</a></td>
-                    <td>{{ vote.email.sender.name }}</td>
+                    <td>{{ vote.email.sender_name }}</td>
                     <td>{{ vote.email.date|date:"l, j F Y H:i:s" }}</td>
                     <td>
                         <form method="post" class="likeform"

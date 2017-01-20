@@ -90,9 +90,8 @@ def add_to_list(list_name, message):
             sender_address = "{}@example.com".format(sender_address)
         else:
             sender_address = "unknown@example.com"
+    email.sender_name = from_name
     sender = Sender.objects.get_or_create(address=sender_address)[0]
-    if not sender.name or (from_name and from_name != sender_address):
-        sender.name = from_name  # update the name if needed
     sender.save()
     email.sender = sender
     if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):

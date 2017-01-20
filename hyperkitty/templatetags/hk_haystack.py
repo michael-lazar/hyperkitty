@@ -42,4 +42,6 @@ def nolongterms(text):
             escape(word).replace(
                 '"', '&quot;').replace(
                 "'", "&#39;").encode("utf-8"))
+    if not text:
+        return ""
     return ' '.join(word for word in text.split() if _getlen(word) < 240)

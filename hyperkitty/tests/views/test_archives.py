@@ -168,9 +168,9 @@ class ExportMboxTestCase(TestCase):
         self.assertEqual(content.get_payload(decode=True), "Dummy message")
 
     def test_with_sender_name(self):
-        sender = Sender.objects.get(address='dummy@example.com')
-        sender.name = "Dummy Sender"
-        sender.save()
+        email = Email.objects.get(message_id="msg")
+        email.sender_name = "Dummy Sender"
+        email.save()
         mbox = self._get_mbox()
         email = mbox.values()[0]
         self.assertEqual(email["From"], "Dummy Sender <dummy at example.com>")
