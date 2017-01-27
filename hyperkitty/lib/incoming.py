@@ -92,10 +92,12 @@ def add_to_list(list_name, message):
             sender_address = "unknown@example.com"
     email.sender_name = from_name
     sender = Sender.objects.get_or_create(address=sender_address)[0]
-    sender.save()
     email.sender = sender
     if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
-        set_sender_mailman_id(sender)
+        try:
+            sender.set_mailman_id()
+        except MailmanConnectionError:
+            return
     # timeit("3 after sender, before email content")
 
     # Headers
@@ -193,13 +195,6 @@ def add_to_list(list_name, message):
             encoding=encoding, content=content)
 
     return email.message_id_hash
-
-
-def set_sender_mailman_id(sender):
-    try:
-        sender.set_mailman_id()
-    except MailmanConnectionError:
-        return
 
 
 def set_or_create_thread(email):
