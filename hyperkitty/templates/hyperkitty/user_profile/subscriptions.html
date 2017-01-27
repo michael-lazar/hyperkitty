@@ -23,7 +23,7 @@
                     <abbr title="{{ sub.first_post.date|date:'D, j M Y H:i'|escape }}">
                     {{ sub.first_post.date|timesince }}</abbr> {% trans "since first post" %}
                     <br>
-                    <a href="{{ sub.all_posts_url }}">{{ sub.posts_count }} {% trans "post" %}{{ sub.posts_count|pluralize }}</a><
+                    <a href="{{ sub.all_posts_url }}">{{ sub.posts_count }} {% trans "post" %}{{ sub.posts_count|pluralize }}</a>
                     <br>
                     <i class="icomoon likestatus {{ sub.likestatus }}"></i>
                     <span class="likestatus">+{{ sub.likes }}/-{{ sub.dislikes }}</span>
