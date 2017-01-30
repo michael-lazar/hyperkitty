@@ -22,6 +22,7 @@
 
 from __future__ import absolute_import, unicode_literals, print_function
 
+from collections import namedtuple
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
@@ -32,7 +33,6 @@ from django_mailman3.lib.cache import cache
 
 from hyperkitty.lib.signals import new_thread
 from .common import get_votes
-from .sender import Sender
 
 
 import logging
@@ -60,13 +60,16 @@ class Thread(models.Model):
     @property
     def participants(self):
         """Set of email senders in this thread"""
-        return Sender.objects.filter(emails__thread_id=self.id).distinct()
+        from .email import Email
+        Participant = namedtuple("Participant", ["name", "address"])
+        return [ Participant(name=e["sender_name"], address=e["sender__address"])
+                 for e in Email.objects.filter(thread_id=self.id).values("sender__address", "sender_name").distinct() ]
 
     @property
     def participants_count(self):
         return cache.get_or_set(
             "Thread:%s:participants_count" % self.id,
-            lambda: self.participants.count(),
+            lambda: len(self.participants),
             None)
 
     def replies_after(self, date):

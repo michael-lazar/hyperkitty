@@ -15,10 +15,10 @@
                 <span class="name">
                     {% if email.sender.mailman_id %}
                     <a href="{% url 'hk_public_user_profile' user_id=email.sender.mailman_id %}"
-                       title="{% blocktrans with name=email.sender_name|escapeemail|escape %}See the profile for {{ name }}{% endblocktrans %}"
-                       >{{email.sender_name|default:"(no name)"|escapeemail}}</a>
+                       title="{% blocktrans with name=email.sender_name|default:email.sender.address|escapeemail|escape %}See the profile for {{ name }}{% endblocktrans %}"
+                       >{{email.sender_name|default:email.sender.address|escapeemail}}</a>
                     {% else %}
-                       {{email.sender_name|default:"(no name)"|escapeemail}}
+                       {{email.sender_name|default:email.sender.address|escapeemail}}
                     {% endif %}
                 </span>
                 {% if use_mockups %}

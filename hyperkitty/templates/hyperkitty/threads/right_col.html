@@ -98,7 +98,7 @@
             {% for participant in thread.participants|sort_by_name %}
             <li class="row">
                 <div class="participant-gravatar col-tn-2 col-sm-4 col-md-2">{% gravatar participant.address 48 %}</div>
-                <div class="participant-name col-tn-8">{{ participant.name|escapeemail }}</div>
+                <div class="participant-name col-tn-8">{{ participant.name|default:participant.address|escapeemail }}</div>
             </li>
             {% endfor %}
         </ul>

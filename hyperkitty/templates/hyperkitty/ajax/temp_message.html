@@ -15,7 +15,7 @@
                 {% gravatar email.sender_email 120 %}
             </div>
             <div class="email-author inline-block">
-                <span class="name">{{email.sender_name|escapeemail}}</span>
+                <span class="name">{{email.sender_name|default:email.sender.address|escapeemail}}</span>
                 {% if use_mockups %}
                 <br />
                 <span class="rank">
