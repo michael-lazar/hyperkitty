@@ -62,8 +62,11 @@ class Thread(models.Model):
         """Set of email senders in this thread"""
         from .email import Email
         Participant = namedtuple("Participant", ["name", "address"])
-        return [ Participant(name=e["sender_name"], address=e["sender__address"])
-                 for e in Email.objects.filter(thread_id=self.id).values("sender__address", "sender_name").distinct() ]
+        return [
+            Participant(name=e["sender_name"], address=e["sender__address"])
+            for e in Email.objects.filter(thread_id=self.id).values(
+                "sender__address", "sender_name").distinct()
+            ]
 
     @property
     def participants_count(self):

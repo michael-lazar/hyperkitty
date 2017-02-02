@@ -97,7 +97,7 @@ def add_to_list(list_name, message):
         try:
             sender.set_mailman_id()
         except MailmanConnectionError:
-            return
+            pass
     # timeit("3 after sender, before email content")
 
     # Headers
