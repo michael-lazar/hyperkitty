@@ -178,34 +178,32 @@ class MailingList(models.Model):
 
     @property
     def top_posters(self):
-        from .email import Email  # avoid circular imports
-        begin_date, end_date = self.get_recent_dates()
-        query = Sender.objects.filter(
-            emails__mailinglist=self,
-            emails__date__gte=begin_date,
-            emails__date__lt=end_date,
-        ).annotate(count=models.Count("emails")).order_by("-count")
-        query = Email.objects.filter(
-            mailinglist=self,
-            date__gte=begin_date,
-            date__lt=end_date,
-        ).only("sender", "sender_name")
-        posters = {}
-        for email in query:
-            key = (email.sender.address, email.sender_name)
-            if key not in posters:
-                posters[key] = 1
-            else:
-                posters[key] += 1
-        posters = [
-            {"address": p[0], "name": p[1], "count": c}
-            for p, c in posters.items()
-            ]
-        sorted_posters = sorted(
-            posters, key=lambda p: p["count"], reverse=True)
+        def _get_posters():
+            from .email import Email  # avoid circular imports
+            begin_date, end_date = self.get_recent_dates()
+            query = Email.objects.filter(
+                mailinglist=self,
+                date__gte=begin_date,
+                date__lt=end_date,
+            ).only("sender", "sender_name"
+            ).select_related("sender__address")
+            posters = {}
+            for email in query:
+                key = (email.sender.address, email.sender_name)
+                if key not in posters:
+                    posters[key] = 1
+                else:
+                    posters[key] += 1
+            posters = [
+                {"address": p[0], "name": p[1], "count": c}
+                for p, c in posters.items()
+                ]
+            sorted_posters = sorted(
+                posters, key=lambda p: p["count"], reverse=True)
+            return sorted_posters[:5]
         return cache.get_or_set(
             "MailingList:%s:top_posters" % self.name,
-            lambda: sorted_posters[:5],
+            _get_posters,
             3600 * 6)  # 6 hours
         # It's not actually necessary to convert back to instances since it's
         # only used in templates where access to instance attributes or

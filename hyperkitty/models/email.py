@@ -214,7 +214,6 @@ class Email(models.Model):
         cache.delete("Thread:%s:participants_count" % self.thread_id)
         cache.delete("MailingList:%s:recent_participants_count"
                      % self.mailinglist_id)
-        cache.delete("MailingList:%s:top_posters" % self.mailinglist_id)
         cache.delete(make_template_fragment_key(
             "thread_participants", [self.thread_id]))
         cache.delete("MailingList:%s:p_count_for:%s:%s"
@@ -225,7 +224,6 @@ class Email(models.Model):
                 self.thread.emails_count
                 self.thread.participants_count
                 self.mailinglist.recent_participants_count
-                self.mailinglist.top_posters
                 self.mailinglist.get_participants_count_for_month(
                     self.date.year, self.date.month)
             except (Thread.DoesNotExist, MailingList.DoesNotExist):
