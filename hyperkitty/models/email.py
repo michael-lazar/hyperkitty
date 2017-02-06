@@ -232,6 +232,10 @@ class Email(models.Model):
     def on_post_init(self):
         self._set_message_id_hash()
 
+    def on_post_created(self):
+        # refresh the count cache
+        self._refresh_count_cache()
+
     def on_pre_save(self):
         self._set_message_id_hash()
         # Make sure there is only one email with parent_id == None in a thread
@@ -245,8 +249,7 @@ class Email(models.Model):
                                  "parent_id==None in the same thread")
 
     def on_post_save(self):
-        # refresh the count cache
-        self._refresh_count_cache()
+        pass
 
     def on_pre_delete(self):
         # Reset parent_id
@@ -295,7 +298,10 @@ def Email_on_pre_save(sender, **kwargs):
 
 @receiver(post_save, sender=Email)
 def Email_on_post_save(sender, **kwargs):
-    kwargs["instance"].on_post_save()
+    if kwargs["created"]:
+        kwargs["instance"].on_post_created()
+    else:
+        kwargs["instance"].on_post_save()
 
 
 @receiver(pre_delete, sender=Email)
