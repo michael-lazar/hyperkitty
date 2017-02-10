@@ -36,5 +36,5 @@ class Job(BaseJob):
 
     def execute(self):
         for mlist in MailingList.objects.all():
-            cache.delete("MailingList:%s:top_posters" % mlist.mailinglist_id)
+            cache.delete("MailingList:%s:top_posters" % mlist.name)
             mlist.top_posters
