@@ -113,6 +113,15 @@ class Thread(models.Model):
         return get_votes(self)
 
     @property
+    def votes_total(self):
+        def compute():
+            votes = self.get_votes()
+            return votes["likes"] - votes["dislikes"]
+        return cache.get_or_set(
+            "Thread:%s:votes_total" % self.id,
+            compute, None)
+
+    @property
     def prev_thread(self):  # TODO: Make it a relationship
         return Thread.objects.filter(
                 mailinglist=self.mailinglist,

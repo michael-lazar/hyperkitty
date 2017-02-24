@@ -36,6 +36,4 @@ class Job(BaseJob):
 
     def execute(self):
         for mlist in MailingList.objects.all():
-            cache_key = "MailingList:%s:recent_threads" % mlist.name
-            cache.delete(cache_key)
-            mlist.recent_threads
+            mlist.recent_threads_cache_rebuild()

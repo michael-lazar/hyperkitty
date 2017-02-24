@@ -143,16 +143,8 @@ def overview(request, mlist_fqdn=None):
         authors = []
 
     # Popular threads
-    pop_threads = []
-    for t in threads:
-        votes = t.get_votes()
-        if votes["likes"] - votes["dislikes"] > 0:
-            pop_threads.append(t)
-
-    def _get_thread_vote_result(t):
-        votes = t.get_votes()
-        return votes["likes"] - votes["dislikes"]
-    pop_threads.sort(key=_get_thread_vote_result, reverse=True)
+    pop_threads = [t for t in threads if t.votes_total > 0]
+    pop_threads.sort(key=lambda t: t.votes_total, reverse=True)
 
     # Threads by category
     threads_by_category = {}

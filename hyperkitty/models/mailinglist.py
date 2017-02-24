@@ -137,7 +137,7 @@ class MailingList(models.Model):
             cache.set(cache_key, result, 3600 * 12)  # 12 hours
         return result
 
-    def _recent_threads_cache_rebuild(self):
+    def recent_threads_cache_rebuild(self):
         begin_date, end_date = self.get_recent_dates()
         cache_key = "MailingList:%s:recent_threads" % self.name
         cache.delete(cache_key)
@@ -160,10 +160,10 @@ class MailingList(models.Model):
                       len(recent_thread_ids), 3600 * 12)  # 12 hours
         else:
             # Low-volume list, rebuild the cache
-            self._recent_threads_cache_rebuild()
+            self.recent_threads_cache_rebuild()
 
     def on_thread_deleted(self, thread):
-        self._recent_threads_cache_rebuild()
+        self.recent_threads_cache_rebuild()
 
     def get_participants_count_for_month(self, year, month):
         def _get_value():

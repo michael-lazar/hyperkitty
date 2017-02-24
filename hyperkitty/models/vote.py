@@ -44,6 +44,7 @@ class Vote(models.Model):
     def _clean_cache(self):
         """Delete cached vote values for Email and Thread instance"""
         cache.delete("Thread:%s:votes" % self.email.thread_id)
+        cache.delete("Thread:%s:votes_total" % self.email.thread_id)
         # re-populate the cache?
         cache.delete("Email:%s:votes" % self.email_id)
 
