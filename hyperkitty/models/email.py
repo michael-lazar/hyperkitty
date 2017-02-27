@@ -31,7 +31,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.nonmultipart import MIMENonMultipart
 
 from django.conf import settings
-from django.core.cache.utils import make_template_fragment_key
 from django.db import models, IntegrityError
 from django.db.models.signals import (
     post_init, pre_save, post_save, pre_delete, post_delete)
@@ -209,32 +208,12 @@ class Email(models.Model):
         if not self.message_id_hash:
             self.message_id_hash = get_message_id_hash(self.message_id)
 
-    def _refresh_count_cache(self):
-        cache.delete("Thread:%s:emails_count" % self.thread_id)
-        cache.delete("Thread:%s:participants_count" % self.thread_id)
-        cache.delete("MailingList:%s:recent_participants_count"
-                     % self.mailinglist_id)
-        cache.delete(make_template_fragment_key(
-            "thread_participants", [self.thread_id]))
-        cache.delete("MailingList:%s:p_count_for:%s:%s"
-                     % (self.mailinglist_id, self.date.year, self.date.month))
-        # don't warm up the cache in batch mode (mass import)
-        if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
-            try:
-                self.thread.emails_count
-                self.thread.participants_count
-                self.mailinglist.recent_participants_count
-                self.mailinglist.get_participants_count_for_month(
-                    self.date.year, self.date.month)
-            except (Thread.DoesNotExist, MailingList.DoesNotExist):
-                pass  # it's post_delete, those may have been deleted too
-
     def on_post_init(self):
         self._set_message_id_hash()
 
     def on_post_created(self):
-        # refresh the count cache
-        self._refresh_count_cache()
+        self.mailinglist.on_email_added(self)
+        self.thread.on_email_added(self)
 
     def on_pre_save(self):
         self._set_message_id_hash()
@@ -270,20 +249,24 @@ class Email(models.Model):
             children.update(parent=self.parent)
 
     def on_post_delete(self):
-        # refresh the count cache
-        self._refresh_count_cache()
-        # update_or_clean_thread
         try:
             thread = Thread.objects.get(id=self.thread_id)
         except Thread.DoesNotExist:
-            return
-        if thread.emails.count() == 0:
-            thread.delete()
+            pass
         else:
-            if thread.starting_email is None:
-                thread.find_starting_email()
-                thread.save(update_fields=["starting_email"])
-            compute_thread_order_and_depth(thread)
+            thread.on_email_deleted(self)
+        try:
+            mlist = MailingList.objects.get(name=self.mailinglist_id)
+        except MailingList.DoesNotExist:
+            pass
+        else:
+            mlist.on_email_deleted(self)
+
+    def on_vote_added(self, vote):
+        cache.delete("Email:%s:votes" % self.id)
+        self.get_votes()  # TODO: async task
+
+    on_vote_deleted = on_vote_added
 
 
 @receiver(post_init, sender=Email)

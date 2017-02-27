@@ -165,6 +165,24 @@ class MailingList(models.Model):
     def on_thread_deleted(self, thread):
         self.recent_threads_cache_rebuild()
 
+    def on_email_added(self, email):
+        cache.delete("MailingList:%s:recent_participants_count" % self.name)
+        cache.delete("MailingList:%s:p_count_for:%s:%s"
+                     % (self.name, email.date.year, email.date.month))
+        # don't warm up the cache in batch mode (mass import)
+        if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
+            # TODO: async task
+            self.recent_participants_count
+            self.get_participants_count_for_month(
+                email.date.year, email.date.month)
+
+    on_email_deleted = on_email_added
+
+    def on_vote_added(self, vote):
+        pass
+
+    on_vote_deleted = on_vote_added
+
     def get_participants_count_for_month(self, year, month):
         def _get_value():
             begin_date = datetime.datetime(year, month, 1, tzinfo=utc)

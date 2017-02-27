@@ -24,6 +24,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 from collections import namedtuple
 from django.conf import settings
+from django.core.cache.utils import make_template_fragment_key
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.contrib import admin
@@ -31,6 +32,7 @@ from django.dispatch import receiver
 from django.utils.timezone import now, utc
 from django_mailman3.lib.cache import cache
 
+from hyperkitty.lib.analysis import compute_thread_order_and_depth
 from hyperkitty.lib.signals import new_thread
 from .common import get_votes
 
@@ -166,6 +168,37 @@ class Thread(models.Model):
 
     def on_post_delete(self):
         self.mailinglist.on_thread_deleted(self)
+
+    def _clean_email_cache(self):
+        cache.delete("Thread:%s:emails_count" % self.id)
+        cache.delete("Thread:%s:participants_count" % self.id)
+        cache.delete(make_template_fragment_key(
+            "thread_participants", [self.id]))
+        # don't warm up the cache in batch mode (mass import)
+        if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
+            # TODO: async task
+            self.emails_count
+            self.participants_count
+
+    def on_email_added(self, email):
+        self._clean_email_cache()
+
+    def on_email_deleted(self, email):
+        self._clean_email_cache()
+        # update or cleanup thread
+        if self.emails.count() == 0:
+            self.delete()
+        else:
+            if self.starting_email is None:
+                self.find_starting_email()
+                self.save(update_fields=["starting_email"])
+            compute_thread_order_and_depth(self)
+
+    def on_vote_added(self, vote):
+        cache.delete("Thread:%s:votes" % self.id)
+        self.get_votes()  # TODO: async task
+
+    on_vote_deleted = on_vote_added
 
 
 @receiver(pre_save, sender=Thread)
