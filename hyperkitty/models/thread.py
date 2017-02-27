@@ -196,6 +196,7 @@ class Thread(models.Model):
 
     def on_vote_added(self, vote):
         cache.delete("Thread:%s:votes" % self.id)
+        cache.delete("Thread:%s:votes_total" % self.id)
         self.get_votes()  # TODO: async task
 
     on_vote_deleted = on_vote_added

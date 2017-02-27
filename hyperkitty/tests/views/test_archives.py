@@ -80,9 +80,24 @@ class ListArchivesTestCase(TestCase):
             'hk_list_overview', args=["list@example.com"]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["view_name"], "overview")
-        self.assertEqual(len(response.context["top_threads"]), 1)
-        self.assertEqual(len(response.context["most_active_threads"]), 1)
-        self.assertEqual(len(response.context["pop_threads"]), 0)
+
+    def test_overview_top_threads(self):
+        response = self.client.get(reverse(
+            'hk_list_overview_top_threads', args=["list@example.com"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["threads"]), 1)
+
+    def test_overview_recent_threads(self):
+        response = self.client.get(reverse(
+            'hk_list_overview_recent_threads', args=["list@example.com"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["threads"]), 1)
+
+    def test_overview_pop_threads(self):
+        response = self.client.get(reverse(
+            'hk_list_overview_pop_threads', args=["list@example.com"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["threads"]), 0)
 
     def test_overview_with_user(self):
         user = User.objects.create_user(
@@ -99,8 +114,15 @@ class ListArchivesTestCase(TestCase):
         response = self.client.get(
             reverse('hk_list_overview', args=["list@example.com"]))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["threads_posted_to"]), 1)
-        self.assertEqual(len(response.context["flagged_threads"]), 1)
+        self.assertEqual(response.context["view_name"], "overview")
+        response = self.client.get(
+            reverse('hk_list_overview_posted_to', args=["list@example.com"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["threads"]), 1)
+        response = self.client.get(
+            reverse('hk_list_overview_favorites', args=["list@example.com"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["threads"]), 1)
 
     def test_overview_cleaned_cache(self):
         # Test the overview page with a clean cache (different code path for
@@ -109,14 +131,23 @@ class ListArchivesTestCase(TestCase):
         response = self.client.get(
             reverse('hk_list_overview', args=["list@example.com"]))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["view_name"], "overview")
-        self.assertEqual(len(response.context["top_threads"]), 1)
-        self.assertEqual(len(response.context["most_active_threads"]), 1)
-        self.assertEqual(len(response.context["pop_threads"]), 0)
+        response = self.client.get(reverse(
+            'hk_list_overview_top_threads', args=["list@example.com"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["threads"]), 1)
+        response = self.client.get(reverse(
+            'hk_list_overview_recent_threads', args=["list@example.com"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["threads"]), 1)
+        response = self.client.get(reverse(
+            'hk_list_overview_pop_threads', args=["list@example.com"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["threads"]), 0)
 
     def test_email_escaped_sender(self):
-        url = reverse('hk_list_overview', args=["list@example.com"])
-        response = self.client.get(url)
+        response = self.client.get(reverse(
+            'hk_list_overview_top_posters', args=["list@example.com"]))
+        self.assertContains(response, "dummy", status_code=200)
         self.assertNotContains(response, "dummy@example.com", status_code=200)
 
 
@@ -263,7 +294,11 @@ class PrivateArchivesTestCase(TestCase):
         # session.save()
         response = self.client.get(url, query)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Dummy message")
+        try:
+            self.assertContains(response, "Dummy message")
+        except AssertionError:
+            print(response.content)
+            raise
 
     def test_month_view(self):
         now = datetime.datetime.now()
@@ -271,8 +306,13 @@ class PrivateArchivesTestCase(TestCase):
             'hk_archives_with_month',
             args=["list@example.com", now.year, now.month]))
 
-    def test_overview(self):
-        self._do_test(reverse('hk_list_overview', args=["list@example.com"]))
+    def test_overview_top_threads(self):
+        self._do_test(reverse(
+            'hk_list_overview_top_threads', args=["list@example.com"]))
+
+    def test_overview_recent_threads(self):
+        self._do_test(reverse(
+            'hk_list_overview_recent_threads', args=["list@example.com"]))
 
     def test_thread_view(self):
         self._do_test(reverse(

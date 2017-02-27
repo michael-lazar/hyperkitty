@@ -127,11 +127,6 @@ def overview(request, mlist_fqdn=None):
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
     threads = mlist.recent_threads
 
-    # top threads are the one with the most answers
-    top_threads = sorted(threads, key=lambda t: t.emails_count, reverse=True)
-    # active threads are the ones that have the most recent posting
-    active_threads = sorted(threads, key=lambda t: t.date_active, reverse=True)
-
     # top authors are the ones that have the most kudos.  How do we determine
     # that?  Most likes for their post?
     if getattr(settings, 'USE_MOCKUPS', False):
@@ -142,45 +137,19 @@ def overview(request, mlist_fqdn=None):
     else:
         authors = []
 
-    # Popular threads
-    pop_threads = [t for t in threads if t.votes_total > 0]
-    pop_threads.sort(key=lambda t: t.votes_total, reverse=True)
-
     # Threads by category
     threads_by_category = {}
-    for thread in active_threads:
-        if not thread.category:
-            continue
-        # don't use defaultdict, use .setdefault():
-        # http://stackoverflow.com/questions/4764110/django-template-cant-loop-defaultdict
-        if len(threads_by_category.setdefault(thread.category, [])) >= 5:
-            continue
-        threads_by_category[thread.category].append(thread)
-
-    # Personalized discussion groups: flagged/favorited threads and threads by
-    # user.
-    if request.user.is_authenticated():
-        favorites = [f.thread for f in Favorite.objects.filter(
-            thread__mailinglist=mlist, user=request.user)]
-        mm_user_id = get_mailman_user_id(request.user)
-        threads_posted_to = []
-        if mm_user_id is not None:
-            for thread in threads:
-                senders = set(
-                    [e.sender.mailman_id for e in thread.emails.all()])
-                if mm_user_id in senders:
-                    threads_posted_to.append(thread)
-    else:
-        favorites = []
-        threads_posted_to = []
-
-    # Empty messages # TODO: translate this
-    empty_messages = {
-        "flagged": 'You have not flagged any discussions (yet).',
-        "posted": 'You have not posted to this list (yet).',
-        "active": 'No discussions this month (yet).',
-        "popular": 'No vote has been cast this month (yet).',
-    }
+    if getattr(settings, 'USE_MOCKUPS', False):
+        active_threads = sorted(
+            threads, key=lambda t: t.date_active, reverse=True)
+        for thread in active_threads:
+            if not thread.category:
+                continue
+            # don't use defaultdict, use .setdefault():
+            # http://stackoverflow.com/questions/4764110/django-template-cant-loop-defaultdict
+            if len(threads_by_category.setdefault(thread.category, [])) >= 5:
+                continue
+            threads_by_category[thread.category].append(thread)
 
     # Export button
     recent_dates = [
@@ -204,18 +173,98 @@ def overview(request, mlist_fqdn=None):
     context = {
         'view_name': 'overview',
         'mlist': mlist,
-        'top_threads': top_threads[:20],
-        'most_active_threads': active_threads[:20],
         'top_author': authors,
-        'pop_threads': pop_threads[:20],
         'threads_by_category': threads_by_category,
         'months_list': get_months(mlist),
-        'flagged_threads': favorites,
-        'threads_posted_to': threads_posted_to,
-        'empty_messages': empty_messages,
         'export': export,
     }
     return render(request, "hyperkitty/overview.html", context)
+
+
+@check_mlist_private
+#@cache_page(3600 * 12)  # cache for 12 hours
+def overview_recent_threads(request, mlist_fqdn):
+    """Return the most recently updated threads."""
+    mlist = get_object_or_404(MailingList, name=mlist_fqdn)
+    return render(request, "hyperkitty/fragments/overview_threads.html", {
+        'mlist': mlist,
+        'threads': mlist.recent_threads[:20],
+        'empty': _('No discussions this month (yet).'),
+        })
+
+
+@check_mlist_private
+#@cache_page(3600 * 12)  # cache for 12 hours
+def overview_pop_threads(request, mlist_fqdn):
+    """Return the threads with the most votes."""
+    mlist = get_object_or_404(MailingList, name=mlist_fqdn)
+    return render(request, "hyperkitty/fragments/overview_threads.html", {
+        'mlist': mlist,
+        'threads': mlist.popular_threads,
+        "empty": _('No vote has been cast this month (yet).'),
+        })
+
+
+@check_mlist_private
+#@cache_page(3600 * 12)  # cache for 12 hours
+def overview_top_threads(request, mlist_fqdn):
+    """Return the threads with the most answers."""
+    mlist = get_object_or_404(MailingList, name=mlist_fqdn)
+    return render(request, "hyperkitty/fragments/overview_threads.html", {
+        'mlist': mlist,
+        'threads': mlist.top_threads,
+        "empty": _('No discussions this month (yet).'),
+        })
+
+
+@check_mlist_private
+#@cache_page(3600 * 12)  # cache for 12 hours
+def overview_favorites(request, mlist_fqdn):
+    """Return the threads that the logged-in user has set as favorite."""
+    mlist = get_object_or_404(MailingList, name=mlist_fqdn)
+    if request.user.is_authenticated():
+        favorites = [f.thread for f in Favorite.objects.filter(
+            thread__mailinglist=mlist, user=request.user)]
+    else:
+        favorites = []
+    return render(request, "hyperkitty/fragments/overview_threads.html", {
+        'mlist': mlist,
+        'threads': favorites,
+        "empty": _('You have not flagged any discussions (yet).'),
+        })
+
+
+@check_mlist_private
+#@cache_page(3600 * 12)  # cache for 12 hours
+def overview_posted_to(request, mlist_fqdn):
+    """Return the threads that the logged-in user has posted to."""
+    mlist = get_object_or_404(MailingList, name=mlist_fqdn)
+    if request.user.is_authenticated():
+        mm_user_id = get_mailman_user_id(request.user)
+        threads_posted_to = []
+        if mm_user_id is not None:
+            for thread in mlist.recent_threads:
+                senders = set(
+                    [e.sender.mailman_id for e in thread.emails.all()])
+                if mm_user_id in senders:
+                    threads_posted_to.append(thread)
+    else:
+        threads_posted_to = []
+    return render(request, "hyperkitty/fragments/overview_threads.html", {
+        'mlist': mlist,
+        'threads': threads_posted_to,
+        "empty": _('You have not posted to this list (yet).'),
+        })
+
+
+@check_mlist_private
+#@cache_page(3600 * 12)  # cache for 12 hours
+def overview_top_posters(request, mlist_fqdn):
+    """Return the authors that sent the most emails."""
+    mlist = get_object_or_404(MailingList, name=mlist_fqdn)
+    return render(request, "hyperkitty/fragments/overview_top_posters.html", {
+        'mlist': mlist,
+        })
 
 
 @check_mlist_private

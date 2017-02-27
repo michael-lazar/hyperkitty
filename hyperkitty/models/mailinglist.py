@@ -169,17 +169,20 @@ class MailingList(models.Model):
         cache.delete("MailingList:%s:recent_participants_count" % self.name)
         cache.delete("MailingList:%s:p_count_for:%s:%s"
                      % (self.name, email.date.year, email.date.month))
+        cache.delete("MailingList:%s:top_threads" % self.name)
         # don't warm up the cache in batch mode (mass import)
         if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
             # TODO: async task
             self.recent_participants_count
             self.get_participants_count_for_month(
                 email.date.year, email.date.month)
+            self.top_threads
 
     on_email_deleted = on_email_added
 
     def on_vote_added(self, vote):
-        pass
+        cache.delete("MailingList:%s:popular_threads" % self.name)
+        self.popular_threads  # TODO: async task
 
     on_vote_deleted = on_vote_added
 
@@ -224,6 +227,49 @@ class MailingList(models.Model):
         # It's not actually necessary to convert back to instances since it's
         # only used in templates where access to instance attributes or
         # dictionnary keys is identical
+
+    @property
+    def top_threads(self):
+        """Threads with the most answers."""
+        cache_key = "MailingList:%s:top_threads" % self.name
+        thread_ids = cache.get(cache_key)
+        if thread_ids is None:
+            # Filter on the recent_threads ids instead of re-using the date
+            # filter, otherwise the Sum will be computed for every thread
+            # regardless of their date.
+            threads = Thread.objects.filter(
+                id__in=[t.id for t in self.recent_threads]).annotate(
+                models.Count("emails")).order_by("-emails__count")[:20]
+            cache.set(cache_key, [t.id for t in threads], 3600 * 12)  # 12h
+        else:
+            threads = Thread.objects.filter(id__in=thread_ids)
+        return threads
+
+    @property
+    def popular_threads(self):
+        """Threads with the most votes."""
+        cache_key = "MailingList:%s:popular_threads" % self.name
+        thread_ids = cache.get(cache_key)
+        if thread_ids is None:
+            # Filter on the recent_threads ids instead of re-using the date
+            # filter, otherwise the Sum will be computed for every thread
+            # regardless of their date.
+            threads = Thread.objects.filter(
+                id__in=[t.id for t in self.recent_threads]).annotate(
+                models.Sum("emails__votes__value")).order_by(
+                "-emails__votes__value__sum")[:20]
+            for thread in threads:
+                value = thread.emails__votes__value__sum
+                if value is None:
+                    value = 0
+                cache.set("Thread:%s:votes_total" % thread.id, value, None)
+            cache.set(
+                cache_key,
+                [t.id for t in threads if t.votes_total > 0],
+                3600 * 12)  # 12h
+        else:
+            threads = Thread.objects.filter(id__in=thread_ids)
+        return threads
 
     def update_from_mailman(self):
         try:

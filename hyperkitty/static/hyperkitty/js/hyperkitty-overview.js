@@ -76,4 +76,9 @@ function setup_overview(recent_activity_url) {
             $(this).remove();
         }
     });
+
+    // Page fragments
+    $('div[data-load-from]').each(function() {
+        $(this).load($(this).attr("data-load-from"));
+    });
 }
