@@ -182,7 +182,7 @@ def overview(request, mlist_fqdn=None):
 
 
 @check_mlist_private
-#@cache_page(3600 * 12)  # cache for 12 hours
+# @cache_page(3600 * 12)  # cache for 12 hours
 def overview_recent_threads(request, mlist_fqdn):
     """Return the most recently updated threads."""
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
@@ -194,7 +194,7 @@ def overview_recent_threads(request, mlist_fqdn):
 
 
 @check_mlist_private
-#@cache_page(3600 * 12)  # cache for 12 hours
+# @cache_page(3600 * 12)  # cache for 12 hours
 def overview_pop_threads(request, mlist_fqdn):
     """Return the threads with the most votes."""
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
@@ -206,7 +206,7 @@ def overview_pop_threads(request, mlist_fqdn):
 
 
 @check_mlist_private
-#@cache_page(3600 * 12)  # cache for 12 hours
+# @cache_page(3600 * 12)  # cache for 12 hours
 def overview_top_threads(request, mlist_fqdn):
     """Return the threads with the most answers."""
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
@@ -218,7 +218,7 @@ def overview_top_threads(request, mlist_fqdn):
 
 
 @check_mlist_private
-#@cache_page(3600 * 12)  # cache for 12 hours
+# @cache_page(3600 * 12)  # cache for 12 hours
 def overview_favorites(request, mlist_fqdn):
     """Return the threads that the logged-in user has set as favorite."""
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
@@ -235,7 +235,7 @@ def overview_favorites(request, mlist_fqdn):
 
 
 @check_mlist_private
-#@cache_page(3600 * 12)  # cache for 12 hours
+# @cache_page(3600 * 12)  # cache for 12 hours
 def overview_posted_to(request, mlist_fqdn):
     """Return the threads that the logged-in user has posted to."""
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
@@ -258,7 +258,7 @@ def overview_posted_to(request, mlist_fqdn):
 
 
 @check_mlist_private
-#@cache_page(3600 * 12)  # cache for 12 hours
+# @cache_page(3600 * 12)  # cache for 12 hours
 def overview_top_posters(request, mlist_fqdn):
     """Return the authors that sent the most emails."""
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)

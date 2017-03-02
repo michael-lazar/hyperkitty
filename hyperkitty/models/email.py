@@ -32,11 +32,7 @@ from email.mime.nonmultipart import MIMENonMultipart
 
 from django.conf import settings
 from django.db import models, IntegrityError
-from django.db.models.signals import (
-    post_init, pre_save, post_save, pre_delete, post_delete)
-from django.dispatch import receiver
 from django.utils.timezone import now, get_fixed_timezone
-from django_mailman3.lib.cache import cache
 
 from hyperkitty.lib.analysis import compute_thread_order_and_depth
 from .common import get_votes
@@ -214,9 +210,21 @@ class Email(models.Model):
     def on_post_created(self):
         self.mailinglist.on_email_added(self)
         self.thread.on_email_added(self)
+        if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
+            # For batch imports, let the cron job do the work
+            from hyperkitty.tasks import check_orphans
+            check_orphans.delay(self.id)
 
     def on_pre_save(self):
         self._set_message_id_hash()
+        # Link to the thread
+        thread_created = False
+        if self.thread_id is None:
+            # Create the thread if not found
+            thread, thread_created = Thread.objects.get_or_create(
+                mailinglist=self.mailinglist,
+                thread_id=self.message_id_hash)
+            self.thread = thread
         # Make sure there is only one email with parent_id == None in a thread
         if self.parent_id is not None:
             return
@@ -263,38 +271,10 @@ class Email(models.Model):
             mlist.on_email_deleted(self)
 
     def on_vote_added(self, vote):
-        cache.delete("Email:%s:votes" % self.id)
-        self.get_votes()  # TODO: async task
+        from hyperkitty.tasks import rebuild_email_cache_votes
+        rebuild_email_cache_votes.delay(self.id)
 
     on_vote_deleted = on_vote_added
-
-
-@receiver(post_init, sender=Email)
-def Email_on_post_init(sender, **kwargs):
-    kwargs["instance"].on_post_init()
-
-
-@receiver(pre_save, sender=Email)
-def Email_on_pre_save(sender, **kwargs):
-    kwargs["instance"].on_pre_save()
-
-
-@receiver(post_save, sender=Email)
-def Email_on_post_save(sender, **kwargs):
-    if kwargs["created"]:
-        kwargs["instance"].on_post_created()
-    else:
-        kwargs["instance"].on_post_save()
-
-
-@receiver(pre_delete, sender=Email)
-def Email_on_pre_delete(sender, **kwargs):
-    kwargs["instance"].on_pre_delete()
-
-
-@receiver(post_delete, sender=Email)
-def Email_on_post_delete(sender, **kwargs):
-    kwargs["instance"].on_post_delete()
 
 
 class Attachment(models.Model):
@@ -312,8 +292,3 @@ class Attachment(models.Model):
     def on_pre_save(self):
         # set the size
         self.size = len(self.content)
-
-
-@receiver(pre_save, sender=Attachment)
-def Attachment_on_pre_save(sender, **kwargs):
-    kwargs["instance"].on_pre_save()

@@ -38,6 +38,7 @@ from math import floor
 from dateutil.parser import parse as parse_date
 from dateutil import tz
 from django.conf import settings
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction, Error as DatabaseError
 from django.utils.timezone import utc
@@ -296,6 +297,9 @@ class Command(BaseCommand):
             sync_with_mailman()
             # if not transaction.get_autocommit():
             #     transaction.commit()
+        if options["verbosity"] >= 1:
+            self.stdout.write("Warming up cache")
+            call_command("hyperkitty_warm_up_cache", list_address)
         if options["verbosity"] >= 1:
             self.stdout.write(
                 "The full-text search index will be updated every minute. Run "

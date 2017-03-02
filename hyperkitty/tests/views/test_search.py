@@ -61,7 +61,6 @@ class SearchViewsTestCase(SearchEnabledTestCase):
     def test_search_basic(self):
         mlist = MailingList.objects.create(
             name="public@example.com",
-            archive_policy=ArchivePolicy.private.value
         )
         mm_mlist = FakeMMList("public@example.com")
         self.mailman_client.get_list.side_effect = lambda name: mm_mlist
@@ -135,7 +134,6 @@ class SearchViewsTestCase(SearchEnabledTestCase):
     def test_email_escaped_body(self):
         MailingList.objects.create(
             name="public@example.com",
-            archive_policy=ArchivePolicy.private.value
         )
         mm_mlist = FakeMMList("public@example.com")
         self.mailman_client.get_list.side_effect = lambda name: mm_mlist
@@ -156,7 +154,6 @@ class SearchViewsTestCase(SearchEnabledTestCase):
     def test_email_in_link_in_body(self):
         MailingList.objects.create(
             name="public@example.com",
-            archive_policy=ArchivePolicy.private.value
         )
         mm_mlist = FakeMMList("public@example.com")
         self.mailman_client.get_list.side_effect = lambda name: mm_mlist
@@ -178,7 +175,6 @@ class SearchViewsTestCase(SearchEnabledTestCase):
     def test_email_escaped_sender(self):
         MailingList.objects.create(
             name="public@example.com",
-            archive_policy=ArchivePolicy.private.value
         )
         mm_mlist = FakeMMList("public@example.com")
         self.mailman_client.get_list.side_effect = lambda name: mm_mlist

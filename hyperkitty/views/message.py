@@ -184,9 +184,8 @@ def reply(request, mlist_fqdn, message_id_hash):
         email_reply = {
             "sender_name": "%s %s" % (request.user.first_name,
                                       request.user.last_name),
-            "sender_address": (
-                form.cleaned_data["sender"] or request.user.email
-                ),
+            "sender_address": (form.cleaned_data["sender"]
+                               or request.user.email),
             "content": form.cleaned_data["message"],
             # no need to increment, level = thread_depth - 1
             "level": message.thread_depth,

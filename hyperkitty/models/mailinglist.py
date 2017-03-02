@@ -29,8 +29,6 @@ from six.moves.urllib.error import HTTPError
 import dateutil.parser
 from django.conf import settings
 from django.db import models
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 from django.utils.timezone import now, utc
 from django_mailman3.lib.cache import cache
 from django_mailman3.lib.mailman import get_mailman_client
@@ -122,7 +120,8 @@ class MailingList(models.Model):
         thread_ids = cache.get(cache_key)
         if thread_ids is None:
             threads = self.get_threads_between(begin_date, end_date)
-            cache.set(cache_key, [t.id for t in threads], 3600 * 12)  # 12h
+            # The cache will be refreshed daily by a periodic job.
+            cache.set(cache_key, [t.id for t in threads], None)
         else:
             threads = Thread.objects.filter(id__in=thread_ids)
         return threads
@@ -134,55 +133,54 @@ class MailingList(models.Model):
         result = cache.get(cache_key)
         if result is None:
             result = self.get_threads_between(begin_date, end_date).count()
-            cache.set(cache_key, result, 3600 * 12)  # 12 hours
+            # The cache will be refreshed daily by a periodic job.
+            cache.set(cache_key, result, None)
         return result
 
-    def recent_threads_cache_rebuild(self):
-        begin_date, end_date = self.get_recent_dates()
-        cache_key = "MailingList:%s:recent_threads" % self.name
-        cache.delete(cache_key)
-        cache.delete("%s_count" % cache_key)
-        # don't warm up the cache in batch mode (mass import)
-        if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
-            thread_ids = list(self.get_threads_between(
-                begin_date, end_date).values_list("id", flat=True))
-            cache.set(cache_key, thread_ids, 3600 * 12)  # 12 hours
-            cache.set("%s_count" % cache_key, len(thread_ids), 3600 * 12)
-
     def on_thread_added(self, thread):
-        cache_key = "MailingList:%s:recent_threads" % self.name
-        recent_thread_ids = cache.get(cache_key)
-        if recent_thread_ids is not None and len(recent_thread_ids) >= 1000:
-            # It's a high-volume list, just append to the cache
-            recent_thread_ids.append(thread.id)
-            cache.set(cache_key, recent_thread_ids, 3600 * 12)  # 12 hours
-            cache.set("%s_count" % cache_key,
-                      len(recent_thread_ids), 3600 * 12)  # 12 hours
-        else:
-            # Low-volume list, rebuild the cache
-            self.recent_threads_cache_rebuild()
+        pass
 
     def on_thread_deleted(self, thread):
-        self.recent_threads_cache_rebuild()
+        from hyperkitty.tasks import rebuild_cache_recent_threads
+        rebuild_cache_recent_threads.delay(self.name)
 
     def on_email_added(self, email):
-        cache.delete("MailingList:%s:recent_participants_count" % self.name)
-        cache.delete("MailingList:%s:p_count_for:%s:%s"
-                     % (self.name, email.date.year, email.date.month))
-        cache.delete("MailingList:%s:top_threads" % self.name)
-        # don't warm up the cache in batch mode (mass import)
-        if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
-            # TODO: async task
-            self.recent_participants_count
-            self.get_participants_count_for_month(
-                email.date.year, email.date.month)
-            self.top_threads
+        if getattr(settings, "HYPERKITTY_BATCH_MODE", False):
+            # Cache handling will be done at the end of the import
+            # process.
+            return
+        # Add the thread to the recent_threads
+        # Just append to the cache, a daily cron job will rebuild
+        # the cache entirely to remove older threads.
+        cache_key = "MailingList:%s:recent_threads" % self.name
+        recent_thread_ids = cache.get(cache_key)
+        if recent_thread_ids is None:
+            recent_thread_ids = []
+        thread_id = email.thread.id
+        if thread_id in recent_thread_ids:
+            # If the thread is already recent, make it the most recent.
+            recent_thread_ids.remove(thread_id)
+        recent_thread_ids.insert(0, thread_id)
+        cache.set(cache_key, recent_thread_ids, None)
+        cache.set("%s_count" % cache_key,
+                  len(recent_thread_ids), None)
+        # Now rebuild the other cached values (some depend on the
+        # recent_threads cache).
+        from hyperkitty.tasks import rebuild_mailinglist_cache_new_email
+        rebuild_mailinglist_cache_new_email.delay(
+            self.name, email.date.year, email.date.month)
 
-    on_email_deleted = on_email_added
+    def on_email_deleted(self, email):
+        # Don't use on_email_added, it will try appending to the
+        # recent_threads and emails aren't associated to a thread
+        # when they are deleted.
+        from hyperkitty.tasks import rebuild_mailinglist_cache_new_email
+        rebuild_mailinglist_cache_new_email.delay(
+            self.name, email.date.year, email.date.month)
 
     def on_vote_added(self, vote):
-        cache.delete("MailingList:%s:popular_threads" % self.name)
-        self.popular_threads  # TODO: async task
+        from hyperkitty.tasks import rebuild_cache_popular_threads
+        rebuild_cache_popular_threads.delay(self.name)
 
     on_vote_deleted = on_vote_added
 
@@ -202,10 +200,10 @@ class MailingList(models.Model):
             from .email import Email  # avoid circular imports
             begin_date, end_date = self.get_recent_dates()
             query = Email.objects.filter(
-                mailinglist=self,
-                date__gte=begin_date,
-                date__lt=end_date,
-            ).only("sender", "sender_name").select_related("sender")
+                    mailinglist=self,
+                    date__gte=begin_date,
+                    date__lt=end_date,
+                ).only("sender", "sender_name").select_related("sender")
             posters = {}
             for email in query:
                 key = (email.sender.address, email.sender_name)
@@ -222,8 +220,7 @@ class MailingList(models.Model):
             return sorted_posters[:5]
         return cache.get_or_set(
             "MailingList:%s:top_posters" % self.name,
-            _get_posters,
-            3600 * 6)  # 6 hours
+            _get_posters, None)
         # It's not actually necessary to convert back to instances since it's
         # only used in templates where access to instance attributes or
         # dictionnary keys is identical
@@ -263,10 +260,8 @@ class MailingList(models.Model):
                 if value is None:
                     value = 0
                 cache.set("Thread:%s:votes_total" % thread.id, value, None)
-            cache.set(
-                cache_key,
-                [t.id for t in threads if t.votes_total > 0],
-                3600 * 12)  # 12h
+            threads = [t for t in threads if t.votes_total > 0]
+            cache.set(cache_key, [t.id for t in threads], None)
         else:
             threads = Thread.objects.filter(id__in=thread_ids)
         return threads
@@ -305,8 +300,3 @@ class MailingList(models.Model):
         # Set the default list_id
         if self.list_id is None:
             self.list_id = self.name.replace("@", ".")
-
-
-@receiver(pre_save, sender=MailingList)
-def MailingList_set_list_id(sender, **kwargs):
-    kwargs["instance"].on_pre_save()

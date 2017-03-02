@@ -24,16 +24,12 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 from collections import namedtuple
 from django.conf import settings
-from django.core.cache.utils import make_template_fragment_key
 from django.db import models
-from django.db.models.signals import post_delete, pre_save
 from django.contrib import admin
-from django.dispatch import receiver
 from django.utils.timezone import now, utc
 from django_mailman3.lib.cache import cache
 
 from hyperkitty.lib.analysis import compute_thread_order_and_depth
-from hyperkitty.lib.signals import new_thread
 from .common import get_votes
 
 
@@ -163,28 +159,33 @@ class Thread(models.Model):
     def on_pre_save(self):
         self.find_starting_email()
 
-    def on_new_thread(self):
+    def on_post_created(self):
         self.mailinglist.on_thread_added(self)
+
+    def on_post_save(self):
+        pass
 
     def on_post_delete(self):
         self.mailinglist.on_thread_deleted(self)
 
-    def _clean_email_cache(self):
-        cache.delete("Thread:%s:emails_count" % self.id)
-        cache.delete("Thread:%s:participants_count" % self.id)
-        cache.delete(make_template_fragment_key(
-            "thread_participants", [self.id]))
-        # don't warm up the cache in batch mode (mass import)
-        if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
-            # TODO: async task
-            self.emails_count
-            self.participants_count
-
     def on_email_added(self, email):
-        self._clean_email_cache()
+        self.date_active = email.date
+        if self.starting_email is None:
+            self.starting_email = email
+        self.save()
+        if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
+            # Cache handling and thread positions will be handled at the end of
+            # the import process.
+            from hyperkitty.tasks import (
+                rebuild_thread_cache_new_email,
+                compute_thread_positions,
+                )
+            rebuild_thread_cache_new_email.delay(self.id)
+            compute_thread_positions.delay(self.id)
 
     def on_email_deleted(self, email):
-        self._clean_email_cache()
+        from hyperkitty.tasks import rebuild_thread_cache_new_email
+        rebuild_thread_cache_new_email.delay(self.id)
         # update or cleanup thread
         if self.emails.count() == 0:
             self.delete()
@@ -195,32 +196,10 @@ class Thread(models.Model):
             compute_thread_order_and_depth(self)
 
     def on_vote_added(self, vote):
-        cache.delete("Thread:%s:votes" % self.id)
-        cache.delete("Thread:%s:votes_total" % self.id)
-        self.get_votes()  # TODO: async task
+        from hyperkitty.tasks import rebuild_thread_cache_votes
+        rebuild_thread_cache_votes.delay(self.id)
 
     on_vote_deleted = on_vote_added
-
-
-@receiver(pre_save, sender=Thread)
-def on_pre_save(sender, **kwargs):
-    kwargs["instance"].on_pre_save()
-
-
-@receiver(new_thread)
-def on_new_thread(sender, **kwargs):
-    kwargs["thread"].on_new_thread()
-
-
-@receiver(post_delete, sender=Thread)
-def on_post_delete(sender, **kwargs):
-    kwargs["instance"].on_post_delete()
-
-
-# @receiver(new_thread)
-# def cache_thread_subject(sender, **kwargs):
-#     thread = kwargs["instance"]
-#     thread.subject
 
 
 class LastView(models.Model):

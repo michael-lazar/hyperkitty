@@ -25,9 +25,6 @@ from __future__ import absolute_import, unicode_literals, print_function
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
-from django_mailman3.lib.cache import cache
 
 
 class Vote(models.Model):
@@ -53,13 +50,3 @@ class Vote(models.Model):
 
 
 admin.site.register(Vote)  # noqa: E305
-
-
-@receiver(post_save, sender=Vote)
-def on_post_save(sender, **kwargs):
-    kwargs["instance"].on_post_save()
-
-
-@receiver(post_delete, sender=Vote)
-def on_post_delete(sender, **kwargs):
-    kwargs["instance"].on_post_delete()
