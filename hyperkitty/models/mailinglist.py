@@ -186,7 +186,7 @@ class MailingList(models.Model):
                 date__gte=begin_date,
                 date__lt=end_date,
             ).only("sender", "sender_name"
-            ).select_related("sender__address")
+            ).select_related("sender")
             posters = {}
             for email in query:
                 key = (email.sender.address, email.sender_name)
