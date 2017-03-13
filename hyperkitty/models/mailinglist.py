@@ -36,7 +36,6 @@ from django_mailman3.lib.cache import cache
 from django_mailman3.lib.mailman import get_mailman_client
 from mailmanclient import MailmanConnectionError
 
-from .sender import Sender
 from .thread import Thread
 
 import logging
@@ -185,8 +184,7 @@ class MailingList(models.Model):
                 mailinglist=self,
                 date__gte=begin_date,
                 date__lt=end_date,
-            ).only("sender", "sender_name"
-            ).select_related("sender")
+            ).only("sender", "sender_name").select_related("sender")
             posters = {}
             for email in query:
                 key = (email.sender.address, email.sender_name)
