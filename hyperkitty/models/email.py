@@ -35,7 +35,7 @@ from django.db import models, IntegrityError
 from django.utils.timezone import now, get_fixed_timezone
 
 from hyperkitty.lib.analysis import compute_thread_order_and_depth
-from .common import get_votes
+from .common import VotesCachedValue
 from .mailinglist import MailingList
 from .thread import Thread
 from .vote import Vote
@@ -70,11 +70,17 @@ class Email(models.Model):
 
     ADDRESS_REPLACE_RE = re.compile(r"([\w.+-]+)@([\w.+-]+)")
 
+    def __init__(self, *args, **kwargs):
+        super(Email, self).__init__(*args, **kwargs)
+        self.cached_values = {
+            "votes": VotesCachedValue(self),
+        }
+
     class Meta:
         unique_together = ("mailinglist", "message_id")
 
     def get_votes(self):
-        return get_votes(self)
+        return self.cached_values["votes"]()
 
     def vote(self, value, user):
         # Checks if the user has already voted for this message.
@@ -208,8 +214,8 @@ class Email(models.Model):
         self._set_message_id_hash()
 
     def on_post_created(self):
-        self.mailinglist.on_email_added(self)
         self.thread.on_email_added(self)
+        self.mailinglist.on_email_added(self)
         if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
             # For batch imports, let the cron job do the work
             from hyperkitty.tasks import check_orphans
@@ -218,10 +224,9 @@ class Email(models.Model):
     def on_pre_save(self):
         self._set_message_id_hash()
         # Link to the thread
-        thread_created = False
         if self.thread_id is None:
             # Create the thread if not found
-            thread, thread_created = Thread.objects.get_or_create(
+            thread, _thread_created = Thread.objects.get_or_create(
                 mailinglist=self.mailinglist,
                 thread_id=self.message_id_hash)
             self.thread = thread

@@ -202,51 +202,32 @@ def update_search_index():
 
 
 @SingletonAsync.task
-def rebuild_cache_recent_threads(mlist_name):
+def rebuild_mailinglist_cache_recent(mlist_name):
     mlist = MailingList.objects.get(name=mlist_name)
-    begin_date, end_date = mlist.get_recent_dates()
-    cache_key = "MailingList:%s:recent_threads" % mlist.name
-    cache.delete(cache_key)
-    cache.delete("%s_count" % cache_key)
-    # Warm up the cache.
-    thread_ids = list(mlist.get_threads_between(
-        begin_date, end_date).values_list("id", flat=True))
-    # It will be rebuilt daily by a cron job to expunge old threads.
-    cache.set(cache_key, thread_ids, None)
-    cache.set("%s_count" % cache_key, len(thread_ids), None)
+    for cached_value in mlist.recent_cached_values:
+        cached_value.rebuild()
 
 
 @SingletonAsync.task
-def rebuild_mailinglist_cache_new_email(mlist_name, year, month):
+def rebuild_mailinglist_cache_for_month(mlist_name, year, month):
     mlist = MailingList.objects.get(name=mlist_name)
-    cache.delete("MailingList:%s:recent_participants_count" % mlist.name)
-    mlist.recent_participants_count
-    cache.delete("MailingList:%s:p_count_for:%s:%s"
-                 % (mlist.name, year, month))
-    mlist.get_participants_count_for_month(year, month)
-    cache.delete("MailingList:%s:top_threads" % mlist.name)
-    mlist.top_threads
-    cache.delete("MailingList:%s:top_posters" % mlist.name)
-    mlist.top_posters
+    mlist.cached_values["participants_count_for_month"].rebuild(year, month)
 
 
 @SingletonAsync.task
 def rebuild_thread_cache_new_email(thread_id):
     thread = Thread.objects.get(id=thread_id)
-    cache.delete("Thread:%s:emails_count" % thread.id)
-    cache.delete("Thread:%s:participants_count" % thread.id)
+    for cached_key in ["participants_count", "emails_count"]:
+        thread.cached_values[cached_key].rebuild()
+    # Don't forget the cached template fragment.
     cache.delete(make_template_fragment_key(
         "thread_participants", [thread.id]))
-    # Warm up the cache.
-    thread.emails_count
-    thread.participants_count
 
 
 @SingletonAsync.task
 def rebuild_cache_popular_threads(mlist_name):
     mlist = MailingList.objects.get(name=mlist_name)
-    cache.delete("MailingList:%s:popular_threads" % mlist.name)
-    mlist.popular_threads
+    mlist.cached_values["popular_threads"].rebuild()
 
 
 @SingletonAsync.task
@@ -293,13 +274,11 @@ def check_orphans(email_id):
 @SingletonAsync.task
 def rebuild_thread_cache_votes(thread_id):
     thread = Thread.objects.get(id=thread_id)
-    cache.delete("Thread:%s:votes" % thread.id)
-    cache.delete("Thread:%s:votes_total" % thread.id)
-    thread.get_votes()
+    for cached_key in ["votes", "votes_total"]:
+        thread.cached_values[cached_key].rebuild()
 
 
 @SingletonAsync.task
 def rebuild_email_cache_votes(email_id):
     email = Email.objects.get(id=email_id)
-    cache.delete("Email:%s:votes" % email.id)
-    email.get_votes()
+    email.cached_values["votes"].rebuild()

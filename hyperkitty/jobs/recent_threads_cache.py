@@ -35,4 +35,5 @@ class Job(BaseJob):
 
     def execute(self):
         for mlist in MailingList.objects.all():
-            mlist.recent_threads_cache_rebuild()
+            for cached_value in mlist.recent_cached_values:
+                cached_value.rebuild()

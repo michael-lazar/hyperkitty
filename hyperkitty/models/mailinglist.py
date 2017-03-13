@@ -34,6 +34,7 @@ from django_mailman3.lib.cache import cache
 from django_mailman3.lib.mailman import get_mailman_client
 from mailmanclient import MailmanConnectionError
 
+from .common import ModelCachedValue
 from .thread import Thread
 
 import logging
@@ -71,6 +72,24 @@ class MailingList(models.Model):
         "archive_policy", "created_at", "list_id",
     )
 
+    def __init__(self, *args, **kwargs):
+        super(MailingList, self).__init__(*args, **kwargs)
+        self.cached_values = {
+            "recent_threads": RecentThreads(self),
+            "participants_count_for_month": ParticipantsCountForMonth(self),
+            "recent_participants_count": RecentParticipantsCount(self),
+            "top_posters": TopPosters(self),
+            "top_threads": TopThreads(self),
+            "popular_threads": PopularThreads(self),
+        }
+        self.recent_cached_values = [
+            self.cached_values[key] for key in [
+                "recent_threads",
+                "recent_participants_count",
+                "top_threads", "top_posters", "popular_threads",
+                ]
+            ]
+
     @property
     def is_private(self):
         return self.archive_policy == ArchivePolicy.private.value
@@ -105,29 +124,17 @@ class MailingList(models.Model):
 
     @property
     def recent_participants_count(self):
-        begin_date, end_date = self.get_recent_dates()
-        return cache.get_or_set(
-            "MailingList:%s:recent_participants_count" % self.name,
-            lambda: self.get_participants_count_between(begin_date, end_date),
-            3600 * 6)  # 6 hours
+        return self.cached_values["recent_participants_count"]()
 
     @property
     def recent_threads(self):
-        begin_date, end_date = self.get_recent_dates()
-        # Only cache the list of thread ids, or it may go over memcached's size
-        # limit (1MB)
-        cache_key = "MailingList:%s:recent_threads" % self.name
-        thread_ids = cache.get(cache_key)
-        if thread_ids is None:
-            threads = self.get_threads_between(begin_date, end_date)
-            # The cache will be refreshed daily by a periodic job.
-            cache.set(cache_key, [t.id for t in threads], None)
-        else:
-            threads = Thread.objects.filter(id__in=thread_ids)
-        return threads
+        return self.cached_values["recent_threads"]()
 
     @property
     def recent_threads_count(self):
+        # Don't use a CachedValue for this one, because it does not need a
+        # specific warm up or rebuild: this is done by the recent_threads
+        # CachedValue.
         begin_date, end_date = self.get_recent_dates()
         cache_key = "MailingList:%s:recent_threads_count" % self.name
         result = cache.get(cache_key)
@@ -137,134 +144,22 @@ class MailingList(models.Model):
             cache.set(cache_key, result, None)
         return result
 
-    def on_thread_added(self, thread):
-        pass
-
-    def on_thread_deleted(self, thread):
-        from hyperkitty.tasks import rebuild_cache_recent_threads
-        rebuild_cache_recent_threads.delay(self.name)
-
-    def on_email_added(self, email):
-        if getattr(settings, "HYPERKITTY_BATCH_MODE", False):
-            # Cache handling will be done at the end of the import
-            # process.
-            return
-        # Add the thread to the recent_threads
-        # Just append to the cache, a daily cron job will rebuild
-        # the cache entirely to remove older threads.
-        cache_key = "MailingList:%s:recent_threads" % self.name
-        recent_thread_ids = cache.get(cache_key)
-        if recent_thread_ids is None:
-            recent_thread_ids = []
-        thread_id = email.thread.id
-        if thread_id in recent_thread_ids:
-            # If the thread is already recent, make it the most recent.
-            recent_thread_ids.remove(thread_id)
-        recent_thread_ids.insert(0, thread_id)
-        cache.set(cache_key, recent_thread_ids, None)
-        cache.set("%s_count" % cache_key,
-                  len(recent_thread_ids), None)
-        # Now rebuild the other cached values (some depend on the
-        # recent_threads cache).
-        from hyperkitty.tasks import rebuild_mailinglist_cache_new_email
-        rebuild_mailinglist_cache_new_email.delay(
-            self.name, email.date.year, email.date.month)
-
-    def on_email_deleted(self, email):
-        # Don't use on_email_added, it will try appending to the
-        # recent_threads and emails aren't associated to a thread
-        # when they are deleted.
-        from hyperkitty.tasks import rebuild_mailinglist_cache_new_email
-        rebuild_mailinglist_cache_new_email.delay(
-            self.name, email.date.year, email.date.month)
-
-    def on_vote_added(self, vote):
-        from hyperkitty.tasks import rebuild_cache_popular_threads
-        rebuild_cache_popular_threads.delay(self.name)
-
-    on_vote_deleted = on_vote_added
-
     def get_participants_count_for_month(self, year, month):
-        def _get_value():
-            begin_date = datetime.datetime(year, month, 1, tzinfo=utc)
-            end_date = begin_date + datetime.timedelta(days=32)
-            end_date = end_date.replace(day=1)
-            return self.get_participants_count_between(begin_date, end_date)
-        return cache.get_or_set(
-            "MailingList:%s:p_count_for:%s:%s" % (self.name, year, month),
-            _get_value, None)
+        return self.cached_values["participants_count_for_month"](year, month)
 
     @property
     def top_posters(self):
-        def _get_posters():
-            from .email import Email  # avoid circular imports
-            begin_date, end_date = self.get_recent_dates()
-            query = Email.objects.filter(
-                    mailinglist=self,
-                    date__gte=begin_date,
-                    date__lt=end_date,
-                ).only("sender", "sender_name").select_related("sender")
-            posters = {}
-            for email in query:
-                key = (email.sender.address, email.sender_name)
-                if key not in posters:
-                    posters[key] = 1
-                else:
-                    posters[key] += 1
-            posters = [
-                {"address": p[0], "name": p[1], "count": c}
-                for p, c in posters.items()
-                ]
-            sorted_posters = sorted(
-                posters, key=lambda p: p["count"], reverse=True)
-            return sorted_posters[:5]
-        return cache.get_or_set(
-            "MailingList:%s:top_posters" % self.name,
-            _get_posters, None)
-        # It's not actually necessary to convert back to instances since it's
-        # only used in templates where access to instance attributes or
-        # dictionnary keys is identical
+        return self.cached_values["top_posters"]()
 
     @property
     def top_threads(self):
         """Threads with the most answers."""
-        cache_key = "MailingList:%s:top_threads" % self.name
-        thread_ids = cache.get(cache_key)
-        if thread_ids is None:
-            # Filter on the recent_threads ids instead of re-using the date
-            # filter, otherwise the Sum will be computed for every thread
-            # regardless of their date.
-            threads = Thread.objects.filter(
-                id__in=[t.id for t in self.recent_threads]).annotate(
-                models.Count("emails")).order_by("-emails__count")[:20]
-            cache.set(cache_key, [t.id for t in threads], 3600 * 12)  # 12h
-        else:
-            threads = Thread.objects.filter(id__in=thread_ids)
-        return threads
+        return self.cached_values["top_threads"]()
 
     @property
     def popular_threads(self):
         """Threads with the most votes."""
-        cache_key = "MailingList:%s:popular_threads" % self.name
-        thread_ids = cache.get(cache_key)
-        if thread_ids is None:
-            # Filter on the recent_threads ids instead of re-using the date
-            # filter, otherwise the Sum will be computed for every thread
-            # regardless of their date.
-            threads = Thread.objects.filter(
-                id__in=[t.id for t in self.recent_threads]).annotate(
-                models.Sum("emails__votes__value")).order_by(
-                "-emails__votes__value__sum")[:20]
-            for thread in threads:
-                value = thread.emails__votes__value__sum
-                if value is None:
-                    value = 0
-                cache.set("Thread:%s:votes_total" % thread.id, value, None)
-            threads = [t for t in threads if t.votes_total > 0]
-            cache.set(cache_key, [t.id for t in threads], None)
-        else:
-            threads = Thread.objects.filter(id__in=thread_ids)
-        return threads
+        return self.cached_values["popular_threads"]()
 
     def update_from_mailman(self):
         try:
@@ -296,7 +191,199 @@ class MailingList(models.Model):
             setattr(self, propname, value)
         self.save()
 
+    # Events (signal callbacks)
+
     def on_pre_save(self):
         # Set the default list_id
         if self.list_id is None:
             self.list_id = self.name.replace("@", ".")
+
+    def on_thread_added(self, thread):
+        pass
+
+    def on_thread_deleted(self, thread):
+        from hyperkitty.tasks import (
+            rebuild_mailinglist_cache_recent,
+            rebuild_mailinglist_cache_for_month,
+            )
+        begin_date, end_date = self.get_recent_dates()
+        if thread.date_active >= begin_date and thread.date_active < end_date:
+            # It's a recent thread
+            rebuild_mailinglist_cache_recent.delay(self.name)
+        rebuild_mailinglist_cache_for_month.delay(
+            self.name, thread.date_active.year, thread.date_active.month)
+
+    def on_email_added(self, email):
+        if getattr(settings, "HYPERKITTY_BATCH_MODE", False):
+            # Cache handling will be done at the end of the import
+            # process.
+            return
+        # Rebuild the cached values.
+        from hyperkitty.tasks import (
+            rebuild_mailinglist_cache_recent,
+            rebuild_mailinglist_cache_for_month,
+            )
+        rebuild_mailinglist_cache_recent.delay(self.name)
+        rebuild_mailinglist_cache_for_month.delay(
+            self.name, email.date.year, email.date.month)
+
+    def on_email_deleted(self, email):
+        # Don't use on_email_added, it will try appending to the
+        # recent_threads and emails aren't associated to a thread
+        # when they are deleted.
+        # It's not semantically identical to on_thread_deleted() but it's the
+        # same code, so DRY.
+        try:
+            email.thread
+        except Thread.DoesNotExist:
+            pass  # Already deleted
+        else:
+            self.on_thread_deleted(email.thread)
+
+    def on_vote_added(self, vote):
+        from hyperkitty.tasks import rebuild_cache_popular_threads
+        rebuild_cache_popular_threads.delay(self.name)
+
+    on_vote_deleted = on_vote_added
+
+
+class RecentThreads(ModelCachedValue):
+
+    cache_key = "recent_threads"
+
+    def get_value(self):
+        # Only cache the list of thread ids, or it may go over memcached's size
+        # limit (1MB)
+        begin_date, end_date = self.instance.get_recent_dates()
+        thread_ids = self.instance.get_threads_between(
+            begin_date, end_date).values_list("id", flat=True)
+        return thread_ids
+
+    def rebuild(self):
+        value = super(RecentThreads, self).rebuild()
+        cache.set("%s_count" % self._get_cache_key(), len(value), None)
+        return value
+
+    def get_or_set(self):
+        thread_ids = super(RecentThreads, self).get_or_set()
+        return Thread.objects.filter(id__in=thread_ids)
+
+    def add_thread(self, thread):
+        # Add the thread to the recent_threads.
+        # Just append to the cache, a daily cron job will rebuild
+        # the cache entirely to remove older threads.
+        recent_thread_ids = self.get_value()
+        if recent_thread_ids is None:
+            recent_thread_ids = []
+        if thread.id in recent_thread_ids:
+            # If the thread is already recent, make it the most recent.
+            recent_thread_ids.remove(thread.id)
+        recent_thread_ids.insert(0, thread.id)
+        cache.set(self._get_cache_key(), recent_thread_ids, None)
+        cache.set("%s_count" % self._get_cache_key(),
+                  len(recent_thread_ids), None)
+
+
+class ParticipantsCountForMonth(ModelCachedValue):
+
+    def _get_cache_key(self, year, month):
+        return "MailingList:%s:p_count_for:%s:%s" % (
+            self.instance.name, year, month)
+
+    def get_value(self, year, month):
+        begin_date = datetime.datetime(year, month, 1, tzinfo=utc)
+        end_date = begin_date + datetime.timedelta(days=32)
+        end_date = end_date.replace(day=1)
+        return self.instance.get_participants_count_between(
+            begin_date, end_date)
+
+
+class RecentParticipantsCount(ModelCachedValue):
+
+    cache_key = "recent_participants_count"
+
+    def get_value(self):
+        begin_date, end_date = self.instance.get_recent_dates()
+        return self.instance.get_participants_count_between(
+            begin_date, end_date)
+
+
+class TopPosters(ModelCachedValue):
+
+    cache_key = "top_posters"
+
+    def get_value(self):
+        from .email import Email  # avoid circular imports
+        begin_date, end_date = self.instance.get_recent_dates()
+        query = Email.objects.filter(
+                mailinglist=self.instance,
+                date__gte=begin_date,
+                date__lt=end_date,
+            ).only("sender", "sender_name").select_related("sender")
+        posters = {}
+        for email in query:
+            key = (email.sender.address, email.sender_name)
+            if key not in posters:
+                posters[key] = 1
+            else:
+                posters[key] += 1
+        # It's not necessary to return instances since it's only used in
+        # templates where access to instance attributes or dictionnary keys is
+        # identical.
+        posters = [
+            {"address": p[0], "name": p[1], "count": c}
+            for p, c in posters.items()
+            ]
+        sorted_posters = sorted(
+            posters, key=lambda p: p["count"], reverse=True)
+        return sorted_posters[:5]
+
+
+class TopThreads(ModelCachedValue):
+    """Threads with the most answers."""
+
+    cache_key = "top_threads"
+
+    def get_value(self):
+        # Filter on the recent_threads ids instead of re-using the date
+        # filter, otherwise the Sum will be computed for every thread
+        # regardless of their date.
+        threads = Thread.objects.filter(
+            id__in=[t.id for t in self.instance.recent_threads]).annotate(
+            models.Count("emails")).order_by("-emails__count")[:20]
+        # (not sure about using .values_list() here because of the annotation)
+        # Only cache the list of thread ids, or it may go over memcached's size
+        # limit (1MB)
+        return [t.id for t in threads]
+
+    def get_or_set(self):
+        thread_ids = super(TopThreads, self).get_or_set()
+        return Thread.objects.filter(id__in=thread_ids)
+
+
+class PopularThreads(ModelCachedValue):
+    """Threads with the most votes."""
+
+    cache_key = "popular_threads"
+
+    def get_value(self):
+        # Filter on the recent_threads ids instead of re-using the date
+        # filter, otherwise the Sum will be computed for every thread
+        # regardless of their date.
+        threads = Thread.objects.filter(
+            id__in=[t.id for t in self.instance.recent_threads]).annotate(
+            models.Sum("emails__votes__value")).order_by(
+            "-emails__votes__value__sum")[:20]
+        # (not sure about using .values_list() here because of the annotation)
+        for thread in threads:
+            value = thread.emails__votes__value__sum
+            if value is None:
+                value = 0
+            cache.set("Thread:%s:votes_total" % thread.id, value, None)
+        # Only cache the list of thread ids, or it may go over memcached's size
+        # limit (1MB)
+        return [t.id for t in threads if t.votes_total > 0]
+
+    def get_or_set(self):
+        thread_ids = super(PopularThreads, self).get_or_set()
+        return Thread.objects.filter(id__in=thread_ids)

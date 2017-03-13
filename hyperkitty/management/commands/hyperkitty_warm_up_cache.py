@@ -29,10 +29,9 @@ from __future__ import (
 import datetime
 
 from django.core.management.base import BaseCommand
-from django.utils.timezone import now, utc
+from django.utils.timezone import now
 from hyperkitty.management.utils import setup_logging
 from hyperkitty.models import MailingList
-from hyperkitty.tasks import rebuild_cache_recent_threads
 
 
 class Command(BaseCommand):
@@ -59,11 +58,8 @@ class Command(BaseCommand):
         if options["verbosity"] > 1:
             self.stdout.write("Warming up cache for %s" % mlist.name)
         # Recent data
-        rebuild_cache_recent_threads(mlist.name)
-        mlist.recent_participants_count
-        mlist.top_threads
-        mlist.top_posters
-        mlist.popular_threads
+        for cached_value in mlist.recent_cached_values:
+            cached_value.warm_up()
         for thread in mlist.recent_threads:
             self.warm_up_thread(thread)
         # Other months
@@ -72,7 +68,7 @@ class Command(BaseCommand):
         for month_num in range(options["months"]):
             month_start = month_start - datetime.timedelta(days=1)
             month_start = month_start.replace(day=1)
-            mlist.get_participants_count_for_month(
+            mlist.cached_values["participants_count_for_month"].warm_up(
                 month_start.year, month_start.month)
             month_end = month_start + datetime.timedelta(days=32)
             month_end = month_end.replace(day=1)
@@ -80,10 +76,8 @@ class Command(BaseCommand):
                 self.warm_up_thread(thread)
 
     def warm_up_thread(self, thread):
-        thread.subject
-        thread.emails_count
-        thread.participants_count
-        thread.votes_total
+        for cached_value in thread.cached_values.values():
+            cached_value.warm_up()
         for email in thread.emails.all():
-            email.get_votes()
-        thread.get_votes()
+            for cached_value in email.cached_values.values():
+                cached_value.warm_up()

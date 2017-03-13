@@ -27,10 +27,9 @@ from django.conf import settings
 from django.db import models
 from django.contrib import admin
 from django.utils.timezone import now, utc
-from django_mailman3.lib.cache import cache
 
 from hyperkitty.lib.analysis import compute_thread_order_and_depth
-from .common import get_votes
+from .common import ModelCachedValue, VotesCachedValue
 
 
 import logging
@@ -52,6 +51,16 @@ class Thread(models.Model):
         "Email", related_name="started_thread", null=True,
         on_delete=models.SET_NULL)
 
+    def __init__(self, *args, **kwargs):
+        super(Thread, self).__init__(*args, **kwargs)
+        self.cached_values = {
+            "participants_count": ParticipantsCount(self),
+            "emails_count": EmailsCount(self),
+            "subject": Subject(self),
+            "votes": VotesCachedValue(self),
+            "votes_total": VotesTotal(self),
+        }
+
     class Meta:
         unique_together = ("mailinglist", "thread_id")
 
@@ -68,10 +77,7 @@ class Thread(models.Model):
 
     @property
     def participants_count(self):
-        return cache.get_or_set(
-            "Thread:%s:participants_count" % self.id,
-            lambda: len(self.participants),
-            None)
+        return self.cached_values["participants_count"]()
 
     def replies_after(self, date):
         return self.emails.filter(date__gt=date)
@@ -95,29 +101,18 @@ class Thread(models.Model):
 
     @property
     def emails_count(self):
-        return cache.get_or_set(
-            "Thread:%s:emails_count" % self.id,
-            lambda: self.emails.count(),
-            None)
+        return self.cached_values["emails_count"]()
 
     @property
     def subject(self):
-        return cache.get_or_set(
-            "Thread:%s:subject" % self.id,
-            lambda: self.starting_email.subject,
-            None)
+        return self.cached_values["subject"]()
 
     def get_votes(self):
-        return get_votes(self)
+        return self.cached_values["votes"]()
 
     @property
     def votes_total(self):
-        def compute():
-            votes = self.get_votes()
-            return votes["likes"] - votes["dislikes"]
-        return cache.get_or_set(
-            "Thread:%s:votes_total" % self.id,
-            compute, None)
+        return self.cached_values["votes_total"]()
 
     @property
     def prev_thread(self):  # TODO: Make it a relationship
@@ -169,6 +164,7 @@ class Thread(models.Model):
         self.mailinglist.on_thread_deleted(self)
 
     def on_email_added(self, email):
+        self.find_starting_email()
         self.date_active = email.date
         if self.starting_email is None:
             self.starting_email = email
@@ -194,12 +190,46 @@ class Thread(models.Model):
                 self.find_starting_email()
                 self.save(update_fields=["starting_email"])
             compute_thread_order_and_depth(self)
+            self.date_active = self.emails.order_by("-date").first().date
 
     def on_vote_added(self, vote):
         from hyperkitty.tasks import rebuild_thread_cache_votes
         rebuild_thread_cache_votes.delay(self.id)
 
     on_vote_deleted = on_vote_added
+
+
+class ParticipantsCount(ModelCachedValue):
+
+    cache_key = "participants_count"
+
+    def get_value(self):
+        return len(self.instance.participants)
+
+
+class EmailsCount(ModelCachedValue):
+
+    cache_key = "emails_count"
+
+    def get_value(self):
+        return self.instance.emails.count()
+
+
+class Subject(ModelCachedValue):
+
+    cache_key = "subject"
+
+    def get_value(self):
+        return self.instance.starting_email.subject
+
+
+class VotesTotal(ModelCachedValue):
+
+    cache_key = "votes_total"
+
+    def get_value(self):
+        votes = self.instance.get_votes()
+        return votes["likes"] - votes["dislikes"]
 
 
 class LastView(models.Model):
