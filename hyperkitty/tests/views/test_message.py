@@ -428,3 +428,21 @@ class MessageViewsTestCase(TestCase):
         self.assertFalse(Email.objects.filter(message_id="msg").exists())
         self.assertFalse(Email.objects.filter(message_id="msg2").exists())
         self.assertFalse(Thread.objects.filter(pk=thread_id).exists())
+
+    def test_delete_duplicate_thread(self):
+        self.user.is_staff = True
+        self.user.save()
+        msg = Email.objects.get(message_id="msg")
+        # Add a message with the same message-id to a different list.
+        msg2 = Message()
+        msg2["From"] = "dummy@example.com"
+        msg2["Message-ID"] = "<msg>"
+        msg2.set_payload("Dummy message")
+        add_to_list("list2@example.com", msg2)
+        # Make sure the confirmation page is not confused.
+        url = reverse('hk_thread_delete',
+                      args=("list@example.com", msg.thread.thread_id))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["mlist"], msg.mailinglist)
+        self.assertEqual(response.context["thread"], msg.thread)

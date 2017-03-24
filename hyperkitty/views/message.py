@@ -249,7 +249,8 @@ def delete(request, mlist_fqdn, threadid=None, message_id_hash=None):
                             content_type="text/plain", status=403)
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
     if threadid is not None:
-        thread = get_object_or_404(Thread, thread_id=threadid)
+        thread = get_object_or_404(
+            Thread, mailinglist=mlist, thread_id=threadid)
         message = None
     elif message_id_hash is not None:
         message = get_object_or_404(
