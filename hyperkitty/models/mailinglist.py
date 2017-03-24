@@ -138,7 +138,7 @@ class MailingList(models.Model):
         # specific warm up or rebuild: this is done by the recent_threads
         # CachedValue.
         begin_date, end_date = self.get_recent_dates()
-        cache_key = "MailingList:%s:recent_threads_count" % self.name
+        cache_key = "MailingList:%s:recent_threads_count" % self.pk
         result = cache.get(cache_key)
         if result is None:
             result = self.get_threads_between(begin_date, end_date).count()
@@ -290,7 +290,7 @@ class ParticipantsCountForMonth(ModelCachedValue):
 
     def _get_cache_key(self, year, month):
         return "MailingList:%s:p_count_for:%s:%s" % (
-            self.instance.name, year, month)
+            self.instance.pk, year, month)
 
     def get_value(self, year, month):
         begin_date = datetime.datetime(year, month, 1, tzinfo=utc)
