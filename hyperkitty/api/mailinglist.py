@@ -30,7 +30,8 @@ from hyperkitty.api.utils import EnumField
 
 class MailingListSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name='hk_api_mailinglist_detail', lookup_field="name")
+        view_name='hk_api_mailinglist_detail', lookup_field="name",
+        lookup_url_kwarg="mlist_fqdn")
     threads = serializers.HyperlinkedIdentityField(
         view_name='hk_api_thread_list', lookup_field="name",
         lookup_url_kwarg="mlist_fqdn")
@@ -51,7 +52,7 @@ class MailingListList(generics.ListAPIView):
     """List mailing-lists"""
 
     queryset = MailingList.objects.exclude(
-        archive_policy=ArchivePolicy.private.value)
+        archive_policy=ArchivePolicy.private.value).order_by("name")
     lookup_field = "name"
     serializer_class = MailingListSerializer
 #    def get(self, request):

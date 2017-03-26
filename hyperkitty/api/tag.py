@@ -23,12 +23,20 @@ from __future__ import absolute_import, unicode_literals
 
 from rest_framework import serializers, generics
 from hyperkitty.models import Tag
+from .utils import MLChildHyperlinkedRelatedField
 
 
 class TagSerializer(serializers.HyperlinkedModelSerializer):
+
+    threads = MLChildHyperlinkedRelatedField(
+        view_name='hk_api_thread_detail', many=True, read_only=True,
+        lookup_field="thread_id")
+    users = serializers.SlugRelatedField(
+        many=True, read_only=True, slug_field='username')
+
     class Meta:
         model = Tag
-        fields = ("url", "threads", "users", "name")
+        fields = ("name", "threads", "users")
         lookup_field = "name"
 
 

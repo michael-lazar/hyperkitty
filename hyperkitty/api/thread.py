@@ -29,18 +29,17 @@ from hyperkitty.models import Thread, ArchivePolicy
 from hyperkitty.api.utils import MLChildHyperlinkedRelatedField
 
 
-class ThreadSerializer(serializers.HyperlinkedModelSerializer):
+class ThreadShortSerializer(serializers.HyperlinkedModelSerializer):
     url = MLChildHyperlinkedRelatedField(
         view_name='hk_api_thread_detail', read_only=True,
         lookup_field="thread_id", source="*")
     mailinglist = serializers.HyperlinkedRelatedField(
         view_name='hk_api_mailinglist_detail', read_only=True,
-        lookup_field="name")
+        lookup_field="name", lookup_url_kwarg="mlist_fqdn")
     starting_email = MLChildHyperlinkedRelatedField(
         view_name='hk_api_email_detail', read_only=True,
         lookup_field="message_id_hash")
-    likes = serializers.IntegerField(min_value=0)
-    dislikes = serializers.IntegerField(min_value=0)
+    votes_total = serializers.IntegerField(min_value=0)
     emails = MLChildHyperlinkedRelatedField(
         view_name='hk_api_thread_email_list', read_only=True,
         lookup_field="thread_id", source="*")
@@ -55,17 +54,39 @@ class ThreadSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Thread
         fields = ("url", "mailinglist", "thread_id", "subject", "date_active",
-                  "category", "starting_email", "emails", "likes", "dislikes",
+                  "starting_email", "emails", "votes_total",
                   "replies_count", "next_thread", "prev_thread")
 
     def get_replies_count(self, obj):
         return obj.emails_count - 1
 
 
+class ThreadSerializer(ThreadShortSerializer):
+    votes = serializers.SerializerMethodField()
+    participants = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Thread
+        fields = ThreadShortSerializer.Meta.fields + (
+            "votes", "participants", "participants_count",
+            )
+
+    def get_votes(self, obj):
+        return obj.get_votes()
+
+    def get_participants(self, obj):
+        return [
+            {"name": p[0].replace("@", " (a) "),
+             "email": p[1].replace("@", " (a) "),
+             }
+            for p in obj.participants
+            ]
+
+
 class ThreadList(generics.ListAPIView):
     """List threads"""
 
-    serializer_class = ThreadSerializer
+    serializer_class = ThreadShortSerializer
 
     def get_queryset(self):
         return Thread.objects.filter(

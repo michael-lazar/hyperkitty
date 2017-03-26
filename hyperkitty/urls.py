@@ -79,29 +79,30 @@ thread_patterns = [
 
 
 # REST API
+api_list_patterns = [
+    url(r'^$',
+        api_mailinglist.MailingListDetail.as_view(), name="hk_api_mailinglist_detail"),
+    url(r'^threads/$',
+        api_thread.ThreadList.as_view(), name="hk_api_thread_list"),
+    url(r'^thread/(?P<thread_id>[^/]+)/$',
+        api_thread.ThreadDetail.as_view(), name="hk_api_thread_detail"),
+    url(r'^emails/$',
+        api_email.EmailList.as_view(), name="hk_api_email_list"),
+    url(r'^email/(?P<message_id_hash>.*)/$',
+        api_email.EmailDetail.as_view(), name="hk_api_email_detail"),
+    url(r'^thread/(?P<thread_id>[^/]+)/emails/$',
+        api_email.EmailList.as_view(), name="hk_api_thread_email_list"),
+]
 api_patterns = [
     url(r'^$', TemplateView.as_view(template_name="hyperkitty/api.html")),
     url(r'^lists/$',
         api_mailinglist.MailingListList.as_view(), name="hk_api_mailinglist_list"),
-    url(r'^list/(?P<name>[^/@]+@[^/@]+)/$',
-        api_mailinglist.MailingListDetail.as_view(), name="hk_api_mailinglist_detail"),
-    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)\/threads/$',
-        api_thread.ThreadList.as_view(), name="hk_api_thread_list"),
-    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)\/thread/(?P<thread_id>[^/]+)/$',
-        api_thread.ThreadDetail.as_view(), name="hk_api_thread_detail"),
-    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/emails/$',
-        api_email.EmailList.as_view(), name="hk_api_email_list"),
-    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)\/email/(?P<message_id_hash>.*)/$',
-        api_email.EmailDetail.as_view(), name="hk_api_email_detail"),
-    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/thread/(?P<thread_id>[^/]+)/emails/$',
-        api_email.EmailList.as_view(), name="hk_api_thread_email_list"),
-    #url(r'^sender/(?P<address>[^/@]+@[^/@]+)/$',
-    #    api_sender.SenderDetail.as_view(), name="hk_api_sender_detail"),
+    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/', include(api_list_patterns)),
+    url(r'^lists/$',
+        api_mailinglist.MailingListList.as_view(), name="hk_api_mailinglist_list"),
     url(r'^sender/(?P<mailman_id>[^/]+)/emails/$',
         api_email.EmailListBySender.as_view(), name="hk_api_sender_email_list"),
     url(r'^tags/$', api_tag.TagList.as_view(), name="hk_api_tag_list"),
-    #url(r'^', include(restrouter.urls)),
-    #url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
 

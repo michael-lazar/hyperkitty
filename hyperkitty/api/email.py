@@ -36,7 +36,7 @@ class EmailShortSerializer(serializers.HyperlinkedModelSerializer):
         lookup_field="message_id_hash", source="*")
     mailinglist = serializers.HyperlinkedRelatedField(
         view_name='hk_api_mailinglist_detail', read_only=True,
-        lookup_field="name")
+        lookup_field="name", lookup_url_kwarg="mlist_fqdn")
     thread = MLChildHyperlinkedRelatedField(
         view_name='hk_api_thread_detail', read_only=True,
         lookup_field="thread_id")
@@ -47,20 +47,24 @@ class EmailShortSerializer(serializers.HyperlinkedModelSerializer):
         view_name='hk_api_email_detail', read_only=True,
         lookup_field="message_id_hash", many=True)
     sender = SenderSerializer()
-    likes = serializers.IntegerField(min_value=0)
-    dislikes = serializers.IntegerField(min_value=0)
 
     class Meta:
         model = Email
         fields = ("url", "mailinglist", "message_id", "message_id_hash",
-                  "thread", "sender", "subject", "date", "parent", "children",
-                  "likes", "dislikes")
+                  "thread", "sender", "sender_name", "subject", "date",
+                  "parent", "children",
+                  )
 
 
 class EmailSerializer(EmailShortSerializer):
+    votes = serializers.SerializerMethodField()
+
     class Meta:
         model = Email
-        fields = EmailShortSerializer.Meta.fields + ("content",)
+        fields = EmailShortSerializer.Meta.fields + ("votes", "content",)
+
+    def get_votes(self, obj):
+        return obj.get_votes()
 
 
 class EmailList(generics.ListAPIView):
@@ -84,7 +88,7 @@ class EmailListBySender(generics.ListAPIView):
 
     def get_queryset(self):
         return Email.objects.filter(
-                sender__address=self.kwargs["address"],
+                sender__mailman_id=self.kwargs["mailman_id"],
             ).exclude(
                 mailinglist__archive_policy=ArchivePolicy.private.value
             ).order_by("-archived_date")
