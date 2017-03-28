@@ -35,7 +35,6 @@ BuildRequires:  python-django-haystack >= 2.5.0
 BuildRequires:  python-django-extensions
 BuildRequires:  python-django-mailman3
 BuildRequires:  python-lockfile
-BuildRequires:  python-six
 # Unit tests only
 BuildRequires:  python-beautifulsoup4
 BuildRequires:  python-mock
@@ -62,7 +61,6 @@ Requires:       python-django-haystack >= 2.5.0
 Requires:       python-django-extensions
 Requires:       python-django-mailman3
 Requires:       python-lockfile
-Requires:       python-six
 Requires:       numpy
 
 

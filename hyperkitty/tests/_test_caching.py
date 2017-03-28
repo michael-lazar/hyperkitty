@@ -6,7 +6,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import unittest
 import datetime
 import uuid
-from six.moves.urllib.error import HTTPError
+from django.utils.six.moves.urllib.error import HTTPError
 
 from mock import Mock
 from mailman.email.message import Message
