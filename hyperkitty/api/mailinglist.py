@@ -52,7 +52,9 @@ class MailingListList(generics.ListAPIView):
     """List mailing-lists"""
 
     queryset = MailingList.objects.exclude(
-        archive_policy=ArchivePolicy.private.value).order_by("name")
+        archive_policy=ArchivePolicy.private.value)
+    ordering = ("name", )
+    ordering_fields = ("name", "created_at")
     lookup_field = "name"
     serializer_class = MailingListSerializer
 #    def get(self, request):

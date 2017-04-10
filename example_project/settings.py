@@ -343,9 +343,14 @@ HAYSTACK_CONNECTIONS = {
 }
 
 
-# REST API
+#
+# REST framework
+#
 REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework.filters.OrderingFilter',
+    ),
 }
 
 

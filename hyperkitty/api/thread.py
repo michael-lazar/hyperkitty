@@ -87,6 +87,7 @@ class ThreadList(generics.ListAPIView):
     """List threads"""
 
     serializer_class = ThreadShortSerializer
+    ordering = ("-date_active", )
 
     def get_queryset(self):
         return Thread.objects.filter(

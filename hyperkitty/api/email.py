@@ -71,6 +71,7 @@ class EmailList(generics.ListAPIView):
     """List emails"""
 
     serializer_class = EmailShortSerializer
+    ordering_fields = ("archived_date", "thread_order", "date")
 
     def get_queryset(self):
         query = Email.objects.filter(
