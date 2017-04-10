@@ -26,7 +26,7 @@ BuildRequires:  sassc
 BuildRequires:  python-mailman-client
 BuildRequires:  python-robot-detection
 BuildRequires:  pytz
-BuildRequires:  django-paintstore
+BuildRequires:  python-django-paintstore
 BuildRequires:  python-django >= 1.8
 BuildRequires:  python-dateutil
 BuildRequires:  python-networkx
@@ -53,7 +53,7 @@ Requires:       sassc
 Requires:       python-mailman-client
 Requires:       python-robot-detection
 Requires:       pytz
-Requires:       django-paintstore
+Requires:       python-django-paintstore
 Requires:       python-django >= 1.8
 Requires:       python-dateutil
 Requires:       python-networkx
@@ -63,7 +63,6 @@ Requires:       python-django-extensions
 Requires:       python-django-mailman3
 Requires:       python-lockfile
 Requires:       python-six
-Requires:       numpy
 
 
 %description
