@@ -21,7 +21,9 @@
 
 from __future__ import absolute_import, unicode_literals
 
-from rest_framework import serializers
+from rest_framework import serializers, permissions
+from hyperkitty.models import MailingList
+from hyperkitty.lib.view_helpers import is_mlist_authorized
 
 
 class MLChildHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
@@ -61,3 +63,23 @@ class EnumField(serializers.IntegerField):
 
     def to_representation(self, value):
         return self.enum(value).name
+
+
+class IsMailingListPublicOrIsMember(permissions.BasePermission):
+    """
+    Custom permission to only allow access to public lists or to lists the
+    authenticated user is a member of.
+    """
+
+    def _get_mlist(self, obj):
+        if isinstance(obj, MailingList):
+            return obj
+        if hasattr(obj, "mailinglist"):
+            return obj.mailinglist
+
+    def has_object_permission(self, request, view, obj):
+        mlist = self._get_mlist(obj)
+        if mlist is None:
+            # This is not a object linked to a mailing-list.
+            return True
+        return is_mlist_authorized(request, mlist)

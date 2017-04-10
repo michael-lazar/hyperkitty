@@ -25,8 +25,12 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 from rest_framework import serializers, generics
 
-from hyperkitty.models import Thread, ArchivePolicy
-from hyperkitty.api.utils import MLChildHyperlinkedRelatedField
+from hyperkitty.models import Thread, MailingList
+from hyperkitty.lib.view_helpers import is_mlist_authorized
+from .utils import (
+    MLChildHyperlinkedRelatedField,
+    IsMailingListPublicOrIsMember,
+    )
 
 
 class ThreadShortSerializer(serializers.HyperlinkedModelSerializer):
@@ -90,10 +94,11 @@ class ThreadList(generics.ListAPIView):
     ordering = ("-date_active", )
 
     def get_queryset(self):
+        mlist = MailingList.objects.get(name=self.kwargs["mlist_fqdn"])
+        if not is_mlist_authorized(self.request, mlist):
+            raise PermissionDenied
         return Thread.objects.filter(
                 mailinglist__name=self.kwargs["mlist_fqdn"],
-            ).exclude(
-                mailinglist__archive_policy=ArchivePolicy.private.value
             ).order_by("-date_active")
 
 
@@ -101,6 +106,7 @@ class ThreadDetail(generics.RetrieveAPIView):
     """Show a thread"""
 
     serializer_class = ThreadSerializer
+    permission_classes = [IsMailingListPublicOrIsMember]
 
     def get_object(self):
         thread = get_object_or_404(
@@ -108,6 +114,4 @@ class ThreadDetail(generics.RetrieveAPIView):
             mailinglist__name=self.kwargs["mlist_fqdn"],
             thread_id=self.kwargs["thread_id"],
             )
-        if thread.mailinglist.archive_policy == ArchivePolicy.private.value:
-            raise PermissionDenied
         return thread

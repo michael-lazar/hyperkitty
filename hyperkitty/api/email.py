@@ -25,9 +25,13 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 from rest_framework import serializers, generics
 
-from hyperkitty.models import Email, ArchivePolicy
-from .utils import MLChildHyperlinkedRelatedField
+from hyperkitty.models import Email, ArchivePolicy, MailingList
+from hyperkitty.lib.view_helpers import is_mlist_authorized
 from .sender import SenderSerializer
+from .utils import (
+    MLChildHyperlinkedRelatedField,
+    IsMailingListPublicOrIsMember,
+    )
 
 
 class EmailShortSerializer(serializers.HyperlinkedModelSerializer):
@@ -74,12 +78,18 @@ class EmailList(generics.ListAPIView):
     ordering_fields = ("archived_date", "thread_order", "date")
 
     def get_queryset(self):
+        mlist = MailingList.objects.get(name=self.kwargs["mlist_fqdn"])
+        if not is_mlist_authorized(self.request, mlist):
+            raise PermissionDenied
         query = Email.objects.filter(
-                mailinglist__name=self.kwargs["mlist_fqdn"],
-            ).exclude(mailinglist__archive_policy=ArchivePolicy.private.value)
+                mailinglist__name=self.kwargs["mlist_fqdn"])
         if "thread_id" in self.kwargs:
-            query = query.filter(thread__thread_id=self.kwargs["thread_id"])
-        return query.order_by("-archived_date")
+            query = query.filter(
+                    thread__thread_id=self.kwargs["thread_id"]
+                ).order_by("thread_order")
+        else:
+            query = query.order_by("-archived_date")
+        return query
 
 
 class EmailListBySender(generics.ListAPIView):
@@ -99,6 +109,7 @@ class EmailDetail(generics.RetrieveAPIView):
     """Show an email"""
 
     serializer_class = EmailSerializer
+    permission_classes = [IsMailingListPublicOrIsMember]
 
     def get_object(self):
         email = get_object_or_404(
@@ -106,6 +117,4 @@ class EmailDetail(generics.RetrieveAPIView):
             mailinglist__name=self.kwargs["mlist_fqdn"],
             message_id_hash=self.kwargs["message_id_hash"],
             )
-        if email.mailinglist.archive_policy == ArchivePolicy.private.value:
-            raise PermissionDenied
         return email

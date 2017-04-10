@@ -21,11 +21,10 @@
 
 from __future__ import absolute_import, unicode_literals
 
-from django.core.exceptions import PermissionDenied
 from rest_framework import serializers, generics
 
 from hyperkitty.models import MailingList, ArchivePolicy
-from hyperkitty.api.utils import EnumField
+from .utils import EnumField, IsMailingListPublicOrIsMember
 
 
 class MailingListSerializer(serializers.HyperlinkedModelSerializer):
@@ -57,11 +56,6 @@ class MailingListList(generics.ListAPIView):
     ordering_fields = ("name", "created_at")
     lookup_field = "name"
     serializer_class = MailingListSerializer
-#    def get(self, request):
-#        lists = MailingList.objects.exclude(
-#            archive_policy=ArchivePolicy.private.value)
-#        serializer = MailingListSerializer(lists, many=True)
-#        return Response(serializer.data)
 
 
 class MailingListDetail(generics.RetrieveAPIView):
@@ -71,24 +65,4 @@ class MailingListDetail(generics.RetrieveAPIView):
     lookup_field = "name"
     lookup_url_kwarg = "mlist_fqdn"
     serializer_class = MailingListSerializer
-
-    def get_object(self):
-        mlist = super(MailingListDetail, self).get_object()
-        # mlist = get_object_or_404(MailingList, name=self.kwargs["name"])
-        # try:
-        #     mlist = MailingList.objects.get(name=self.kwargs["name"])
-        # except MailingList.DoesNotExist:
-        #     raise Http404
-        if mlist.archive_policy == ArchivePolicy.private.value:
-            raise PermissionDenied
-        return mlist
-#    def get(self, request, name):
-#        try:
-#            mlist = MailingList.objects.get(name=name)
-#        except MailingList.DoesNotExist:
-#            raise Http404
-#        if mlist.archive_policy == ArchivePolicy.private.value:
-#            raise PermissionDenied
-#        serializer = MailingListSerializer(mlist)
-#        return Response(serializer.data)
     permission_classes = [IsMailingListPublicOrIsMember]
