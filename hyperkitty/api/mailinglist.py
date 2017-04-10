@@ -67,6 +67,7 @@ class MailingListDetail(generics.RetrieveAPIView):
 
     queryset = MailingList.objects.all()
     lookup_field = "name"
+    lookup_url_kwarg = "mlist_fqdn"
     serializer_class = MailingListSerializer
 
     def get_object(self):
@@ -88,3 +89,4 @@ class MailingListDetail(generics.RetrieveAPIView):
 #            raise PermissionDenied
 #        serializer = MailingListSerializer(mlist)
 #        return Response(serializer.data)
+    permission_classes = [IsMailingListPublicOrIsMember]
