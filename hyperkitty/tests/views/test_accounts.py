@@ -280,12 +280,17 @@ class LastViewsTestCase(TestCase):
         self.assertContains(response, "fa-envelope",
                             count=2, status_code=200)
 
-    def test_overview(self):
-        response = self.client.get(
-            reverse('hk_list_overview', args=["list@example.com"]))
-        # 2 in recently active, 2 in most active
+    def test_overview_top_threads(self):
+        response = self.client.get(reverse(
+            'hk_list_overview_top_threads', args=["list@example.com"]))
         self.assertContains(response, "fa-envelope",
-                            count=4, status_code=200)
+                            count=2, status_code=200)
+
+    def test_overview_recent_threads(self):
+        response = self.client.get(reverse(
+            'hk_list_overview_recent_threads', args=["list@example.com"]))
+        self.assertContains(response, "fa-envelope",
+                            count=2, status_code=200)
 
 
 class SubscriptionsTestCase(TestCase):

@@ -151,12 +151,23 @@ After this command complete, your database will be updated, you can start
 your webserver again.
 
 
-Maintenance
-===========
+Asynchronous tasks
+==================
 
 There are a few tasks in HyperKitty that need to be run at regular intervals.
 The ``example_project`` directory contains an example ``crontab`` file
 that you can put in your ``/etc/cron.d`` directory.
+
+To improve performance, HyperKitty uses a distributed task queue that offloads
+long operations to separate processes called "workers". Those workers must be
+started with the following command::
+
+    django-admin qcluster --pythonpath example_project --settings settings
+
+An example service file for systemd is provided in the ``example_project``
+directory to start the workers at boot time, and manage them like an ordinary
+system service. The service file is called ``qcluster.service``, make sure you
+edit the path to the project on the ``ExecStart`` line.
 
 
 RPMs

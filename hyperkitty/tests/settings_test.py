@@ -62,6 +62,7 @@ INSTALLED_APPS = (
     'compressor',
     'haystack',
     'django_extensions',
+    'django_q',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -299,6 +300,15 @@ HAYSTACK_CONNECTIONS = {
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 
+#
+# Asynchronous tasks
+#
+Q_CLUSTER = {
+    'orm': 'default',
+    'sync': True,
+}
+
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
@@ -327,6 +337,10 @@ LOGGING = {
         'django_mailman3.lib.mailman': {
             'handlers': ['console'],
             'level': 'ERROR',
+        },
+        'django-q': {
+            'handlers': ['console'],
+            'level': 'WARNING',
         },
     },
     'formatters': {

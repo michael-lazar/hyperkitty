@@ -29,4 +29,5 @@ class HyperKittyConfig(AppConfig):
     verbose_name = "HyperKitty"
 
     def ready(self):
-        import hyperkitty.signals  # flake8: noqa
+        # flake8: noqa
+        import hyperkitty.signals

@@ -94,13 +94,17 @@
             <h3>{% trans "Discussions You've Flagged" %} ({{ flagged_threads|length }})
                 {% if flagged_threads %}<i class="fa fa-caret-right"></i>{% endif %}
             </h3>
-            {% include "hyperkitty/fragments/overview_threads.html" with threads=flagged_threads empty=empty_messages.flagged %}
+            <div data-load-from="{% url 'hk_list_overview_favorites' mlist.name %}">
+                <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
+            </div>
         </section>
         <section id="posted-to">
             <h3>{% trans "Discussions You've Posted to" %} ({{ threads_posted_to|length }})
                 {% if threads_posted_to %}<i class="fa fa-caret-right"></i>{% endif %}
             </h3>
-            {% include "hyperkitty/fragments/overview_threads.html" with threads=threads_posted_to empty=empty_messages.posted %}
+            <div data-load-from="{% url 'hk_list_overview_posted_to' mlist.name %}">
+                <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
+            </div>
         </section>
     </div> <!-- /home, personalized threads lists -->
     {% endif %}
@@ -110,19 +114,25 @@
         <div class="anchor-link"><a id="most-recent"></a></div>
         <section id="most-recent">
             <h3>{% trans "Recently active discussions" %}</h3>
-            {% include "hyperkitty/fragments/overview_threads.html" with threads=most_active_threads empty=empty_messages.active %}
+            <div data-load-from="{% url 'hk_list_overview_recent_threads' mlist.name %}">
+                <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
+            </div>
         </section>
 
         <div class="anchor-link"><a id="most-popular"></a></div>
         <section id="most-popular">
             <h3>{% trans "Most popular discussions" %}</h3>
-            {% include "hyperkitty/fragments/overview_threads.html" with threads=pop_threads empty=empty_messages.popular %}
+            <div data-load-from="{% url 'hk_list_overview_pop_threads' mlist.name %}">
+                <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
+            </div>
         </section>
 
         <div class="anchor-link"><a id="most-active"></a></div>
         <section id="most-active">
             <h3>{% trans "Most active discussions" %}</h3>
-            {% include "hyperkitty/fragments/overview_threads.html" with threads=top_threads empty=empty_messages.active %}
+            <div data-load-from="{% url 'hk_list_overview_top_threads' mlist.name %}">
+                <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
+            </div>
         </section>
 
         {% if use_mockups %}
@@ -165,31 +175,9 @@
         <div class="row">
         <section id="most-active-poster" class="col-tn-12 col-xs-6 col-sm-12">
             <h3>{% trans "Most active posters" %}</h3>
-            {% for poster in mlist.top_posters %}
-            <div class="maker row">
-                <div class="inline-block maker-id col-tn-1">
-                    #{{forloop.counter}}
-                </div>
-                <div class="inline-block gravatar col-tn-3 col-xs-4 col-md-3">
-                    {% gravatar poster.address 120 %}
-                    <br />
-                </div>
-                <div class="gravatar-details inline-block col-tn-7 col-xs-6 col-md-7">
-                    <ul class="list-unstyled">
-                        <li><span class="maker-name">
-                            {% if poster.mailman_id %}
-                            <a href="{% url 'hk_public_user_profile' user_id=poster.mailman_id %}"
-                               title="{% trans "See the profile" %}"
-                                >{{ poster.name|escapeemail }}</a>
-                            {% else %}
-                                {{ poster.name|escapeemail }}
-                            {% endif %}
-                        </span></li>
-                        <li><span class="score">{{ poster.count }}</span> {% trans "posts" %}</li>
-                    </ul>
-                </div>
+            <div data-load-from="{% url 'hk_list_overview_top_posters' mlist.name %}">
+                <img alt="{% trans 'Loading...' %}" class="ajaxloader" src="{% static 'hyperkitty/img/ajax-loader.gif' %}" />
             </div>
-            {% endfor %}
 
         </section>
 

@@ -39,6 +39,7 @@ REQUIRES = [
     "django-extensions>=1.3.7",
     "lockfile>=0.9.1",
     "six",
+    "django-q",
 ]
 
 

@@ -25,9 +25,6 @@ from __future__ import absolute_import, unicode_literals, print_function
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
-from django.db.models.signals import pre_save, pre_delete
-from django.dispatch import receiver
-from django_mailman3.lib.cache import cache
 
 
 class Vote(models.Model):
@@ -41,26 +38,15 @@ class Vote(models.Model):
     class Meta:
         unique_together = ("email", "user")
 
-    def _clean_cache(self):
-        """Delete cached vote values for Email and Thread instance"""
-        cache.delete("Thread:%s:votes" % self.email.thread_id)
-        # re-populate the cache?
-        cache.delete("Email:%s:votes" % self.email_id)
+    def on_post_save(self):
+        self.email.on_vote_added(self)
+        self.email.thread.on_vote_added(self)
+        self.email.mailinglist.on_vote_added(self)
 
-    def on_pre_save(self):
-        self._clean_cache()
+    def on_post_delete(self):
+        self.email.on_vote_deleted(self)
+        self.email.thread.on_vote_deleted(self)
+        self.email.mailinglist.on_vote_deleted(self)
 
-    def on_pre_delete(self):
-        self._clean_cache()
 
 admin.site.register(Vote)  # noqa: E305
-
-
-@receiver(pre_save, sender=Vote)
-def on_pre_save(sender, **kwargs):
-    kwargs["instance"].on_pre_save()
-
-
-@receiver(pre_delete, sender=Vote)
-def on_pre_delete(sender, **kwargs):
-    kwargs["instance"].on_pre_delete()

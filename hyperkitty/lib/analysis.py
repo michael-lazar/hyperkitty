@@ -29,6 +29,7 @@ import networkx as nx
 
 
 def compute_thread_order_and_depth(thread):
+    # Emails must be saved, there will be DB queries in this function.
     graph = nx.DiGraph()
     thread_pos = {"d": 0, "o": 0}  # depth, order
 

@@ -27,8 +27,6 @@ from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 from .email import Email
 
@@ -69,10 +67,3 @@ class Profile(models.Model):
             mailinglist=mlist).order_by("archived_date").first()
 
 admin.site.register(Profile)  # noqa: E305
-
-
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_profile(sender, **kwargs):
-    user = kwargs["instance"]
-    if not Profile.objects.filter(user=user).exists():
-        Profile.objects.create(user=user)

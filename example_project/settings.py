@@ -62,6 +62,7 @@ INSTALLED_APPS = (
     'compressor',
     'haystack',
     'django_extensions',
+    'django_q',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -351,6 +352,16 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': (
         'rest_framework.filters.OrderingFilter',
     ),
+}
+
+
+#
+# Asynchronous tasks
+#
+Q_CLUSTER = {
+    'timeout': 300,
+    'save_limit': 100,
+    'orm': 'default',
 }
 
 

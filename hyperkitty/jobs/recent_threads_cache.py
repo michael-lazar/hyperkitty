@@ -26,7 +26,6 @@ Refresh the recent threads cache for each mailing list.
 from __future__ import absolute_import, print_function, unicode_literals
 
 from django_extensions.management.jobs import BaseJob
-from django_mailman3.lib.cache import cache
 from hyperkitty.models import MailingList
 
 
@@ -36,6 +35,5 @@ class Job(BaseJob):
 
     def execute(self):
         for mlist in MailingList.objects.all():
-            cache_key = "MailingList:%s:recent_threads" % mlist.name
-            cache.delete(cache_key)
-            mlist.recent_threads
+            for cached_value in mlist.recent_cached_values:
+                cached_value.rebuild()

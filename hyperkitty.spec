@@ -8,7 +8,7 @@ Summary:        A web interface to access GNU Mailman v3 archives
 
 License:        GPLv3
 URL:            https://gitlab.com/mailman/hyperkitty
-Source0:        http://pypi.python.org/packages/source/H/%{pypi_name}/%{pypi_name}-%{version}%{?prerel:dev}.tar.gz
+Source0:        http://pypi.python.org/packages/source/H/%{pypi_name}/%{pypi_name}-%{version}%{?prerel:.dev0}.tar.gz
 
 # Patch settings to use the FHS
 Patch0:         hyperkitty-fhs.patch
@@ -17,8 +17,10 @@ BuildArch:      noarch
 
 BuildRequires:  python-devel
 BuildRequires:  python-sphinx
+BuildRequires:  systemd
 # Unit tests in %%check
 BuildRequires:  python-django-gravatar2
+BuildRequires:  python-django-q
 BuildRequires:  python-django-rest-framework >= 2.2.0
 BuildRequires:  python-django-compressor
 BuildRequires:  python-rjsmin
@@ -45,8 +47,10 @@ BuildRequires:  python-whoosh
 BuildRequires:  checkpolicy, selinux-policy-devel, /usr/share/selinux/devel/policyhelp
 BuildRequires:  hardlink
 
+%{?systemd_requires}
 Requires:       python-django-gravatar2
 Requires:       python-django-rest-framework >= 2.2.0
+Requires:       python-django-q
 Requires:       python-django-compressor
 Requires:       python-rjsmin
 Requires:       sassc
@@ -90,7 +94,7 @@ This is the SELinux module for %{name}, install it if you are using SELinux.
 
 
 %prep
-%setup -q -n %{pypi_name}-%{version}%{?prerel:dev}
+%setup -q -n %{pypi_name}-%{version}%{?prerel:.dev0}
 %patch0 -p0
 
 # Remove bundled egg-info
@@ -154,6 +158,9 @@ install -p -m 644 -D example_project/crontab \
     %{buildroot}%{_sysconfdir}/cron.d/%{name}
 # Logs
 mkdir -p %{buildroot}%{_localstatedir}/log/%{name}/
+# Systemd
+install -p -m 644 -D example_project/qcluster.service \
+    %{buildroot}%{_unitdir}/%{name}-qcluster.service
 
 # SELinux
 for selinuxvariant in %{selinux_variants}; do
@@ -170,6 +177,8 @@ PYTHONPATH=`pwd` %{__python} example_project/manage.py test --settings=hyperkitt
 
 
 %post
+# Install the service file
+%systemd_post %{name}-qcluster.service
 # Build the static files cache
 %{_bindir}/django-admin collectstatic \
     --pythonpath=%{_sysconfdir}/%{name}/sites/default \
@@ -178,6 +187,11 @@ PYTHONPATH=`pwd` %{__python} example_project/manage.py test --settings=hyperkitt
     --pythonpath=%{_sysconfdir}/%{name}/sites/default \
     --settings=settings &>/dev/null || :
 
+%preun
+%systemd_preun %{name}-qcluster.service
+
+%postun
+%systemd_postun_with_restart %{name}-qcluster.service
 
 %post selinux
 for selinuxvariant in %{selinux_variants}; do
@@ -204,6 +218,7 @@ fi
 %config(noreplace) %attr(640,root,apache) %{_sysconfdir}/%{name}/sites/default/settings.py
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
 %config(noreplace) %{_sysconfdir}/cron.d/%{name}
+%{_unitdir}/*.service
 %{python_sitelib}/%{name}
 %{python_sitelib}/%{pypi_name}-*.egg-info
 %dir %{_localstatedir}/lib/%{name}

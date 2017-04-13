@@ -31,16 +31,11 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.nonmultipart import MIMENonMultipart
 
 from django.conf import settings
-from django.core.cache.utils import make_template_fragment_key
 from django.db import models, IntegrityError
-from django.db.models.signals import (
-    post_init, pre_save, post_save, pre_delete, post_delete)
-from django.dispatch import receiver
 from django.utils.timezone import now, get_fixed_timezone
-from django_mailman3.lib.cache import cache
 
 from hyperkitty.lib.analysis import compute_thread_order_and_depth
-from .common import get_votes
+from .common import VotesCachedValue
 from .mailinglist import MailingList
 from .thread import Thread
 from .vote import Vote
@@ -75,11 +70,17 @@ class Email(models.Model):
 
     ADDRESS_REPLACE_RE = re.compile(r"([\w.+-]+)@([\w.+-]+)")
 
+    def __init__(self, *args, **kwargs):
+        super(Email, self).__init__(*args, **kwargs)
+        self.cached_values = {
+            "votes": VotesCachedValue(self),
+        }
+
     class Meta:
         unique_together = ("mailinglist", "message_id")
 
     def get_votes(self):
-        return get_votes(self)
+        return self.cached_values["votes"]()
 
     def vote(self, value, user):
         # Checks if the user has already voted for this message.
@@ -209,35 +210,26 @@ class Email(models.Model):
         if not self.message_id_hash:
             self.message_id_hash = get_message_id_hash(self.message_id)
 
-    def _refresh_count_cache(self):
-        cache.delete("Thread:%s:emails_count" % self.thread_id)
-        cache.delete("Thread:%s:participants_count" % self.thread_id)
-        cache.delete("MailingList:%s:recent_participants_count"
-                     % self.mailinglist_id)
-        cache.delete(make_template_fragment_key(
-            "thread_participants", [self.thread_id]))
-        cache.delete("MailingList:%s:p_count_for:%s:%s"
-                     % (self.mailinglist_id, self.date.year, self.date.month))
-        # don't warm up the cache in batch mode (mass import)
-        if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
-            try:
-                self.thread.emails_count
-                self.thread.participants_count
-                self.mailinglist.recent_participants_count
-                self.mailinglist.get_participants_count_for_month(
-                    self.date.year, self.date.month)
-            except (Thread.DoesNotExist, MailingList.DoesNotExist):
-                pass  # it's post_delete, those may have been deleted too
-
     def on_post_init(self):
         self._set_message_id_hash()
 
     def on_post_created(self):
-        # refresh the count cache
-        self._refresh_count_cache()
+        self.thread.on_email_added(self)
+        self.mailinglist.on_email_added(self)
+        if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
+            # For batch imports, let the cron job do the work
+            from hyperkitty.tasks import check_orphans
+            check_orphans.delay(self.id)
 
     def on_pre_save(self):
         self._set_message_id_hash()
+        # Link to the thread
+        if self.thread_id is None:
+            # Create the thread if not found
+            thread, _thread_created = Thread.objects.get_or_create(
+                mailinglist=self.mailinglist,
+                thread_id=self.message_id_hash)
+            self.thread = thread
         # Make sure there is only one email with parent_id == None in a thread
         if self.parent_id is not None:
             return
@@ -270,48 +262,24 @@ class Email(models.Model):
             children.update(parent=self.parent)
 
     def on_post_delete(self):
-        # refresh the count cache
-        self._refresh_count_cache()
-        # update_or_clean_thread
         try:
             thread = Thread.objects.get(id=self.thread_id)
         except Thread.DoesNotExist:
-            return
-        if thread.emails.count() == 0:
-            thread.delete()
+            pass
         else:
-            if thread.starting_email is None:
-                thread.find_starting_email()
-                thread.save(update_fields=["starting_email"])
-            compute_thread_order_and_depth(thread)
+            thread.on_email_deleted(self)
+        try:
+            mlist = MailingList.objects.get(name=self.mailinglist_id)
+        except MailingList.DoesNotExist:
+            pass
+        else:
+            mlist.on_email_deleted(self)
 
+    def on_vote_added(self, vote):
+        from hyperkitty.tasks import rebuild_email_cache_votes
+        rebuild_email_cache_votes.delay(self.id)
 
-@receiver(post_init, sender=Email)
-def Email_on_post_init(sender, **kwargs):
-    kwargs["instance"].on_post_init()
-
-
-@receiver(pre_save, sender=Email)
-def Email_on_pre_save(sender, **kwargs):
-    kwargs["instance"].on_pre_save()
-
-
-@receiver(post_save, sender=Email)
-def Email_on_post_save(sender, **kwargs):
-    if kwargs["created"]:
-        kwargs["instance"].on_post_created()
-    else:
-        kwargs["instance"].on_post_save()
-
-
-@receiver(pre_delete, sender=Email)
-def Email_on_pre_delete(sender, **kwargs):
-    kwargs["instance"].on_pre_delete()
-
-
-@receiver(post_delete, sender=Email)
-def Email_on_post_delete(sender, **kwargs):
-    kwargs["instance"].on_post_delete()
+    on_vote_deleted = on_vote_added
 
 
 class Attachment(models.Model):
@@ -329,8 +297,3 @@ class Attachment(models.Model):
     def on_pre_save(self):
         # set the size
         self.size = len(self.content)
-
-
-@receiver(pre_save, sender=Attachment)
-def Attachment_on_pre_save(sender, **kwargs):
-    kwargs["instance"].on_pre_save()

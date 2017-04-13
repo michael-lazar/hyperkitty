@@ -417,10 +417,10 @@ class TestAddToList(TestCase):
         one_hour_ago = timezone.now() - datetime.timedelta(hours=1)
         self.assertTrue(stored_msg.archived_date > one_hour_ago)
 
-    def test_clear_recent_threads_cache(self):
-        # The recent threads cache must be cleared when a new message arrives
+    def test_rebuild_recent_threads_cache(self):
+        # The recent threads cache must be rebuilt when a new message arrives.
         mlist = MailingList.objects.create(name="example-list")
-        cache.set("MailingList:example-list:recent_threads", "test-value")
+        cache.set("MailingList:example-list:recent_threads", [42])
         cache.set("MailingList:example-list:recent_threads_count",
                   "test-value")
         msg = Message()
@@ -430,35 +430,11 @@ class TestAddToList(TestCase):
         msg.set_payload("Fake Message")
         m_hash = add_to_list("example-list", msg)
         thread = Thread.objects.get(thread_id=m_hash)
-        self.assertEqual(
-            cache.get("MailingList:example-list:recent_threads"), [thread.id])
-        self.assertEqual(
-            [t.thread_id for t in mlist.recent_threads], [m_hash])
+        cached_value = cache.get("MailingList:example-list:recent_threads")
+        self.assertListEqual(list(cached_value), [thread.id])
+        self.assertEqual(mlist.recent_threads[0].thread_id, m_hash)
         self.assertEqual(
             cache.get("MailingList:example-list:recent_threads_count"), 1)
-
-    def test_recent_threads_cache_high_volume(self):
-        # On high volume lists, the recent threads cache is just appended to
-        # instead of rebuilt (it will be rebuilt by a cron job daily).
-        # High volume lists are those with more than 1000 recent threads.
-        MailingList.objects.create(name="example-list")
-        existing = list(range(1000))
-        cache.set("MailingList:example-list:recent_threads", existing)
-        cache.set("MailingList:example-list:recent_threads_count",
-                  len(existing))
-        msg = Message()
-        msg["From"] = "dummy@example.com"
-        msg["Subject"] = "Fake Subject"
-        msg["Message-ID"] = "<dummy>"
-        msg.set_payload("Fake Message")
-        m_hash = add_to_list("example-list", msg)
-        thread = Thread.objects.get(thread_id=m_hash)
-        self.assertEqual(
-            cache.get("MailingList:example-list:recent_threads"),
-            existing + [thread.id])
-        self.assertEqual(
-            cache.get("MailingList:example-list:recent_threads_count"),
-            len(existing) + 1)
 
     def test_existing_thread(self):
         msg = Message()
