@@ -89,7 +89,8 @@ def last_views(request):
 @login_required
 def votes(request):
     all_votes = paginate(
-        request.user.votes.all(), request.GET.get('vpage'))
+        request.user.votes.order_by("-email__date").all(),
+        request.GET.get('vpage'))
     return render(request, 'hyperkitty/user_profile/votes.html', {
                 "votes": all_votes,
                 "subpage": "votes",
@@ -220,7 +221,8 @@ def posts(request, user_id):
         "sender_name", flat=True).first()
     # Get the messages and paginate them
     emails = Email.objects.filter(
-        mailinglist=mlist, sender__mailman_id=user_id)
+            mailinglist=mlist, sender__mailman_id=user_id
+        ).order_by("date")
     emails = paginate(emails, request.GET.get("page"))
 
     for email in emails:

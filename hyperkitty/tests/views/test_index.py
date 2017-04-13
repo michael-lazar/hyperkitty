@@ -110,7 +110,7 @@ class FindTestCase(TestCase):
             "mlist_fqdn": "list-two@example.com"}))
 
 
-@override_settings(FILTER_VHOST=True)
+@override_settings(FILTER_VHOST=True, ALLOWED_HOSTS=["*"])
 class DomainFilteringTestCase(TestCase):
 
     def _do_test(self, listdomain, vhost, expected):
