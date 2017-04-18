@@ -216,7 +216,13 @@ def rebuild_mailinglist_cache_for_month(mlist_name, year, month):
 
 @SingletonAsync.task
 def rebuild_thread_cache_new_email(thread_id):
-    thread = Thread.objects.get(id=thread_id)
+    try:
+        thread = Thread.objects.get(id=thread_id)
+    except Thread.DoesNotExist:
+        log.warning(
+            "Cannot rebuild the thread cache: thread %s does not exist.",
+            thread_id)
+        return
     for cached_key in ["participants_count", "emails_count"]:
         thread.cached_values[cached_key].rebuild()
     # Don't forget the cached template fragment.

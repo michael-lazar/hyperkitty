@@ -181,7 +181,6 @@ class Thread(models.Model):
 
     def on_email_deleted(self, email):
         from hyperkitty.tasks import rebuild_thread_cache_new_email
-        rebuild_thread_cache_new_email.delay(self.id)
         # update or cleanup thread
         if self.emails.count() == 0:
             self.delete()
@@ -191,6 +190,7 @@ class Thread(models.Model):
                 self.save(update_fields=["starting_email"])
             compute_thread_order_and_depth(self)
             self.date_active = self.emails.order_by("-date").first().date
+            rebuild_thread_cache_new_email.delay(self.id)
 
     def on_vote_added(self, vote):
         from hyperkitty.tasks import rebuild_thread_cache_votes
