@@ -60,8 +60,9 @@ class Email(models.Model):
     timezone = models.SmallIntegerField()
     in_reply_to = models.CharField(
         max_length=255, null=True, blank=True, db_index=True)
+    # Delete behavior is handled by on_pre_delete()
     parent = models.ForeignKey(
-        "self", blank=True, null=True, on_delete=models.SET_NULL,
+        "self", blank=True, null=True, on_delete=models.DO_NOTHING,
         related_name="children")
     thread = models.ForeignKey("Thread", related_name="emails")
     archived_date = models.DateTimeField(default=now, db_index=True)

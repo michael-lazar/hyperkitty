@@ -342,6 +342,14 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'WARNING',
         },
+        #'django.db.backends': {
+        #    'level': 'DEBUG',
+        #    'handlers': ['console'],
+        #},
+        #'django.db.backends.schema': {
+        #    'level': 'INFO',
+        #    'handlers': ['console'],
+        #},
     },
     'formatters': {
         'verbose': {
