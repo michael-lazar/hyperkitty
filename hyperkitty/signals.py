@@ -25,7 +25,9 @@ from django.conf import settings
 from django.db.models.signals import (
     post_init, pre_save, post_save, pre_delete, post_delete)
 from django.dispatch import receiver
+from django_mailman3.signals import mailinglist_created, mailinglist_modified
 
+from hyperkitty.lib.mailman import import_list_from_mailman
 from hyperkitty.models.email import Email, Attachment
 from hyperkitty.models.mailinglist import MailingList
 from hyperkitty.models.profile import Profile
@@ -116,3 +118,15 @@ def Vote_on_post_save(sender, **kwargs):
 @receiver(post_delete, sender=Vote)
 def Vote_on_post_delete(sender, **kwargs):
     kwargs["instance"].on_post_delete()
+
+
+# Mailman signals
+
+@receiver(mailinglist_created)
+def on_mailinglist_created(sender, **kwargs):
+    import_list_from_mailman(kwargs["list_id"])
+
+
+@receiver(mailinglist_modified)
+def on_mailinglist_modified(sender, **kwargs):
+    import_list_from_mailman(kwargs["list_id"])

@@ -25,7 +25,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 from django.contrib.auth.models import User
 from django_mailman3.lib.cache import cache
 from django_mailman3.tests.utils import FakeMMList, FakeMMPage
-from mock import Mock
+from mock import Mock, patch
 
 from hyperkitty.lib import mailman
 from hyperkitty.models import MailingList, Sender
@@ -187,3 +187,28 @@ class MailmanSyncTestCase(TestCase):
                     name="list-%02d@example.com" % i).exists())
         # Calls to MailingList.update_from_mailman()
         self.assertEqual(self.mailman_client.get_list.call_count, 20)
+
+    @patch.object(MailingList, 'update_from_mailman')
+    def test_import_list_from_mailman(self, update_from_mailman):
+        mm_mlist = FakeMMList("list@example.com")
+        self.mailman_client.get_list.side_effect = lambda lid: mm_mlist
+        mailman.import_list_from_mailman("list.example.com")
+        self.assertTrue(self.mailman_client.get_list.called)
+        self.assertEqual(
+            self.mailman_client.get_list.call_args_list[0][0],
+            ("list.example.com", ))
+        self.assertTrue(
+            MailingList.objects.filter(name="list@example.com").exists())
+        self.assertEqual(update_from_mailman.call_count, 1)
+
+    @patch.object(MailingList, 'update_from_mailman')
+    def test_import_list_from_mailman_existing(self, update_from_mailman):
+        MailingList.objects.create(name="list@example.com")
+        mm_mlist = FakeMMList("list@example.com")
+        self.mailman_client.get_list.side_effect = lambda lid: mm_mlist
+        mailman.import_list_from_mailman("list.example.com")
+        self.assertTrue(self.mailman_client.get_list.called)
+        self.assertEqual(
+            self.mailman_client.get_list.call_args_list[0][0],
+            ("list.example.com", ))
+        self.assertEqual(update_from_mailman.call_count, 1)
