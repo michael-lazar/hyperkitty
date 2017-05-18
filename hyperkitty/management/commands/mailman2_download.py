@@ -31,8 +31,8 @@ import itertools
 from multiprocessing import Pool
 from datetime import date
 from optparse import make_option
-from six.moves.urllib.error import HTTPError, URLError
-from six.moves.urllib.request import urlopen
+from django.utils.six.moves.urllib.error import HTTPError, URLError
+from django.utils.six.moves.urllib.request import urlopen
 
 from django.core.management.base import BaseCommand, CommandError
 from hyperkitty.management.utils import setup_logging
