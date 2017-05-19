@@ -25,24 +25,19 @@ Author: Aurelien Bompard <abompard@fedoraproject.org>
 
 from __future__ import absolute_import, unicode_literals
 
-import errno
 import importlib
 import logging
-import os.path
 from binascii import crc32
 from functools import wraps
-from tempfile import gettempdir
 
-from django.conf import settings
 from django.core.cache.utils import make_template_fragment_key
 from django_mailman3.lib.cache import cache
 from django_q.conf import Conf
 from django_q.tasks import Async
-from lockfile import AlreadyLocked, LockFailed
-from lockfile.pidlockfile import PIDLockFile
 from mailmanclient import MailmanConnectionError
 
 from hyperkitty.lib.analysis import compute_thread_order_and_depth
+from hyperkitty.lib.utils import run_with_lock
 from hyperkitty.models.email import Email
 from hyperkitty.models.mailinglist import MailingList
 from hyperkitty.models.sender import Sender
@@ -148,56 +143,18 @@ def async_task(f):
     return wrapper
 
 
-# File-based locking
-
-def run_with_lock(fn, *args, **kwargs):
-    lock = PIDLockFile(getattr(
-        settings, "HYPERKITTY_JOBS_UPDATE_INDEX_LOCKFILE",
-        os.path.join(gettempdir(), "hyperkitty-jobs-update-index.lock")))
-    try:
-        lock.acquire(timeout=-1)
-    except AlreadyLocked:
-        if check_pid(lock.read_pid()):
-            log.warning("The job 'update_index' is already running")
-            return
-        else:
-            lock.break_lock()
-            lock.acquire(timeout=-1)
-    except LockFailed as e:
-        log.warning("Could not obtain a lock for the 'update_index' "
-                    "job (%s)", e)
-        return
-    try:
-        fn(*args, **kwargs)
-    except Exception as e:
-        log.exception("Failed to update the fulltext index: %s", e)
-    finally:
-        lock.release()
-
-
-def check_pid(pid):
-    """ Check For the existence of a unix pid. """
-    if pid is None:
-        return False
-    try:
-        os.kill(pid, 0)
-    except OSError as e:
-        if e.errno == errno.ESRCH:
-            # if errno !=3, we may just not be allowed to send the signal
-            return False
-    return True
-
-
 #
 # Tasks
 #
 
 @SingletonAsync.task
 def update_search_index():
+    """Update the full-text index"""
     run_with_lock(update_index, remove=False)
 
 # @SingletonAsync.task
 # def update_and_clean_search_index():
+#     """Update the full-text index and clean old entries"""
 #     run_with_lock(update_index, remove=True)
 
 

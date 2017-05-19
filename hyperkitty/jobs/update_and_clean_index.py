@@ -26,7 +26,9 @@ Update the full-text index
 from __future__ import absolute_import, print_function, unicode_literals
 
 from django_extensions.management.jobs import BaseJob
-from hyperkitty.jobs.update_index import run_with_lock
+
+from hyperkitty.lib.utils import run_with_lock
+from hyperkitty.search_indexes import update_index
 
 
 class Job(BaseJob):
@@ -34,4 +36,4 @@ class Job(BaseJob):
     when = "monthly"
 
     def execute(self):
-        run_with_lock(remove=True)
+        run_with_lock(update_index, remove=True)

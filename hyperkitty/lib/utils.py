@@ -22,16 +22,27 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-import re
 import email.utils
+import errno
+import logging
+import os
+import os.path
+import re
 from base64 import b32encode
-from hashlib import sha1
-from email.header import decode_header
 from datetime import timedelta
+from email.header import decode_header
+from hashlib import sha1
+from tempfile import gettempdir
 
 import dateutil.parser
 import dateutil.tz
+from django.conf import settings
 from django.utils import timezone
+from lockfile import AlreadyLocked, LockFailed
+from lockfile.pidlockfile import PIDLockFile
+
+
+log = logging.getLogger(__name__)
 
 
 def get_message_id_hash(msg_id):
@@ -148,6 +159,46 @@ def stripped_subject(mlist, subject):
     if subject.lower().startswith(mlist.subject_prefix.lower()):
         subject = subject[len(mlist.subject_prefix):]
     return subject
+
+
+# File-based locking
+
+def run_with_lock(fn, *args, **kwargs):
+    lock = PIDLockFile(getattr(
+        settings, "HYPERKITTY_JOBS_UPDATE_INDEX_LOCKFILE",
+        os.path.join(gettempdir(), "hyperkitty-jobs-update-index.lock")))
+    try:
+        lock.acquire(timeout=-1)
+    except AlreadyLocked:
+        if check_pid(lock.read_pid()):
+            log.warning("The job 'update_index' is already running")
+            return
+        else:
+            lock.break_lock()
+            lock.acquire(timeout=-1)
+    except LockFailed as e:
+        log.warning("Could not obtain a lock for the 'update_index' "
+                    "job (%s)", e)
+        return
+    try:
+        fn(*args, **kwargs)
+    except Exception as e:
+        log.exception("Failed to update the fulltext index: %s", e)
+    finally:
+        lock.release()
+
+
+def check_pid(pid):
+    """ Check For the existence of a unix pid. """
+    if pid is None:
+        return False
+    try:
+        os.kill(pid, 0)
+    except OSError as e:
+        if e.errno == errno.ESRCH:
+            # if errno !=3, we may just not be allowed to send the signal
+            return False
+    return True
 
 
 # import time
