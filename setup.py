@@ -22,6 +22,9 @@ with open('hyperkitty/__init__.py') as fp:
 # Requirements
 REQUIRES = [
     "Django>=1.8",
+    # Don't upgrade to 1.11 until django-haystack supports it:
+    # https://github.com/django-haystack/django-haystack/pull/1499
+    "Django<1.11",
     "django_mailman3>=1.0.0",
     "django-gravatar2>=1.0.6",
     "djangorestframework>=3.0.0",
