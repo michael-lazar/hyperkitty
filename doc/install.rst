@@ -121,6 +121,11 @@ command::
 Thread categories can be edited and added from the Django administration
 interface (append ``/admin`` to your base URL).
 
+You must also make sure that Mailman has generated the databases files that
+Postfix (or another MTA) will use to lookup the lists.  Otherwise SMTP delivery
+will fail, and that will also impact HyperKitty when it will try to validate
+email addresses on registration.
+
 
 Customization
 =============
