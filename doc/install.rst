@@ -124,7 +124,10 @@ interface (append ``/admin`` to your base URL).
 You must also make sure that Mailman has generated the databases files that
 Postfix (or another MTA) will use to lookup the lists.  Otherwise SMTP delivery
 will fail, and that will also impact HyperKitty when it will try to validate
-email addresses on registration.
+email addresses on registration.  You can force Mailman to generate those
+database files with the following command::
+
+    mailman aliases
 
 
 Customization
