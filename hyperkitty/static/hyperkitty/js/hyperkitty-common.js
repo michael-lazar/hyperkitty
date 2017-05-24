@@ -240,7 +240,10 @@ function ajax_chart(url, elements, props) {
  * Misc.
  */
 
-function setup_disabled_tooltips() {
+function setup_tooltips() {
+    // Setup tooltips
+    $("body").tooltip({selector: '[data-toggle="tooltip"]'});
+    // Setup disabled tooltips
     $("body")
         .tooltip({selector: "a.disabled"})
         .on("click", "a.disabled", function(e) {
@@ -301,9 +304,10 @@ function setup_expander() {
 
 $(document).ready(function() {
     setup_vote();
-    setup_disabled_tooltips();
+    setup_tooltips();
     setup_flash_messages();
     setup_emails_list();
     setup_send_as();
     setup_expander();
+    setup_fixed_font();
 });

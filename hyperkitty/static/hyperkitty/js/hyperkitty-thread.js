@@ -370,3 +370,13 @@ function setup_reattach() {
         });
     }).submit();
 }
+
+
+/*
+ * Handle click on the "fixed-font" toggle.
+ */
+function setup_fixed_font() {
+    $(document).on("click", ".toggle-font", function() {
+        $(this).parents('.email').find('.email-body').toggleClass('fixed')
+    });
+}

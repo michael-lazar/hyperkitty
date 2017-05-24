@@ -122,7 +122,7 @@ class MessageViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Dummy message")
         self.assertContains(response, "Dummy Sender", count=1)
-        self.assertContains(response, "Dummy Subject", count=3)
+        self.assertContains(response, "Dummy Subject", count=2)
         self.assertNotContains(response, "dummy@example.com")
         self.assertContains(
             response,
