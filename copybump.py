@@ -19,7 +19,7 @@ new_n = '# Copyright {}-{} {}'
 MODE = (stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
 EXTENSIONS = [".py", ".js"]
 EXCLUDE_DIRS = [
-    '.git', '.tox', '_build', 'example_project',
+    '.git', '.tox', '_build', 'example_project', '.sass-cache',
     'develop-eggs', 'eggs', 'parts', 'venv',
     ]
 
@@ -69,7 +69,9 @@ class CopyrightEditor:
 
     def do_walk(self, srcdir):
         for root, dirs, files in os.walk(srcdir):
-            dirs = [d for d in dirs if d not in EXCLUDE_DIRS]
+            for excluded_dir in EXCLUDE_DIRS:
+                if excluded_dir in dirs:
+                    dirs.remove(excluded_dir)
             for filename in files:
                 if os.path.splitext(filename)[1] not in EXTENSIONS:
                     continue
