@@ -1,10 +1,12 @@
 #! /usr/bin/env python3
 
+from __future__ import unicode_literals, print_function
+
 import os
 import re
-import sys
 import stat
 import datetime
+import argparse
 
 
 FSF = 'by the Free Software Foundation, Inc.'
@@ -15,44 +17,11 @@ new_c = '# Copyright (C) {}-{} {}'
 new_n = '# Copyright {}-{} {}'
 
 MODE = (stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
-
-
-if '--noc' in sys.argv:
-    pyre = pyre_n
-    new = new_n
-    sys.argv.remove('--noc')
-else:
-    pyre = pyre_c
-    new = new_c
-
-
-def do_file(path, owner):
-    permissions = os.stat(path).st_mode & MODE
-    with open(path) as in_file, open(path + '.out', 'w') as out_file:
-        try:
-            for line in in_file:
-                mo_c = pyre_c.match(line)
-                mo_n = pyre_n.match(line)
-                if mo_c is None and mo_n is None:
-                    out_file.write(line)
-                    continue
-                mo = (mo_n if mo_c is None else mo_c)
-                start = (mo.group('end')
-                         if mo.group('start') is None
-                         else mo.group('start'))
-                if int(start) == this_year:
-                    out_file.write(line)
-                    continue
-                print(new.format(start, this_year, owner), file=out_file) # noqa
-                print('=>', path)
-                for line in in_file:
-                    out_file.write(line)
-        except UnicodeDecodeError:
-            print('Cannot convert path:', path)
-            os.remove(path + '.out')
-            return
-    os.rename(path + '.out', path)
-    os.chmod(path, permissions)
+EXTENSIONS = [".py", ".js"]
+EXCLUDE_DIRS = [
+    '.git', '.tox', '_build', 'example_project',
+    'develop-eggs', 'eggs', 'parts', 'venv',
+    ]
 
 
 def remove(dirs, path):
@@ -62,35 +31,70 @@ def remove(dirs, path):
         pass
 
 
-def do_walk():
-    try:
-        owner = sys.argv[1]
-    except IndexError:
-        owner = FSF
-    for root, dirs, files in os.walk('.'):
-        if root == '.':
-            remove(dirs, '.git')
-            remove(dirs, '.tox')
-            remove(dirs, 'bin')
-            remove(dirs, 'contrib')
-            remove(dirs, 'develop-eggs')
-            remove(dirs, 'eggs')
-            remove(dirs, 'parts')
-            remove(dirs, 'gnu-COPYING-GPL')
-            remove(dirs, '.installed.cfg')
-            remove(dirs, '.bzrignore')
-            remove(dirs, 'distribute_setup.py')
-        if root == './src':
-            remove(dirs, 'postorius.egg-info')
-        if root == './src/postorius':
-            remove(dirs, 'messages')
-        for file_name in files:
-            if os.path.splitext(file_name)[1] in ('.pyc', '.gz', '.egg'):
-                continue
-            path = os.path.join(root, file_name)
-            if os.path.isfile(path):
-                do_file(path, owner)
+class CopyrightEditor:
+
+    def __init__(self, new_template, owner):
+        self.new_template = new_template
+        self.owner = owner
+
+    def do_file(self, path):
+        permissions = os.stat(path).st_mode & MODE
+        with open(path) as in_file, open(path + '.out', 'w') as out_file:
+            try:
+                for line in in_file:
+                    mo_c = pyre_c.match(line)
+                    mo_n = pyre_n.match(line)
+                    if mo_c is None and mo_n is None:
+                        out_file.write(line)
+                        continue
+                    mo = (mo_n if mo_c is None else mo_c)
+                    start = (mo.group('end')
+                             if mo.group('start') is None
+                             else mo.group('start'))
+                    if int(start) == this_year:
+                        out_file.write(line)
+                        continue
+                    print(
+                        self.new_template.format(start, this_year, self.owner),
+                        file=out_file)
+                    print('=>', path)
+                    for line in in_file:
+                        out_file.write(line)
+            except UnicodeDecodeError:
+                print('Cannot convert path:', path)
+                os.remove(path + '.out')
+                return
+        os.rename(path + '.out', path)
+        os.chmod(path, permissions)
+
+    def do_walk(self, srcdir):
+        for root, dirs, files in os.walk(srcdir):
+            dirs = [d for d in dirs if d not in EXCLUDE_DIRS]
+            for filename in files:
+                if os.path.splitext(filename)[1] not in EXTENSIONS:
+                    continue
+                path = os.path.join(root, filename)
+                if os.path.isfile(path):
+                    self.do_file(path)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "directories", nargs="+", help="directories with source files")
+    parser.add_argument(
+        "--owner", default="by the Free Software Foundation, Inc.")
+    parser.add_argument("--noc", action="store_true", help="Don't use (C)")
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+    new_template = new_n if args.noc else new_c
+    editor = CopyrightEditor(new_template=new_template, owner=args.owner)
+    for srcdir in args.directories:
+        editor.do_walk(srcdir)
 
 
 if __name__ == '__main__':
-    do_walk()
+    main()
