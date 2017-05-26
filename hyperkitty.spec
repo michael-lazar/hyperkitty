@@ -2,7 +2,7 @@
 #%%global prerel 1
 
 Name:           hyperkitty
-Version:        1.0.4
+Version:        1.1.0
 Release:        %{?prerel:0.}1%{?dist}
 Summary:        A web interface to access GNU Mailman v3 archives
 
@@ -234,6 +234,9 @@ fi
 
 
 %changelog
+* Fri May 26 2017 Aurelien Bompard <abompard@fedoraproject.org> - 1.1.0-1
+- version 1.1.0
+
 * Wed Aug 17 2016 Aurelien Bompard <abompard@fedoraproject.org> - 1.0.4-1
 - version 1.0.4
 

@@ -3,6 +3,19 @@ News / Changelog
 ================
 
 
+1.1.0
+=====
+(2017-05-26)
+
+- Add an async task system, check out the installation documentation to run the necessary commands.
+- Support Django < 1.11 (support for 1.11 will arrive soon, only a dependency is not compatible).
+- Switch to the Allauth login library
+- Performance optimizations.
+- Better REST API.
+- Better handling of email sender names.
+- Improve graphic design.
+
+
 1.0.3
 =====
 (2015-11-15)
