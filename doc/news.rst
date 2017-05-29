@@ -3,6 +3,13 @@ News / Changelog
 ================
 
 
+1.1.1
+=====
+(2017-XX-XX)
+
+- Fix the Javascript in the overview page.
+
+
 1.1.0
 =====
 (2017-05-26)

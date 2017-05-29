@@ -21,5 +21,5 @@
 
 from __future__ import absolute_import, unicode_literals
 
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 default_app_config = 'hyperkitty.apps.HyperKittyConfig'
