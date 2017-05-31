@@ -313,7 +313,6 @@ SOCIALACCOUNT_PROVIDERS = {
 # https://pypi.python.org/pypi/django_compressor
 #
 COMPRESS_PRECOMPILERS = (
-   ('text/less', 'lessc {infile} {outfile}'),
    ('text/x-scss', 'sassc -t compressed {infile} {outfile}'),
    ('text/x-sass', 'sassc -t compressed {infile} {outfile}'),
 )
