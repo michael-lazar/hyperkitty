@@ -30,7 +30,6 @@ import gzip
 import itertools
 from multiprocessing import Pool
 from datetime import date
-from optparse import make_option
 from django.utils.six.moves.urllib.error import HTTPError, URLError
 from django.utils.six.moves.urllib.request import urlopen
 
@@ -78,21 +77,20 @@ def _archive_downloader(args):
 class Command(BaseCommand):
     args = "-u <url> -l <list_address> [-d destination]"
     help = "Download Mailman 2.1 archives"
-    option_list = BaseCommand.option_list + (
-        make_option(
-            '-u', '--url',
-            help="URL of the Mailman server"),
-        make_option(
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '-u', '--url', help="URL of the Mailman server")
+        parser.add_argument(
             '-l', '--list-address',
-            help="the full list address the mailbox will be imported to"),
-        make_option(
+            help="the full list address the mailbox will be imported to")
+        parser.add_argument(
             '-d', '--destination', default=os.getcwd(),
             help="directory to download the archives to. Defaults "
-                 "to the current directory (%default)"),
-        make_option(
+                 "to the current directory (%default)")
+        parser.add_argument(
             "-s", "--start", default="2000",
             help="first year to start looking for archives")
-        )
 
     def _check_options(self, args, options):
         if not options.get("url"):
