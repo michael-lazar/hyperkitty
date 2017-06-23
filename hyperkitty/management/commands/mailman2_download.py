@@ -87,7 +87,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '-d', '--destination', default=os.getcwd(),
             help="directory to download the archives to. Defaults "
-                 "to the current directory (%default)")
+                 "to the current directory (%(default)s)")
         parser.add_argument(
             "-s", "--start", default="2000",
             help="first year to start looking for archives")
