@@ -26,7 +26,6 @@ import datetime
 import json
 import zlib
 
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse, StreamingHttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
@@ -125,7 +124,6 @@ def overview(request, mlist_fqdn=None):
     if not mlist_fqdn:
         return redirect('/')
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
-    threads = mlist.recent_threads
 
     # top authors are the ones that have the most kudos.  How do we determine
     # that?  Most likes for their post?

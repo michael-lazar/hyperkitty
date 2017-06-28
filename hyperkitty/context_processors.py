@@ -25,4 +25,3 @@ from hyperkitty import VERSION
 
 def common(request):
     return {"HYPERKITTY_VERSION": VERSION}
-
