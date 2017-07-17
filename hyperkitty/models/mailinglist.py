@@ -266,7 +266,7 @@ class RecentThreads(ModelCachedValue):
 
     def get_or_set(self):
         thread_ids = super(RecentThreads, self).get_or_set()
-        return Thread.objects.filter(id__in=thread_ids)
+        return [Thread.objects.get(pk=pk) for pk in thread_ids]
 
     def add_thread(self, thread):
         # Add the thread to the recent_threads.
@@ -358,7 +358,7 @@ class TopThreads(ModelCachedValue):
 
     def get_or_set(self):
         thread_ids = super(TopThreads, self).get_or_set()
-        return Thread.objects.filter(id__in=thread_ids)
+        return [Thread.objects.get(pk=pk) for pk in thread_ids]
 
 
 class PopularThreads(ModelCachedValue):
@@ -386,4 +386,4 @@ class PopularThreads(ModelCachedValue):
 
     def get_or_set(self):
         thread_ids = super(PopularThreads, self).get_or_set()
-        return Thread.objects.filter(id__in=thread_ids)
+        return [Thread.objects.get(pk=pk) for pk in thread_ids]

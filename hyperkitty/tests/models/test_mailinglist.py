@@ -22,14 +22,18 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from email.message import Message
+from random import shuffle
 
+from django.contrib.auth.models import User
 from django.utils.timezone import utc
 from django_mailman3.tests.utils import FakeMMList
 
 from hyperkitty.lib.incoming import add_to_list
 from hyperkitty.models import MailingList, Thread, ArchivePolicy
+from hyperkitty.models.mailinglist import (
+    RecentThreads, TopThreads, PopularThreads)
 from hyperkitty.tests.utils import TestCase
 
 
@@ -169,3 +173,101 @@ class MailingListTestCase(TestCase):
             datetime(2015, 3, 31, 0, 0, 0, tzinfo=utc),
             )
         self.assertEqual(march_threads.count(), 1)
+
+
+class RecentThreadsTestCase(TestCase):
+
+    def setUp(self):
+        self.ml = MailingList.objects.create(name="list@example.com")
+        self.cached_value = RecentThreads(self.ml)
+
+    def test_order(self):
+        # The Thread instances returned by get_or_set() should be returned in
+        # the order of the list returned by get_value().
+        today = date.today()
+        ids = range(1, 21)
+        shuffle(ids)
+        # Add the emails in random order
+        for i in ids:
+            msg_date = today - timedelta(days=i)
+            msg = Message()
+            msg["From"] = "sender@example.com"
+            msg["Message-ID"] = "<msg%d>" % i
+            msg["Date"] = "%s 00:00:00 UTC" % msg_date.strftime("%Y-%m-%d")
+            msg.set_payload("message %d" % i)
+            add_to_list(self.ml.name, msg)
+        # The RecentThreads value should be reverse-sorted by date.
+        self.assertListEqual(
+            [t.starting_email.message_id for t in self.cached_value()],
+            ["msg%d" % i for i in range(1, 21)]
+            )
+
+
+class TopThreadsTestCase(TestCase):
+
+    def setUp(self):
+        self.ml = MailingList.objects.create(name="list@example.com")
+        self.cached_value = TopThreads(self.ml)
+
+    def test_order(self):
+        # The Thread instances returned by get_or_set() should be returned in
+        # the order of the list returned by get_value().
+        email_counts = range(1, 21)
+        # Create the threads in random order
+        shuffle(email_counts)
+        for email_count in email_counts:
+            msg = Message()
+            msg["From"] = "sender@example.com"
+            msg["Message-ID"] = "<msg%d>" % email_count
+            msg["Date"] = "2017-07-16 00:00:00 UTC"
+            msg.set_payload("message %d" % email_count)
+            add_to_list(self.ml.name, msg)
+            # Add the replies
+            for email_num in range(email_count):
+                msg = Message()
+                msg["From"] = "sender@example.com"
+                msg["Message-ID"] = "<msg%d-%d>" % (email_count, email_num)
+                msg["In-Reply-To"] = "<msg%d>" % email_count
+                msg["Date"] = "2017-07-16 00:00:00 UTC"
+                msg.set_payload("message %d-%d" % (email_count, email_num))
+                add_to_list(self.ml.name, msg)
+        # The TopThreads value should be reverse-sorted by number of emails.
+        self.assertListEqual(
+            [t.starting_email.message_id for t in self.cached_value()],
+            ["msg%d" % i for i in range(20, 0, -1)]
+            )
+
+
+class PopularThreadsTestCase(TestCase):
+
+    def setUp(self):
+        self.ml = MailingList.objects.create(name="list@example.com")
+        self.cached_value = PopularThreads(self.ml)
+
+    def test_order(self):
+        # The Thread instances returned by get_or_set() should be returned in
+        # the order of the list returned by get_value().
+        # Create users to vote
+        users = []
+        for uid in range(20):
+            users.append(User.objects.create(username="user%d" % uid))
+        # Create the threads to be voted on
+        votes_count = range(1, 21)
+        shuffle(votes_count)
+        # Add the emails in random order
+        for votes_num in votes_count:
+            msg = Message()
+            msg["From"] = "sender@example.com"
+            msg["Message-ID"] = "<msg%d>" % votes_num
+            msg["Date"] = "2017-07-16 00:00:00 UTC"
+            msg.set_payload("message %d" % votes_num)
+            msg_id = add_to_list(self.ml.name, msg)
+            # Vote on the thread
+            thread = Thread.objects.get(thread_id=msg_id)
+            for uid in range(votes_num):
+                thread.starting_email.vote(1, users[uid])
+        # The PopularThreads value should be reverse-sorted by vote.
+        self.assertListEqual(
+            [t.starting_email.message_id for t in self.cached_value()],
+            ["msg%d" % i for i in range(20, 0, -1)]
+            )
