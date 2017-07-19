@@ -67,7 +67,7 @@ class Email(models.Model):
     thread = models.ForeignKey("Thread", related_name="emails")
     archived_date = models.DateTimeField(default=now, db_index=True)
     thread_depth = models.IntegerField(default=0)
-    thread_order = models.IntegerField(default=0, db_index=True)
+    thread_order = models.IntegerField(null=True, blank=True, db_index=True)
 
     ADDRESS_REPLACE_RE = re.compile(r"([\w.+-]+)@([\w.+-]+)")
 

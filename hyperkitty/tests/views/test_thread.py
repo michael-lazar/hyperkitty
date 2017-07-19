@@ -29,6 +29,7 @@ import urlparse
 from email.message import Message
 
 from bs4 import BeautifulSoup
+from mock import patch
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -364,3 +365,52 @@ class ThreadTestCase(TestCase):
         url = reverse('hk_thread', args=["list@example.com", self.threadid])
         response = self.client.get(url)
         self.assertNotContains(response, "dummy@example.com", status_code=200)
+
+    def test_replies_without_starting_email(self):
+        msg = self._make_msg("id1", {"Subject": "Starting email"})
+        threadid = msg["Message-ID-Hash"]
+        self._make_msg("id2", {
+            "In-Reply-To": "<id1>", "Subject": "A reply"
+            })
+        self._make_msg("id3", {
+            "In-Reply-To": "<id2>", "Subject": "A reply"
+            })
+        self._make_msg("id4", {
+            "In-Reply-To": "<id3>", "Subject": "A reply"
+            })
+        url = reverse('hk_thread_replies', args=["list@example.com", threadid])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        resp = json.loads(response.content)
+        self.assertNotIn("Starting email", resp["replies_html"])
+        self.assertEqual(
+            resp["replies_html"].count('div class="email unread">'), 3)
+        self.assertFalse(resp["more_pending"])
+        self.assertIsNone(resp["next_offset"])
+
+    def test_replies_without_pending_emails(self):
+        msg = self._make_msg("id1", {"Subject": "Starting email"})
+        threadid = msg["Message-ID-Hash"]
+        self._make_msg("id2", {
+            "In-Reply-To": "<id1>", "Subject": "A reply"
+            })
+        with patch("hyperkitty.tasks.compute_thread_order_and_depth") as ctoad:
+            self._make_msg("id3", {
+                "In-Reply-To": "<id2>", "Subject": "A reply"
+                })
+            self._make_msg("id4", {
+                "In-Reply-To": "<id3>", "Subject": "A reply"
+                })
+        self.assertEqual(ctoad.call_count, 2)
+        self.assertIsNone(Email.objects.get(message_id="id3").thread_order)
+        self.assertIsNone(Email.objects.get(message_id="id4").thread_order)
+        # All set. Now test.
+        url = reverse('hk_thread_replies', args=["list@example.com", threadid])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        resp = json.loads(response.content)
+        self.assertNotIn("Starting email", resp["replies_html"])
+        self.assertEqual(
+            resp["replies_html"].count('div class="email unread">'), 1)
+        self.assertFalse(resp["more_pending"])
+        self.assertIsNone(resp["next_offset"])

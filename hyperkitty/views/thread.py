@@ -49,10 +49,9 @@ from hyperkitty.lib.view_helpers import (
 REPLY_RE = re.compile(r'^(re:\s*)*', re.IGNORECASE)
 
 
-def _get_thread_replies(request, thread, limit, offset=1):
+def _get_thread_replies(request, thread, limit, offset=0):
     '''
     Get and sort the replies for a thread.
-    By default, offset = 1 to skip the original message.
     '''
     if not thread:
         raise Http404
@@ -65,7 +64,11 @@ def _get_thread_replies(request, thread, limit, offset=1):
 
     mlist = thread.mailinglist
     initial_subject = stripped_subject(mlist, thread.starting_email.subject)
-    emails = list(thread.emails.order_by(sort_mode)[offset:offset+limit])
+    emails = list(thread.emails.filter(
+            thread_order__isnull=False
+        ).exclude(
+            pk=thread.starting_email.pk
+        ).order_by(sort_mode)[offset:offset+limit])
     for email in emails:
         # Extract all the votes for this message
         if request.user.is_authenticated():
@@ -195,7 +198,7 @@ def replies(request, mlist_fqdn, threadid):
     """Get JSON encoded lists with the replies and the participants"""
     # chunk_size must be an even number, or the even/odd cycle will be broken.
     chunk_size = 6
-    offset = int(request.GET.get("offset", "1"))
+    offset = int(request.GET.get("offset", "0"))
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
     thread = get_object_or_404(
         Thread, mailinglist__name=mlist_fqdn, thread_id=threadid)

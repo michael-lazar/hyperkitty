@@ -26,6 +26,7 @@ Author: Aurelien Bompard <abompard@fedoraproject.org>
 from __future__ import absolute_import, unicode_literals
 
 import networkx as nx
+from django.db import transaction
 
 
 def compute_thread_order_and_depth(thread):
@@ -51,4 +52,5 @@ def compute_thread_order_and_depth(thread):
             if not nx.is_directed_acyclic_graph(graph):
                 # I don't want reply loops in my graph, thank you very much
                 graph.remove_edge(email.parent_id, email.id)
-    walk_successors(thread.starting_email.id)
+    with transaction.atomic():
+        walk_successors(thread.starting_email.id)
