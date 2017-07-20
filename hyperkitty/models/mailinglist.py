@@ -34,6 +34,7 @@ from django_mailman3.lib.cache import cache
 from django_mailman3.lib.mailman import get_mailman_client
 from mailmanclient import MailmanConnectionError
 
+from hyperkitty.lib.utils import pgsql_disable_indexscan
 from .common import ModelCachedValue
 from .thread import Thread
 
@@ -81,6 +82,7 @@ class MailingList(models.Model):
             "top_posters": TopPosters(self),
             "top_threads": TopThreads(self),
             "popular_threads": PopularThreads(self),
+            "first_date": FirstDate(self),
         }
         self.recent_cached_values = [
             self.cached_values[key] for key in [
@@ -387,3 +389,17 @@ class PopularThreads(ModelCachedValue):
     def get_or_set(self):
         thread_ids = super(PopularThreads, self).get_or_set()
         return [Thread.objects.get(pk=pk) for pk in thread_ids]
+
+
+class FirstDate(ModelCachedValue):
+
+    cache_key = "first_date"
+
+    def get_value(self):
+        with pgsql_disable_indexscan():
+            value = self.instance.emails.order_by(
+                "date").values_list("date", flat=True).first()
+        if value is not None:
+            return value.date()
+        else:
+            return None

@@ -23,36 +23,17 @@
 from __future__ import absolute_import, unicode_literals
 
 import datetime
-from contextlib import contextmanager
 from functools import wraps
 
-from django.db import connection
 from django.http import Http404
 from django.utils.timezone import utc
 from django.utils.decorators import available_attrs
 from django.shortcuts import render
-from django_mailman3.lib.cache import cache
 from django_mailman3.lib.mailman import get_subscriptions
 
 from hyperkitty.models import ThreadCategory, MailingList
 from hyperkitty.forms import CategoryForm
 from hyperkitty.lib.posting import get_sender
-
-
-@contextmanager
-def pgsql_disable_indexscan():
-    # Sometimes PostgreSQL chooses a very inefficient query plan:
-    # https://pagure.io/fedora-infrastructure/issue/6164
-    if connection.vendor != "postgresql":
-        yield
-        return
-    with connection.cursor() as cursor:
-        cursor.execute("SET enable_indexscan = OFF")
-        try:
-            yield
-        finally:
-            cursor.execute("SET enable_indexscan = ON")
-            raise
 
 
 def get_months(mlist):
@@ -63,13 +44,7 @@ def get_months(mlist):
     :arg list_name, name of the mailing list in which this email
     should be searched.
     """
-    def _get_first_date():
-        with pgsql_disable_indexscan():
-            value = mlist.emails.order_by(
-                "date").values_list("date", flat=True).first()
-        return value
-    date_first = cache.get_or_set(
-        "MailingList:%s:first_date" % mlist.name, _get_first_date, None)
+    date_first = mlist.cached_values["first_date"]()
     now = datetime.datetime.now()
     if not date_first:
         # No messages on this list, return the current month.

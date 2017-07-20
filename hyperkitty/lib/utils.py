@@ -29,6 +29,7 @@ import os
 import os.path
 import re
 from base64 import b32encode
+from contextlib import contextmanager
 from datetime import timedelta
 from email.header import decode_header
 from hashlib import sha1
@@ -37,6 +38,7 @@ from tempfile import gettempdir
 import dateutil.parser
 import dateutil.tz
 from django.conf import settings
+from django.db import connection
 from django.utils import timezone
 from lockfile import AlreadyLocked, LockFailed
 from lockfile.pidlockfile import PIDLockFile
@@ -199,6 +201,21 @@ def check_pid(pid):
             # if errno !=3, we may just not be allowed to send the signal
             return False
     return True
+
+
+@contextmanager
+def pgsql_disable_indexscan():
+    # Sometimes PostgreSQL chooses a very inefficient query plan:
+    # https://pagure.io/fedora-infrastructure/issue/6164
+    if connection.vendor != "postgresql":
+        yield
+        return
+    with connection.cursor() as cursor:
+        cursor.execute("SET enable_indexscan = OFF")
+        try:
+            yield
+        finally:
+            cursor.execute("SET enable_indexscan = ON")
 
 
 # import time

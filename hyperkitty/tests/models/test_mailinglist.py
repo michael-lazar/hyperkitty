@@ -33,7 +33,7 @@ from django_mailman3.tests.utils import FakeMMList
 from hyperkitty.lib.incoming import add_to_list
 from hyperkitty.models import MailingList, Thread, ArchivePolicy
 from hyperkitty.models.mailinglist import (
-    RecentThreads, TopThreads, PopularThreads)
+    RecentThreads, TopThreads, PopularThreads, FirstDate)
 from hyperkitty.tests.utils import TestCase
 
 
@@ -271,3 +271,26 @@ class PopularThreadsTestCase(TestCase):
             [t.starting_email.message_id for t in self.cached_value()],
             ["msg%d" % i for i in range(20, 0, -1)]
             )
+
+
+class FirstDateTestCase(TestCase):
+
+    def setUp(self):
+        self.ml = MailingList.objects.create(name="list@example.com")
+        self.cached_value = FirstDate(self.ml)
+
+    def test_no_email(self):
+        self.assertIsNone(self.cached_value())
+
+    def test_date(self):
+        # The date should be the date of the first email in the list
+        today = date.today()
+        for i in range(1, 21):
+            msg_date = today - timedelta(days=i)
+            msg = Message()
+            msg["From"] = "sender@example.com"
+            msg["Message-ID"] = "<msg%d>" % i
+            msg["Date"] = "%s 00:00:00 UTC" % msg_date.strftime("%Y-%m-%d")
+            msg.set_payload("message %d" % i)
+            add_to_list(self.ml.name, msg)
+        self.assertEqual(self.cached_value(), today - timedelta(days=20))
