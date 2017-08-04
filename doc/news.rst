@@ -9,6 +9,9 @@ News / Changelog
 
 - Fix the Javascript in the overview page
 - Make two Django commands compatible with Django >= 1.10
+- Fix sorting in the MailingList's cache value
+- Don't show emails before they have been analyzed
+- Fix slowdown with PostgreSQL on some overview queries
 
 
 1.1.0
