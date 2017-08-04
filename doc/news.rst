@@ -5,7 +5,7 @@ News / Changelog
 
 1.1.1
 =====
-(2017-XX-XX)
+(2017-08-04)
 
 - Fix the Javascript in the overview page
 - Make two Django commands compatible with Django >= 1.10
