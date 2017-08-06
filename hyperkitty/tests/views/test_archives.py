@@ -127,7 +127,8 @@ class ListArchivesTestCase(TestCase):
     def test_overview_cleaned_cache(self):
         # Test the overview page with a clean cache (different code path for
         # MailingList.recent_threads)
-        cache.delete("MailingList:list@example.com:recent_threads")
+        mlist = MailingList.objects.get(name="list@example.com")
+        cache.delete("MailingList:%s:recent_threads" % mlist.pk)
         response = self.client.get(
             reverse('hk_list_overview', args=["list@example.com"]))
         self.assertEqual(response.status_code, 200)
