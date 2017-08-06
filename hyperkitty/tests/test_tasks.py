@@ -35,3 +35,9 @@ class TaskTestCase(TestCase):
             tasks.rebuild_thread_cache_new_email(42)
         except Thread.DoesNotExist:
             self.fail("No protection when the thread is deleted")
+
+    def test_compute_thread_positions_no_thread(self):
+        try:
+            tasks.compute_thread_positions(42)
+        except Thread.DoesNotExist:
+            self.fail("No protection when the thread is deleted")

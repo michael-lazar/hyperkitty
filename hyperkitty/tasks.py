@@ -195,7 +195,14 @@ def rebuild_cache_popular_threads(mlist_name):
 
 @SingletonAsync.task
 def compute_thread_positions(thread_id):
-    thread = Thread.objects.get(id=thread_id)
+    try:
+        thread = Thread.objects.get(id=thread_id)
+    except Thread.DoesNotExist:
+        # Maybe the thread was deleted? Not much we can do here.
+        log.warning(
+            "Cannot rebuild the thread cache: thread %s does not exist.",
+            thread_id)
+        return
     compute_thread_order_and_depth(thread)
 
 
