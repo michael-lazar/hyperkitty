@@ -7,6 +7,10 @@ News / Changelog
 =====
 (2017-XX-XX)
 
+- Use an auto-incrementing integer for the MailingLists's id.
+  **WARNING**: this migration will take a very long time (hours!) if you have
+  a lot of emails in your database.
+
 
 1.1.1
 =====
