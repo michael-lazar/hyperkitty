@@ -22,10 +22,11 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-from hyperkitty.tests.utils import TestCase
 
 from hyperkitty import tasks
+from hyperkitty.models.email import Email
 from hyperkitty.models.thread import Thread
+from hyperkitty.tests.utils import TestCase
 
 
 class TaskTestCase(TestCase):
@@ -41,3 +42,9 @@ class TaskTestCase(TestCase):
             tasks.compute_thread_positions(42)
         except Thread.DoesNotExist:
             self.fail("No protection when the thread is deleted")
+
+    def test_check_orphans_no_email(self):
+        try:
+            tasks.check_orphans(42)
+        except Email.DoesNotExist:
+            self.fail("No protection when the email is deleted")

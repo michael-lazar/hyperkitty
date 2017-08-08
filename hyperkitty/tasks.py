@@ -227,7 +227,13 @@ def check_orphans(email_id):
     When a reply is received before its original message, it must be
     re-attached when the original message arrives.
     """
-    email = Email.objects.get(id=email_id)
+    try:
+        email = Email.objects.get(id=email_id)
+    except Email.DoesNotExist:
+        # Maybe the email was deleted? Not much we can do here.
+        log.warning(
+            "Cannot check for orphans: email %s does not exist.", email_id)
+        return
     orphans = Email.objects.filter(
             mailinglist=email.mailinglist,
             in_reply_to=email.message_id,
