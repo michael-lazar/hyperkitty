@@ -12,6 +12,7 @@ News / Changelog
   a lot of emails in your database.
 - Protect a couple tasks against thread and email deletion
 - Improve performance in the cache rebuilding async task
+- Drop the ``mailman2_download`` command. (#148)
 
 
 1.1.1
