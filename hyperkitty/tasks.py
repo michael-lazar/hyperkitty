@@ -18,7 +18,7 @@
 # USA.
 
 """
-Definition of async tasks using Celery.
+Definition of async tasks using Django-Q.
 
 Author: Aurelien Bompard <abompard@fedoraproject.org>
 """
