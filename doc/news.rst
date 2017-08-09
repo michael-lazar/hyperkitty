@@ -11,6 +11,7 @@ News / Changelog
   **WARNING**: this migration will take a very long time (hours!) if you have
   a lot of emails in your database.
 - Protect a couple tasks against thread and email deletion
+- Improve performance in the cache rebuilding async task
 
 
 1.1.1

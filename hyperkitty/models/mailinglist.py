@@ -350,8 +350,11 @@ class TopThreads(ModelCachedValue):
         # Filter on the recent_threads ids instead of re-using the date
         # filter, otherwise the Sum will be computed for every thread
         # regardless of their date.
+        begin_date, end_date = self.instance.get_recent_dates()
+        recent_thread_ids = self.instance.get_threads_between(
+            begin_date, end_date).values("id")
         threads = Thread.objects.filter(
-            id__in=[t.id for t in self.instance.recent_threads]).annotate(
+            id__in=recent_thread_ids).annotate(
             models.Count("emails")).order_by("-emails__count")[:20]
         # (not sure about using .values_list() here because of the annotation)
         # Only cache the list of thread ids, or it may go over memcached's size
@@ -372,8 +375,11 @@ class PopularThreads(ModelCachedValue):
         # Filter on the recent_threads ids instead of re-using the date
         # filter, otherwise the Sum will be computed for every thread
         # regardless of their date.
+        begin_date, end_date = self.instance.get_recent_dates()
+        recent_thread_ids = self.instance.get_threads_between(
+            begin_date, end_date).values("id")
         threads = Thread.objects.filter(
-            id__in=[t.id for t in self.instance.recent_threads]).annotate(
+            id__in=recent_thread_ids).annotate(
             models.Sum("emails__votes__value")).order_by(
             "-emails__votes__value__sum")[:20]
         # (not sure about using .values_list() here because of the annotation)
