@@ -249,6 +249,16 @@ class ExportMboxTestCase(TestCase):
         self.assertEqual(len(mbox), 1)
         self.assertEqual([m["Message-ID"] for m in mbox], ["<msg2>"])
 
+    def test_bogus_dates(self):
+        base_url = reverse(
+            "hk_list_export_mbox", args=["list@example.com", "dummy"])
+        url = "{}?start=invalid".format(base_url)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 400)
+        url = "{}?end=2017-01-01/".format(base_url)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 400)
+
 
 class PrivateArchivesTestCase(TestCase):
 
