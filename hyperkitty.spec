@@ -25,7 +25,7 @@ BuildRequires:  python-django-rest-framework >= 2.2.0
 BuildRequires:  python-django-compressor
 BuildRequires:  python-rjsmin
 BuildRequires:  sassc
-BuildRequires:  python-mailman-client
+BuildRequires:  python-mailman-client >= 3.1.1
 BuildRequires:  python-robot-detection
 BuildRequires:  pytz
 BuildRequires:  python-django-paintstore
@@ -53,7 +53,7 @@ Requires:       python-django-q
 Requires:       python-django-compressor
 Requires:       python-rjsmin
 Requires:       sassc
-Requires:       python-mailman-client
+Requires:       python-mailman-client >= 3.1.1
 Requires:       python-robot-detection
 Requires:       pytz
 Requires:       python-django-paintstore
