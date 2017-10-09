@@ -3,9 +3,9 @@ News / Changelog
 ================
 
 
-1.1.2
+1.1.3
 =====
-(2017-XX-XX)
+(2017-10-09)
 
 - Use an auto-incrementing integer for the MailingLists's id.
   **WARNING**: this migration will take a very long time (hours!) if you have
@@ -13,6 +13,10 @@ News / Changelog
 - Protect a couple tasks against thread and email deletion
 - Improve performance in the cache rebuilding async task
 - Drop the ``mailman2_download`` command. (#148)
+- Adapt to the newest mailmanclient version (3.1.1).
+- Handle the case when a moderated list is opened and there are pending
+  subscriptions. (#152)
+- Protect export_mbox against malformed URLs. (#153)
 
 
 1.1.1
