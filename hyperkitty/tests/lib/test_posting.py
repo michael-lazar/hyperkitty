@@ -61,7 +61,7 @@ class PostingTestCase(TestCase):
                 self.request, self.mlist, "Dummy subject", "dummy content",
                 {"In-Reply-To": "<msg>", "References": "<msg>"})
             sub_fn.assert_called_with(
-                'list@example.com', self.user, 'testuser@example.com',
+                'list.example.com', self.user, 'testuser@example.com',
                 'Django User')
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].recipients(), ["list@example.com"])
@@ -81,7 +81,7 @@ class PostingTestCase(TestCase):
                 self.request, self.mlist, "Subject", "Content",
                 {"From": "otheremail@example.com"})
             sub_fn.assert_called_with(
-                'list@example.com', self.user, 'otheremail@example.com',
+                'list.example.com', self.user, 'otheremail@example.com',
                 'Django User')
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].recipients(), ["list@example.com"])

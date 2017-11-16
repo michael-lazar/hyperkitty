@@ -81,7 +81,7 @@ def post_to_list(request, mlist, subject, message, headers=None,
     # Check that the user is subscribed
     try:
         subscribed_now = mailman.subscribe(
-            mlist.name, request.user, sender, display_name)
+            mlist.list_id, request.user, sender, display_name)
     except MailmanConnectionError:
         raise PostingFailed("Can't connect to Mailman's REST server, "
                             "your message has not been sent.")
