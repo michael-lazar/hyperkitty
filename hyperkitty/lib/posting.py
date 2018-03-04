@@ -37,7 +37,7 @@ class PostingFailed(Exception):
 
 def get_sender(request, mlist):
     """Returns the appropriate sender email address"""
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return None
     # Fallback to the logged-in user
     address = request.user.email
@@ -109,6 +109,6 @@ def post_to_list(request, mlist, subject, message, headers=None,
 
 def reply_subject(subject):
     if not subject.lower().startswith("re:"):
-        return u"Re: %s" % subject
+        return "Re: %s" % subject
     else:
         return subject

@@ -23,8 +23,6 @@ Definition of async tasks using Django-Q.
 Author: Aurelien Bompard <abompard@fedoraproject.org>
 """
 
-from __future__ import absolute_import, unicode_literals
-
 import importlib
 import logging
 from binascii import crc32
@@ -79,7 +77,8 @@ class SingletonAsync(Async):
         # No space allowed in memcached keys. Use CRC32 on the arguments
         # to have a fast and sufficiently unique way to identify tasks.
         self._cache_key = "task:status:%s:%s" % (
-            func_name, crc32(repr(args) + repr(kwargs)) & 0xffffffff)
+            func_name,
+            crc32((repr(args) + repr(kwargs)).encode('utf-8')) & 0xffffffff)
         super(SingletonAsync, self).__init__(
             unlock_and_call, func, self._cache_key, *args, **kwargs)
 

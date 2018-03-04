@@ -23,17 +23,14 @@
 Import the content of a mbox file into the database.
 """
 
-from __future__ import (
-    absolute_import, print_function, unicode_literals, division)
-
 import mailbox
 import os
 import re
 from datetime import datetime
 from email.utils import unquote
+from email import message_from_bytes, policy
 from traceback import print_exc
 from math import floor
-
 
 from dateutil.parser import parse as parse_date
 from dateutil import tz
@@ -136,7 +133,12 @@ class DbImporter(object):
         progress_marker = ProgressMarker(self.verbose, self.stdout)
         if not self.since:
             progress_marker.total = len(mbox)
-        for message in mbox:
+        for msg in mbox:
+            # FIXME: this converts mailbox.mboxMessage to
+            # email.message.EmailMessage
+            msg_raw = msg.as_bytes(unixfrom=False)
+            unixfrom = msg.get_from()
+            message = message_from_bytes(msg_raw, policy=policy.default)
             if self._is_too_old(message):
                 continue
             progress_marker.tick(message["Message-Id"])
@@ -144,8 +146,8 @@ class DbImporter(object):
             if message["subject"]:
                 message.replace_header(
                     "subject", TEXTWRAP_RE.sub(" ", message["subject"]))
-            if message.get_from():
-                message.set_unixfrom(message.get_from())
+            if unixfrom:
+                message.set_unixfrom(unixfrom)
             # Now insert the message
             try:
                 with transaction.atomic():
@@ -189,6 +191,7 @@ class DbImporter(object):
             progress_marker.count_imported += 1
         # self.store.search_index.flush() # Now commit to the search index
         progress_marker.finish()
+        mbox.close()
 
 
 class Command(BaseCommand):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2012-2017 by the Free Software Foundation, Inc.
+# Copyright (C) 2018 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
 #
@@ -17,13 +17,8 @@
 # You should have received a copy of the GNU General Public License along with
 # HyperKitty.  If not, see <http://www.gnu.org/licenses/>.
 #
-#
 
-from django.shortcuts import render
-
-
-def tags(request):
-    return render(request, "hyperkitty/errors/notimplemented.html", {
-        "mockup": "http://blog.linuxgrrl.com/2013/09/11/"
-                  "hyperkitty-categories/",
-    })
+try:
+    from django.core.urlresolvers import reverse                # noqa: F401
+except ImportError:
+    from django.urls import reverse                             # noqa: F401

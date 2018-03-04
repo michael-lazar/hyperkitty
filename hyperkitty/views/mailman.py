@@ -20,15 +20,19 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from __future__ import absolute_import, unicode_literals
-
 import json
-from email import message_from_file
+from email import message_from_binary_file
+from email.message import EmailMessage
+from email.policy import default
 from functools import wraps
 
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation, ImproperlyConfigured
-from django.core.urlresolvers import reverse
+try:
+    from django.core.urlresolvers import reverse
+except ImportError:
+    # For Django 2.0+
+    from django.urls import reverse
 from django.http import HttpResponse
 from django.utils.http import urlunquote
 from django.views.decorators.csrf import csrf_exempt
@@ -109,7 +113,8 @@ def archive(request):
     mlist_fqdn = request.POST["mlist"]
     if "message" not in request.FILES:
         raise SuspiciousOperation
-    msg = message_from_file(request.FILES['message'])
+    msg = message_from_binary_file(
+        request.FILES['message'], _class=EmailMessage, policy=default)
     try:
         add_to_list(mlist_fqdn, msg)
     except DuplicateMessage as e:
