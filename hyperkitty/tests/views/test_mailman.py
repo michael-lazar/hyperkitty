@@ -21,9 +21,7 @@
 #
 
 
-from __future__ import absolute_import, print_function, unicode_literals
-
-from django.core.urlresolvers import reverse
+from hyperkitty.utils import reverse
 from django.contrib.sites.models import Site
 from django_mailman3.models import MailDomain
 from hyperkitty.tests.utils import TestCase
