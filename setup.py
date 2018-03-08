@@ -39,7 +39,7 @@ REQUIRES = [
     "django-q",
     # We are constrained by Django-haystack to support Django2.0. For now, the
     # only supported version of Django is going to be 1.11
-    "Django==1.11",
+    "Django>=1.11,<1.12",
 ]
 
 
