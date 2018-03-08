@@ -21,7 +21,7 @@ with open('hyperkitty/__init__.py') as fp:
 
 # Requirements
 REQUIRES = [
-    "django_mailman3>=1.2.0a1",
+    "django_mailman3>=1.2.0a2",
     "django-gravatar2>=1.0.6",
     "djangorestframework>=3.0.0",
     "rjsmin>=1.0.6",
@@ -39,7 +39,7 @@ REQUIRES = [
     "django-q",
     # We are constrained by Django-haystack to support Django2.0. For now, the
     # only supported version of Django is going to be 1.11
-    "Django==1.11",
+    "Django>=1.11,<1.12",
 ]
 
 
