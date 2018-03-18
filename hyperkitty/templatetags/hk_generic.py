@@ -203,7 +203,7 @@ def is_message_new(context, refdate):
     last_view = context["last_view"]
     refdate = refdate.replace(tzinfo=utc)
     return (
-        user.is_authenticated() and
+        user.is_authenticated and
         (not last_view or refdate > last_view)
         )
 

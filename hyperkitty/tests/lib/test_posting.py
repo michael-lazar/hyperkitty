@@ -24,7 +24,6 @@ import uuid
 from django.contrib.auth.models import User
 from django.core import mail
 from django.test.client import RequestFactory
-from django.utils import six
 from django_mailman3.tests.utils import FakeMMList, FakeMMMember
 from mock import Mock, patch
 
@@ -135,4 +134,4 @@ class PostingTestCase(TestCase):
             FakeMMMember(self.mlist.list_id, self.mm_user.addresses[0]),
         ]
         addr = posting.get_sender(self.request, self.mlist)
-        self.assertTrue(isinstance(addr, six.string_types))
+        self.assertTrue(isinstance(addr, str))

@@ -37,7 +37,7 @@ from django.http import HttpResponse
 from django.utils.http import urlunquote
 from django.views.decorators.csrf import csrf_exempt
 from django_mailman3.models import MailDomain
-from django.utils.six.moves.urllib.parse import urljoin
+from urllib.parse import urljoin
 
 from hyperkitty.lib.incoming import add_to_list, DuplicateMessage
 from hyperkitty.lib.utils import get_message_id_hash

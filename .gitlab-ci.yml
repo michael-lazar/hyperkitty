@@ -9,10 +9,10 @@ py36-django-1.11:
   script:
   - tox -e py36-django111
 
-# py36-django-2.0:
-#   stage: test
-#   script:
-#   - tox -e py36-django20
+py36-django-2.0:
+   stage: test
+   script:
+   - tox -e py36-django20
 
 py35-django-1.11:
   stage: test
