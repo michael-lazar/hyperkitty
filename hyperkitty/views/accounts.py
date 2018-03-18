@@ -20,7 +20,7 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from django.utils.six.moves.urllib.error import HTTPError
+from urllib.error import HTTPError
 
 import dateutil.parser
 import mailmanclient

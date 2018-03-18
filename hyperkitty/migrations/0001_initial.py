@@ -76,7 +76,7 @@ class Migration(migrations.Migration):
                 ('display_name', models.CharField(max_length=255)),
                 ('description', models.TextField()),
                 ('subject_prefix', models.CharField(max_length=255)),
-                ('archive_policy', models.IntegerField(default=2, choices=[(0, b'never'), (1, b'private'), (2, b'public')])),
+                ('archive_policy', models.IntegerField(default=2, choices=[(0, 'never'), (1, 'private'), (2, 'public')])),
                 ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
             ],
             options={

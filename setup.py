@@ -33,13 +33,12 @@ REQUIRES = [
     "mailmanclient>=3.1.1",
     "python-dateutil >= 2.0",
     "networkx>=1.9.1",
-    "django-haystack>=2.5.0",
+    # django-haystack>=2.5.0 suffices for Django-1.11
+    "django-haystack>=2.8.0",
     "django-extensions>=1.3.7",
     "lockfile>=0.9.1",
     "django-q",
-    # We are constrained by Django-haystack to support Django2.0. For now, the
-    # only supported version of Django is going to be 1.11
-    "Django>=1.11,<1.12",
+    "Django>=1.11",
 ]
 
 
@@ -57,7 +56,7 @@ setup(
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Topic :: Communications :: Email :: Mailing List Servers",
-        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 3",
         "Programming Language :: JavaScript",
         ],
     keywords='email',

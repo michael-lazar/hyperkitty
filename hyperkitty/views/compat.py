@@ -25,7 +25,7 @@ import mailbox
 import datetime
 import tempfile
 import gzip
-from django.utils.six.moves import cStringIO as StringIO
+from io import StringIO
 
 try:
     from django.core.urlresolvers import reverse

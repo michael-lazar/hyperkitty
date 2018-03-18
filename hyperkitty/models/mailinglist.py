@@ -22,7 +22,7 @@
 
 import datetime
 from enum import Enum
-from django.utils.six.moves.urllib.error import HTTPError
+from urllib.error import HTTPError
 
 import dateutil.parser
 from django.conf import settings

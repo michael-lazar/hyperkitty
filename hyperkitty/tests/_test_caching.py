@@ -4,7 +4,7 @@
 import unittest
 import datetime
 import uuid
-from django.utils.six.moves.urllib.error import HTTPError
+from urllib.error import HTTPError
 
 from mock import Mock
 from mailman.email.message import Message

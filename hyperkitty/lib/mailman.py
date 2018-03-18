@@ -20,7 +20,7 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from django.utils.six.moves.urllib.error import HTTPError
+from urllib.error import HTTPError
 
 from django_mailman3.lib.cache import cache
 from django_mailman3.lib.mailman import get_mailman_client
