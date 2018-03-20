@@ -169,6 +169,26 @@ class TestAddToList(TestCase):
         self.assertEqual(Email.objects.count(), 1)
         self.assertEqual(Attachment.objects.count(), 1)
 
+    def test_bytes_attachment(self):
+        """Some attachments have content as bytes."""
+        with open(get_test_file("attachment-2.txt")) as email_file:
+            msg = message_from_file(email_file, EmailMessage, policy=default)
+        try:
+            add_to_list("example-list", msg)
+        except IntegrityError as e:
+            self.fail(e)
+        self.assertEqual(Attachment.objects.count(), 1)
+
+    def test_string_no_cset_attachment(self):
+        """Some attachments have content as str with no specified encoding."""
+        with open(get_test_file("attachment-3.txt")) as email_file:
+            msg = message_from_file(email_file, EmailMessage, policy=default)
+        try:
+            add_to_list("example-list", msg)
+        except IntegrityError as e:
+            self.fail(e)
+        self.assertEqual(Attachment.objects.count(), 1)
+
     def test_thread_neighbors(self):
         # Create 3 threads
         msg_t1_1 = EmailMessage()

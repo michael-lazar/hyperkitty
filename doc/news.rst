@@ -7,6 +7,9 @@ News / Changelog
 =====
 (201X-XX-XX)
 
+- Handle email attachments returned by Scrubber as bytes or as strings with
+  no specified encoding. (#171)
+
 
 1.1.4
 =====
