@@ -96,11 +96,15 @@ class EmailListBySender(generics.ListAPIView):
     serializer_class = EmailShortSerializer
 
     def get_queryset(self):
-        return Email.objects.filter(
-                sender__mailman_id=self.kwargs["mailman_id"],
-            ).exclude(
-                mailinglist__archive_policy=ArchivePolicy.private.value
-            ).order_by("-archived_date")
+        key = self.kwargs["mailman_id"]
+        query = Email.objects.exclude(
+            mailinglist__archive_policy=ArchivePolicy.private.value
+        )
+        if "@" in key:
+            query = query.filter(sender__address=key)
+        else:
+            query = query.filter(sender__mailman_id=key)
+        return query.order_by("-archived_date")
 
 
 class EmailDetail(generics.RetrieveAPIView):
