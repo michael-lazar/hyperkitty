@@ -39,7 +39,6 @@ REQUIRES = [
     "lockfile>=0.9.1",
     "django-q",
     "Django>=1.11",
-    "Django<2.0",
 ]
 
 
