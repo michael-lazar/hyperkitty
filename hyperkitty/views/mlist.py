@@ -20,14 +20,14 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from __future__ import absolute_import, unicode_literals
-
 import datetime
 import json
 import zlib
 
-from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponse, StreamingHttpResponse
+
+from django.urls import reverse
+from django.http import (
+    Http404, HttpResponse, StreamingHttpResponse, HttpResponseBadRequest)
 from django.shortcuts import redirect, render, get_object_or_404
 from django.utils import formats, timezone
 from django.utils.dateformat import format as date_format
@@ -98,7 +98,7 @@ def _thread_list(request, mlist, threads,
     for thread in threads:
         # Favorites
         thread.favorite = False
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             try:
                 Favorite.objects.get(thread=thread, user=request.user)
             except Favorite.DoesNotExist:
@@ -203,7 +203,7 @@ def overview_top_threads(request, mlist_fqdn):
 def overview_favorites(request, mlist_fqdn):
     """Return the threads that the logged-in user has set as favorite."""
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         favorites = [f.thread for f in Favorite.objects.filter(
             thread__mailinglist=mlist, user=request.user)]
     else:
@@ -220,7 +220,7 @@ def overview_favorites(request, mlist_fqdn):
 def overview_posted_to(request, mlist_fqdn):
     """Return the threads that the logged-in user has posted to."""
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         mm_user_id = get_mailman_user_id(request.user)
         threads_posted_to = []
         if mm_user_id is not None:
@@ -283,16 +283,19 @@ def recent_activity(request, mlist_fqdn):
 def export_mbox(request, mlist_fqdn, filename):
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
     query = mlist.emails
-    if "start" in request.GET:
-        start_date = datetime.datetime.strptime(
-            request.GET["start"], "%Y-%m-%d")
-        start_date = timezone.make_aware(start_date, timezone.utc)
-        query = query.filter(date__gte=start_date)
-    if "end" in request.GET:
-        end_date = datetime.datetime.strptime(
-            request.GET["end"], "%Y-%m-%d")
-        end_date = timezone.make_aware(end_date, timezone.utc)
-        query = query.filter(date__lt=end_date)
+    try:
+        if "start" in request.GET:
+            start_date = datetime.datetime.strptime(
+                request.GET["start"], "%Y-%m-%d")
+            start_date = timezone.make_aware(start_date, timezone.utc)
+            query = query.filter(date__gte=start_date)
+        if "end" in request.GET:
+            end_date = datetime.datetime.strptime(
+                request.GET["end"], "%Y-%m-%d")
+            end_date = timezone.make_aware(end_date, timezone.utc)
+            query = query.filter(date__lt=end_date)
+    except ValueError:
+        return HttpResponseBadRequest("Invalid dates")
     if "thread" in request.GET:
         query = query.filter(thread__thread_id=request.GET["thread"])
     if "message" in request.GET:
@@ -303,8 +306,8 @@ def export_mbox(request, mlist_fqdn, filename):
         compressor = zlib.compressobj(6, zlib.DEFLATED, zlib.MAX_WBITS | 16)
         for email in query.order_by("archived_date").all():
             msg = email.as_message()
-            yield compressor.compress(msg.as_string(unixfrom=True))
-            yield compressor.compress("\n\n")
+            yield compressor.compress(msg.as_bytes(unixfrom=True))
+            yield compressor.compress(b"\n\n")
         yield compressor.flush()
     response = StreamingHttpResponse(
         stream_mbox(query), content_type="application/gzip")

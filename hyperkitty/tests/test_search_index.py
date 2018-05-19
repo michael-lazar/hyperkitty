@@ -20,9 +20,7 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from __future__ import absolute_import, print_function, unicode_literals
-
-from email.message import Message
+from email.message import EmailMessage
 
 from django.apps import apps
 from haystack.query import SearchQuerySet
@@ -44,7 +42,7 @@ class SearchIndexTestCase(SearchEnabledTestCase):
         apps.get_app_config('haystack').signal_processor.setup()
 
     def _add_message(self, msgid="msg"):
-        msg = Message()
+        msg = EmailMessage()
         msg["From"] = "Dummy Sender <dummy@example.com>"
         msg["Message-ID"] = "<%s>" % msgid
         msg["Subject"] = "Dummy message"

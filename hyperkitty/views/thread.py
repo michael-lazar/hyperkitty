@@ -21,15 +21,17 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from __future__ import absolute_import, unicode_literals
-
 import datetime
 import re
 import json
 
 import robot_detection
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+try:
+    from django.core.urlresolvers import reverse
+except ImportError:
+    # For Django 2.0+
+    from django.urls import reverse
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
@@ -49,10 +51,9 @@ from hyperkitty.lib.view_helpers import (
 REPLY_RE = re.compile(r'^(re:\s*)*', re.IGNORECASE)
 
 
-def _get_thread_replies(request, thread, limit, offset=1):
+def _get_thread_replies(request, thread, limit, offset=0):
     '''
     Get and sort the replies for a thread.
-    By default, offset = 1 to skip the original message.
     '''
     if not thread:
         raise Http404
@@ -65,10 +66,14 @@ def _get_thread_replies(request, thread, limit, offset=1):
 
     mlist = thread.mailinglist
     initial_subject = stripped_subject(mlist, thread.starting_email.subject)
-    emails = list(thread.emails.order_by(sort_mode)[offset:offset+limit])
+    emails = list(thread.emails.filter(
+            thread_order__isnull=False
+        ).exclude(
+            pk=thread.starting_email.pk
+        ).order_by(sort_mode)[offset:offset+limit])
     for email in emails:
         # Extract all the votes for this message
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             email.myvote = email.votes.filter(user=request.user).first()
         else:
             email.myvote = None
@@ -99,7 +104,7 @@ def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
     starting_email = thread.starting_email
 
     sort_mode = request.GET.get("sort", "thread")
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         starting_email.myvote = starting_email.votes.filter(
             user=request.user).first()
     else:
@@ -110,7 +115,7 @@ def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
 
     # Favorites
     fav_action = "add"
-    if request.user.is_authenticated() and Favorite.objects.filter(
+    if request.user.is_authenticated and Favorite.objects.filter(
             thread=thread, user=request.user).exists():
         fav_action = "rm"
 
@@ -126,7 +131,7 @@ def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
 
     # Last view
     last_view = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         last_view_obj, created = LastView.objects.get_or_create(
                 thread=thread, user=request.user)
         if not created:
@@ -134,7 +139,7 @@ def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
             last_view_obj.save()  # update timestamp
     # get the number of unread messages
     if last_view is None:
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             unread_count = thread.emails_count
         else:
             unread_count = 0
@@ -195,7 +200,7 @@ def replies(request, mlist_fqdn, threadid):
     """Get JSON encoded lists with the replies and the participants"""
     # chunk_size must be an even number, or the even/odd cycle will be broken.
     chunk_size = 6
-    offset = int(request.GET.get("offset", "1"))
+    offset = int(request.GET.get("offset", "0"))
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
     thread = get_object_or_404(
         Thread, mailinglist__name=mlist_fqdn, thread_id=threadid)
@@ -231,7 +236,7 @@ def replies(request, mlist_fqdn, threadid):
 @check_mlist_private
 def tags(request, mlist_fqdn, threadid):
     """ Add or remove one or more tags on a given thread. """
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return HttpResponse('You must be logged in to add a tag',
                             content_type="text/plain", status=403)
     thread = get_object_or_404(
@@ -300,7 +305,7 @@ def suggest_tags(request, mlist_fqdn, threadid):
 @check_mlist_private
 def favorite(request, mlist_fqdn, threadid):
     """ Add or remove from favorites"""
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return HttpResponse('You must be logged in to have favorites',
                             content_type="text/plain", status=403)
     if request.method != 'POST':
@@ -320,7 +325,7 @@ def favorite(request, mlist_fqdn, threadid):
 @check_mlist_private
 def set_category(request, mlist_fqdn, threadid):
     """ Set the category for a given thread. """
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return HttpResponse('You must be logged in to add a tag',
                             content_type="text/plain", status=403)
     if request.method != 'POST':

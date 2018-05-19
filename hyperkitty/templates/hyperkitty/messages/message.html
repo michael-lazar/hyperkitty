@@ -23,12 +23,10 @@
                 </span>
             </div>
         </div>
-        {% if is_new %}
-        <div class="right">
-            <i class="fa fa-envelope" title="{% trans 'Unread' %}"></i>
-        </div>
-        {% endif %}
         <div class="email-date right">
+            {% if is_new %}
+            <i class="fa fa-envelope" title="{% trans 'Unread' %}"></i>
+            {% endif %}
             {% ifchanged %}
             <span class="date hidden-tn">
                 {{email.date|date:"l, j F"}}

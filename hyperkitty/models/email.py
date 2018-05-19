@@ -20,15 +20,8 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from __future__ import absolute_import, unicode_literals, print_function
-
 import re
-from email.charset import Charset, QP
-from email.encoders import encode_base64
-from email.header import Header
-from email.mime.base import MIMEBase
-from email.mime.multipart import MIMEMultipart
-from email.mime.nonmultipart import MIMENonMultipart
+from email.message import EmailMessage
 
 from django.conf import settings
 from django.db import models, IntegrityError
@@ -49,10 +42,12 @@ class Email(models.Model):
     An archived email, from a mailing-list. It is identified by both the list
     name and the message id.
     """
-    mailinglist = models.ForeignKey("MailingList", related_name="emails")
+    mailinglist = models.ForeignKey(
+        "MailingList", related_name="emails", on_delete=models.CASCADE)
     message_id = models.CharField(max_length=255, db_index=True)
     message_id_hash = models.CharField(max_length=255, db_index=True)
-    sender = models.ForeignKey("Sender", related_name="emails")
+    sender = models.ForeignKey(
+        "Sender", related_name="emails", on_delete=models.CASCADE)
     sender_name = models.CharField(max_length=255, null=True, blank=True)
     subject = models.CharField(max_length=512, db_index=True)
     content = models.TextField()
@@ -64,10 +59,11 @@ class Email(models.Model):
     parent = models.ForeignKey(
         "self", blank=True, null=True, on_delete=models.DO_NOTHING,
         related_name="children")
-    thread = models.ForeignKey("Thread", related_name="emails")
+    thread = models.ForeignKey(
+        "Thread", related_name="emails", on_delete=models.CASCADE)
     archived_date = models.DateTimeField(default=now, db_index=True)
     thread_depth = models.IntegerField(default=0)
-    thread_order = models.IntegerField(default=0, db_index=True)
+    thread_order = models.IntegerField(null=True, blank=True, db_index=True)
 
     ADDRESS_REPLACE_RE = re.compile(r"([\w.+-]+)@([\w.+-]+)")
 
@@ -76,6 +72,9 @@ class Email(models.Model):
         self.cached_values = {
             "votes": VotesCachedValue(self),
         }
+
+    def __lt__(self, other):
+        return self.date < other.date
 
     class Meta:
         unique_together = ("mailinglist", "message_id")
@@ -145,22 +144,16 @@ class Email(models.Model):
         # http://wordeology.com/computer/how-to-send-good-unicode-email-with-python.html
         # http://stackoverflow.com/questions/31714221/how-to-send-an-email-with-quoted
         # http://stackoverflow.com/questions/9403265/how-do-i-use-python/9509718#9509718
-        charset = Charset('utf-8')
-        charset.header_encoding = QP
-        charset.body_encoding = QP
-        msg = MIMEMultipart()
+        msg = EmailMessage()
 
         # Headers
         unixfrom = "From %s %s" % (
             self.sender.address, self.archived_date.strftime("%c"))
+        assert isinstance(self.sender.address, str)
         header_from = self.sender.address
         if self.sender_name and self.sender_name != self.sender.address:
             header_from = "%s <%s>" % (self.sender_name, header_from)
         header_to = self.mailinglist.name
-        if escape_addresses:
-            header_from = header_from.replace("@", " at ")
-            header_to = header_to.replace("@", " at ")
-            unixfrom = unixfrom.replace("@", " at ")
         msg.set_unixfrom(unixfrom)
         headers = (
             ("From", header_from),
@@ -168,13 +161,7 @@ class Email(models.Model):
             ("Subject", self.subject),
             )
         for header_name, header_value in headers:
-            if not header_value:
-                continue
-            try:
-                msg[header_name] = header_value.encode('ascii')
-            except UnicodeEncodeError:
-                msg[header_name] = Header(
-                    header_value.encode('utf-8'), charset).encode()
+            msg[header_name] = header_value
         tz = get_fixed_timezone(self.timezone)
         header_date = self.date.astimezone(tz).replace(microsecond=0)
         # Date format: http://tools.ietf.org/html/rfc5322#section-3.3
@@ -185,20 +172,18 @@ class Email(models.Model):
 
         # Body
         content = self.ADDRESS_REPLACE_RE.sub(r"\1(a)\2", self.content)
-        # Don't use MIMEText, it won't encode to quoted-printable
-        textpart = MIMENonMultipart("text", "plain", charset='utf-8')
-        textpart.set_payload(content, charset=charset)
-        msg.attach(textpart)
+
+        # Enforce `multipart/mixed` even when there are no attachments
+        # Q: Why are all emails supposed to be multipart?
+        if self.attachments.count() == 0:
+            msg.set_content(content, subtype='plain')
+            msg.make_mixed()
 
         # Attachments
         for attachment in self.attachments.order_by("counter"):
             mimetype = attachment.content_type.split('/', 1)
-            part = MIMEBase(mimetype[0], mimetype[1])
-            part.set_payload(attachment.content)
-            encode_base64(part)
-            part.add_header('Content-Disposition', 'attachment',
-                            filename=attachment.name)
-            msg.attach(part)
+            msg.add_attachment(attachment.content, maintype=mimetype[0],
+                               subtype=mimetype[1], filename=attachment.name)
 
         return msg
 
@@ -270,7 +255,7 @@ class Email(models.Model):
         else:
             thread.on_email_deleted(self)
         try:
-            mlist = MailingList.objects.get(name=self.mailinglist_id)
+            mlist = MailingList.objects.get(pk=self.mailinglist_id)
         except MailingList.DoesNotExist:
             pass
         else:
@@ -284,7 +269,8 @@ class Email(models.Model):
 
 
 class Attachment(models.Model):
-    email = models.ForeignKey("Email", related_name="attachments")
+    email = models.ForeignKey(
+        "Email", related_name="attachments", on_delete=models.CASCADE)
     counter = models.SmallIntegerField()
     name = models.CharField(max_length=255)
     content_type = models.CharField(max_length=255)

@@ -20,11 +20,9 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from __future__ import absolute_import, unicode_literals, print_function
-
 import datetime
 from enum import Enum
-from django.utils.six.moves.urllib.error import HTTPError
+from urllib.error import HTTPError
 
 import dateutil.parser
 from django.conf import settings
@@ -34,6 +32,7 @@ from django_mailman3.lib.cache import cache
 from django_mailman3.lib.mailman import get_mailman_client
 from mailmanclient import MailmanConnectionError
 
+from hyperkitty.lib.utils import pgsql_disable_indexscan
 from .common import ModelCachedValue
 from .thread import Thread
 
@@ -57,7 +56,7 @@ class MailingList(models.Model):
     """
     An archived mailing-list.
     """
-    name = models.CharField(max_length=254, primary_key=True)
+    name = models.CharField(max_length=254, unique=True)
     list_id = models.CharField(max_length=254, null=True, unique=True)
     display_name = models.CharField(max_length=255)
     description = models.TextField()
@@ -81,6 +80,7 @@ class MailingList(models.Model):
             "top_posters": TopPosters(self),
             "top_threads": TopThreads(self),
             "popular_threads": PopularThreads(self),
+            "first_date": FirstDate(self),
         }
         self.recent_cached_values = [
             self.cached_values[key] for key in [
@@ -136,7 +136,7 @@ class MailingList(models.Model):
         # specific warm up or rebuild: this is done by the recent_threads
         # CachedValue.
         begin_date, end_date = self.get_recent_dates()
-        cache_key = "MailingList:%s:recent_threads_count" % self.name
+        cache_key = "MailingList:%s:recent_threads_count" % self.pk
         result = cache.get(cache_key)
         if result is None:
             result = self.get_threads_between(begin_date, end_date).count()
@@ -266,7 +266,7 @@ class RecentThreads(ModelCachedValue):
 
     def get_or_set(self):
         thread_ids = super(RecentThreads, self).get_or_set()
-        return Thread.objects.filter(id__in=thread_ids)
+        return [Thread.objects.get(pk=pk) for pk in thread_ids]
 
     def add_thread(self, thread):
         # Add the thread to the recent_threads.
@@ -288,7 +288,7 @@ class ParticipantsCountForMonth(ModelCachedValue):
 
     def _get_cache_key(self, year, month):
         return "MailingList:%s:p_count_for:%s:%s" % (
-            self.instance.name, year, month)
+            self.instance.pk, year, month)
 
     def get_value(self, year, month):
         begin_date = datetime.datetime(year, month, 1, tzinfo=utc)
@@ -348,8 +348,11 @@ class TopThreads(ModelCachedValue):
         # Filter on the recent_threads ids instead of re-using the date
         # filter, otherwise the Sum will be computed for every thread
         # regardless of their date.
+        begin_date, end_date = self.instance.get_recent_dates()
+        recent_thread_ids = self.instance.get_threads_between(
+            begin_date, end_date).values("id")
         threads = Thread.objects.filter(
-            id__in=[t.id for t in self.instance.recent_threads]).annotate(
+            id__in=recent_thread_ids).annotate(
             models.Count("emails")).order_by("-emails__count")[:20]
         # (not sure about using .values_list() here because of the annotation)
         # Only cache the list of thread ids, or it may go over memcached's size
@@ -358,7 +361,7 @@ class TopThreads(ModelCachedValue):
 
     def get_or_set(self):
         thread_ids = super(TopThreads, self).get_or_set()
-        return Thread.objects.filter(id__in=thread_ids)
+        return [Thread.objects.get(pk=pk) for pk in thread_ids]
 
 
 class PopularThreads(ModelCachedValue):
@@ -370,8 +373,11 @@ class PopularThreads(ModelCachedValue):
         # Filter on the recent_threads ids instead of re-using the date
         # filter, otherwise the Sum will be computed for every thread
         # regardless of their date.
+        begin_date, end_date = self.instance.get_recent_dates()
+        recent_thread_ids = self.instance.get_threads_between(
+            begin_date, end_date).values("id")
         threads = Thread.objects.filter(
-            id__in=[t.id for t in self.instance.recent_threads]).annotate(
+            id__in=recent_thread_ids).annotate(
             models.Sum("emails__votes__value")).order_by(
             "-emails__votes__value__sum")[:20]
         # (not sure about using .values_list() here because of the annotation)
@@ -386,4 +392,18 @@ class PopularThreads(ModelCachedValue):
 
     def get_or_set(self):
         thread_ids = super(PopularThreads, self).get_or_set()
-        return Thread.objects.filter(id__in=thread_ids)
+        return [Thread.objects.get(pk=pk) for pk in thread_ids]
+
+
+class FirstDate(ModelCachedValue):
+
+    cache_key = "first_date"
+
+    def get_value(self):
+        with pgsql_disable_indexscan():
+            value = self.instance.emails.order_by(
+                "date").values_list("date", flat=True).first()
+        if value is not None:
+            return value.date()
+        else:
+            return None

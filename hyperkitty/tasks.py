@@ -18,12 +18,10 @@
 # USA.
 
 """
-Definition of async tasks using Celery.
+Definition of async tasks using Django-Q.
 
 Author: Aurelien Bompard <abompard@fedoraproject.org>
 """
-
-from __future__ import absolute_import, unicode_literals
 
 import importlib
 import logging
@@ -79,7 +77,8 @@ class SingletonAsync(Async):
         # No space allowed in memcached keys. Use CRC32 on the arguments
         # to have a fast and sufficiently unique way to identify tasks.
         self._cache_key = "task:status:%s:%s" % (
-            func_name, crc32(repr(args) + repr(kwargs)) & 0xffffffff)
+            func_name,
+            crc32((repr(args) + repr(kwargs)).encode('utf-8')) & 0xffffffff)
         super(SingletonAsync, self).__init__(
             unlock_and_call, func, self._cache_key, *args, **kwargs)
 
@@ -195,7 +194,14 @@ def rebuild_cache_popular_threads(mlist_name):
 
 @SingletonAsync.task
 def compute_thread_positions(thread_id):
-    thread = Thread.objects.get(id=thread_id)
+    try:
+        thread = Thread.objects.get(id=thread_id)
+    except Thread.DoesNotExist:
+        # Maybe the thread was deleted? Not much we can do here.
+        log.warning(
+            "Cannot rebuild the thread cache: thread %s does not exist.",
+            thread_id)
+        return
     compute_thread_order_and_depth(thread)
 
 
@@ -220,7 +226,13 @@ def check_orphans(email_id):
     When a reply is received before its original message, it must be
     re-attached when the original message arrives.
     """
-    email = Email.objects.get(id=email_id)
+    try:
+        email = Email.objects.get(id=email_id)
+    except Email.DoesNotExist:
+        # Maybe the email was deleted? Not much we can do here.
+        log.warning(
+            "Cannot check for orphans: email %s does not exist.", email_id)
+        return
     orphans = Email.objects.filter(
             mailinglist=email.mailinglist,
             in_reply_to=email.message_id,

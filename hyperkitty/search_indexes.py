@@ -19,8 +19,6 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from __future__ import absolute_import, unicode_literals, print_function
-
 from haystack import indexes
 from haystack.query import SearchQuerySet
 from haystack.management.commands.update_index import \

@@ -3,11 +3,39 @@ News / Changelog
 ================
 
 
+1.1.5
+=====
+(201X-XX-XX)
+
+- Handle email attachments returned by Scrubber as bytes or as strings with
+  no specified encoding. (#171)
+
+
+1.1.4
+=====
+(2017-10-09)
+
+- Use an auto-incrementing integer for the MailingLists's id.
+  **WARNING**: this migration will take a very long time (hours!) if you have
+  a lot of emails in your database.
+- Protect a couple tasks against thread and email deletion
+- Improve performance in the cache rebuilding async task
+- Drop the ``mailman2_download`` command. (#148)
+- Adapt to the newest mailmanclient version (3.1.1).
+- Handle the case when a moderated list is opened and there are pending
+  subscriptions. (#152)
+- Protect export_mbox against malformed URLs. (#153)
+
+
 1.1.1
 =====
-(2017-XX-XX)
+(2017-08-04)
 
-- Fix the Javascript in the overview page.
+- Fix the Javascript in the overview page
+- Make two Django commands compatible with Django >= 1.10
+- Fix sorting in the MailingList's cache value
+- Don't show emails before they have been analyzed
+- Fix slowdown with PostgreSQL on some overview queries
 
 
 1.1.0

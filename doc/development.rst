@@ -105,7 +105,7 @@ Testing
 
 Use the following command::
 
-    django-admin test --pythonpath example_project --settings settings hyperkitty
+    django-admin test --settings hyperkitty.tests.settings_test hyperkitty
 
 All test modules reside in the ``hyperkitty/tests`` directory
 and this is where you should put your own tests, too. To make the django test

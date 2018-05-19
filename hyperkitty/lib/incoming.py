@@ -20,10 +20,8 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from __future__ import absolute_import, unicode_literals, division
-
-
 import re
+from email.message import EmailMessage
 
 from django.conf import settings
 from django.utils import timezone
@@ -49,6 +47,7 @@ class DuplicateMessage(Exception):
 
 
 def add_to_list(list_name, message):
+    assert isinstance(message, EmailMessage)
     # timeit("1 start")
     mlist = MailingList.objects.get_or_create(name=list_name)[0]
     if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
@@ -74,9 +73,10 @@ def add_to_list(list_name, message):
 
     # Sender
     try:
-        from_name, from_email = parseaddr(message['From'])
-        from_name = header_to_unicode(from_name).strip()
-        sender_address = from_email.decode("ascii").strip()
+        from_str = header_to_unicode(message['From'])
+        from_name, from_email = parseaddr(from_str)
+        from_name = from_name.strip()
+        sender_address = from_email.encode('ascii').decode("ascii").strip()
     except (UnicodeDecodeError, UnicodeEncodeError):
         raise ValueError("Non-ascii sender address", message)
     if not sender_address:
@@ -153,6 +153,11 @@ def add_to_list(list_name, message):
         counter, name, content_type, encoding, content = attachment
         if Attachment.objects.filter(email=email, counter=counter).exists():
             continue
+        if isinstance(content, str):
+            if encoding is not None:
+                content = content.encode(encoding)
+            else:
+                content = content.encode('utf-8')
         Attachment.objects.create(
             email=email, counter=counter, name=name, content_type=content_type,
             encoding=encoding, content=content)

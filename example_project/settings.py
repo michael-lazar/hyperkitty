@@ -18,7 +18,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = 'change-this-on-your-production-server'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ADMINS = (
      ('HyperKitty Admin', 'root@localhost'),
@@ -31,6 +31,7 @@ SITE_ID = 1
 ALLOWED_HOSTS = [
     "localhost",  # Archiving API from Mailman, keep it.
     "lists.your-domain.org",
+    "127.0.0.1",
     # Add here all production URLs you may have.
 ]
 
@@ -77,16 +78,14 @@ INSTALLED_APPS = (
 )
 
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
     'django_mailman3.middleware.TimezoneMiddleware',
 )
 
@@ -313,7 +312,6 @@ SOCIALACCOUNT_PROVIDERS = {
 # https://pypi.python.org/pypi/django_compressor
 #
 COMPRESS_PRECOMPILERS = (
-   ('text/less', 'lessc {infile} {outfile}'),
    ('text/x-scss', 'sassc -t compressed {infile} {outfile}'),
    ('text/x-sass', 'sassc -t compressed {infile} {outfile}'),
 )
@@ -349,6 +347,7 @@ HAYSTACK_CONNECTIONS = {
 #
 REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'DEFAULT_FILTER_BACKENDS': (
         'rest_framework.filters.OrderingFilter',
     ),
@@ -388,7 +387,7 @@ LOGGING = {
             'level': 'INFO',
             #'class': 'logging.handlers.RotatingFileHandler',
             'class': 'logging.handlers.WatchedFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'hyperkitty.log'),
+            'filename': os.path.join(BASE_DIR, 'hyperkitty.log'),
             'formatter': 'verbose',
         },
     },

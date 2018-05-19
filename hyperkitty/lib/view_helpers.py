@@ -20,8 +20,6 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from __future__ import absolute_import, unicode_literals
-
 import datetime
 from functools import wraps
 
@@ -29,7 +27,6 @@ from django.http import Http404
 from django.utils.timezone import utc
 from django.utils.decorators import available_attrs
 from django.shortcuts import render
-from django_mailman3.lib.cache import cache
 from django_mailman3.lib.mailman import get_subscriptions
 
 from hyperkitty.models import ThreadCategory, MailingList
@@ -45,11 +42,7 @@ def get_months(mlist):
     :arg list_name, name of the mailing list in which this email
     should be searched.
     """
-    date_first = cache.get_or_set(
-        "MailingList:%s:first_date" % mlist.name,
-        lambda: mlist.emails.order_by(
-            "date").values_list("date", flat=True).first(),
-        None)
+    date_first = mlist.cached_values["first_date"]()
     now = datetime.datetime.now()
     if not date_first:
         # No messages on this list, return the current month.
@@ -147,7 +140,7 @@ def is_mlist_authorized(request, mlist):
         return True
     if request.user.is_superuser:
         return True
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return False
     # Private list and logged-in user: check subscriptions
     if mlist.list_id in get_subscriptions(request.user):
@@ -159,7 +152,7 @@ def is_mlist_authorized(request, mlist):
 def get_posting_form(formclass, request, mlist, data=None):
     form = formclass(data, initial={
         "sender": get_sender(request, mlist)})
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         form.fields['sender'].choices = [
             (a, a) for a in request.user.hyperkitty_profile.addresses]
     return form
