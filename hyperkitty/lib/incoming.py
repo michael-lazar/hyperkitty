@@ -153,13 +153,10 @@ def add_to_list(list_name, message):
         counter, name, content_type, encoding, content = attachment
         if Attachment.objects.filter(email=email, counter=counter).exists():
             continue
-        if isinstance(content, str):
-            if encoding is not None:
-                content = content.encode(encoding)
-            else:
-                content = content.encode('utf-8')
-        Attachment.objects.create(
+        att = Attachment.objects.create(
             email=email, counter=counter, name=name, content_type=content_type,
-            encoding=encoding, content=content)
+            encoding=encoding)
+        att.set_content(content)
+        att.save()
 
     return email.message_id_hash

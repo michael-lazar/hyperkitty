@@ -22,8 +22,11 @@
 #
 
 import json
+import os
 import uuid
+from email import message_from_file
 from email.message import EmailMessage
+from email.policy import default
 
 from allauth.account.models import EmailAddress
 from mock import Mock, patch
@@ -36,10 +39,10 @@ from django_mailman3.tests.utils import get_flash_messages
 
 from hyperkitty.lib.utils import get_message_id_hash
 from hyperkitty.lib.incoming import add_to_list
-from hyperkitty.models.email import Email
+from hyperkitty.models.email import Email, Attachment
 from hyperkitty.models.mailinglist import MailingList
 from hyperkitty.models.thread import Thread
-from hyperkitty.tests.utils import TestCase
+from hyperkitty.tests.utils import TestCase, get_test_file
 
 
 class MessageViewsTestCase(TestCase):
@@ -444,3 +447,65 @@ class MessageViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["mlist"], msg.mailinglist)
         self.assertEqual(response.context["thread"], msg.thread)
+
+    def test_attachment(self):
+        with open(get_test_file("attachment-1.txt")) as email_file:
+            msg = message_from_file(email_file, EmailMessage, policy=default)
+        add_to_list("list@example.com", msg)
+        url = reverse('hk_message_attachment', args=(
+            "list@example.com",
+            get_message_id_hash(msg["Message-Id"]),
+            "2", "puntogil.vcf",
+        ))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], "text/x-vcard")
+        self.assertEqual(response['Content-Length'], "49")
+        self.assertEqual(response['Content-Encoding'], "utf-8")
+        self.assertEqual(
+            response['Content-Disposition'],
+            "attachment; filename*=UTF-8''puntogil.vcf"
+        )
+        self.assertEqual(
+            response.content,
+            b'begin:vcard\nfn:gil\nn:;gil\nversion:2.1\nend:vcard\n\n'
+        )
+
+    def test_attachment_local_storage(self):
+        # Tests getting an attachment when it's stored on the filesystem.
+        msg = Email.objects.get(mailinglist__name="list@example.com",
+                                message_id="msg")
+        # Add the attachment object
+        att = Attachment.objects.create(
+            email=msg, counter=1, name="testattach.txt",
+            content_type="text/plain", encoding="ascii",
+        )
+        att.set_content("test_content")
+        att.save()
+        # Create the attachment on the filesystem
+        attachment_folder = os.path.join(self.tmpdir, "attachments")
+        filedir = os.path.join(
+            attachment_folder, "example.com", "list", "DH", "ZU", "5Y",
+            str(msg.id),
+        )
+        os.makedirs(filedir)
+        contents = "test content"
+        with open(os.path.join(filedir, "1"), "w") as f:
+            f.write(contents)
+        # Now get it.
+        url = reverse('hk_message_attachment', args=(
+            "list@example.com",
+            get_message_id_hash("msg"),
+            "1", "testattach.txt",
+        ))
+        with self.settings(HYPERKITTY_ATTACHMENT_FOLDER=attachment_folder):
+            response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], "text/plain")
+        self.assertEqual(response['Content-Length'], str(len(contents)))
+        self.assertEqual(response['Content-Encoding'], "ascii")
+        self.assertEqual(
+            response['Content-Disposition'],
+            "attachment; filename*=UTF-8''testattach.txt"
+        )
+        self.assertEqual(response.content, contents.encode("ascii"))
