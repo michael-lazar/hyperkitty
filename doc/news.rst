@@ -9,7 +9,6 @@ News / Changelog
 
 - Handle email attachments returned by Scrubber as bytes or as strings with
   no specified encoding. (#171)
-
 - Remove robotx.txt from Hyperkitty. It wasn't working correctly anyway.
   If you still need it, serve it from the webserver directly. (#176)
 
