@@ -103,7 +103,7 @@ def attachment(request, mlist_fqdn, message_id_hash, counter, filename):
     if att.name != filename:
         raise Http404
     # http://djangosnippets.org/snippets/1710/
-    response = HttpResponse(att.content)
+    response = HttpResponse(att.get_content())
     response['Content-Type'] = att.content_type
     response['Content-Length'] = att.size
     if att.encoding is not None:

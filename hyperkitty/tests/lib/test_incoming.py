@@ -21,6 +21,7 @@
 #
 
 import datetime
+import os
 from email.message import EmailMessage
 from email.policy import default
 from email import message_from_file
@@ -188,6 +189,48 @@ class TestAddToList(TestCase):
         except IntegrityError as e:
             self.fail(e)
         self.assertEqual(Attachment.objects.count(), 1)
+
+    def test_attachment_local_storage(self):
+        # The HYPERKITTY_ATTACHMENT_FOLDER config allows usage of a local
+        # folder for attachments.
+        with open(get_test_file("attachment-1.txt")) as email_file:
+            msg = message_from_file(email_file, EmailMessage, policy=default)
+        attachment_folder = os.path.join(self.tmpdir, "attachments")
+        with self.settings(HYPERKITTY_ATTACHMENT_FOLDER=attachment_folder):
+            add_to_list("list@example.com", msg)
+        self.assertEqual(Attachment.objects.count(), 1)
+        attachment = Attachment.objects.all().first()
+        self.assertIsNone(attachment.content, None)
+        self.assertEqual(attachment.size, 49)
+        filepath = os.path.join(
+            attachment_folder, "example.com", "list", "E3", "YP", "52",
+            "1", "2",
+        )
+        self.assertTrue(os.path.exists(filepath))
+        self.assertEqual(os.path.getsize(filepath), 49)
+
+    def test_attachment_local_storage_bad_list_name(self):
+        # The HYPERKITTY_ATTACHMENT_FOLDER config allows usage of a local
+        # folder for attachments. Verify that bad list names don't crash the
+        # app.
+        with open(get_test_file("attachment-1.txt")) as email_file:
+            msg = message_from_file(email_file, EmailMessage, policy=default)
+        attachment_folder = os.path.join(self.tmpdir, "attachments")
+        with self.settings(HYPERKITTY_ATTACHMENT_FOLDER=attachment_folder):
+            add_to_list("list.example.com", msg)
+            add_to_list("list@local@example.com", msg)
+        email1 = Email.objects.filter(
+            mailinglist__name="list.example.com").first()
+        email2 = Email.objects.filter(
+            mailinglist__name="list@local@example.com").first()
+        self.assertTrue(os.path.exists(os.path.join(
+            attachment_folder, "list.example.com", "none", "E3", "YP", "52",
+            str(email1.id), "2",
+        )))
+        self.assertTrue(os.path.exists(os.path.join(
+            attachment_folder, "example.com", "list@local", "E3", "YP", "52",
+            str(email2.id), "2",
+        )))
 
     def test_thread_neighbors(self):
         # Create 3 threads

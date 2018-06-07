@@ -20,6 +20,7 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
+import os
 import re
 from email.message import EmailMessage
 
@@ -275,12 +276,62 @@ class Attachment(models.Model):
     name = models.CharField(max_length=255)
     content_type = models.CharField(max_length=255)
     encoding = models.CharField(max_length=255, null=True)
-    size = models.IntegerField()
-    content = models.BinaryField()
+    size = models.IntegerField(null=True)
+    content = models.BinaryField(null=True)
 
     class Meta:
         unique_together = ("email", "counter")
 
     def on_pre_save(self):
         # set the size
-        self.size = len(self.content)
+        if not self.size and self.content is not None:
+            self.size = len(self.content)
+
+    def _get_folder(self):
+        global_folder = getattr(
+            settings, "HYPERKITTY_ATTACHMENT_FOLDER", None)
+        if global_folder is None:
+            return None
+        mlist = self.email.mailinglist.name
+        try:
+            listname, domain = mlist.rsplit("@", 1)
+        except ValueError:
+            listname = "none"
+            domain = mlist
+        return os.path.join(
+            global_folder, domain, listname,
+            self.email.message_id_hash[0:2],
+            self.email.message_id_hash[2:4],
+            self.email.message_id_hash[4:6],
+            str(self.email.id),
+        )
+
+    def get_content(self):
+        folder = self._get_folder()
+        if folder is None:
+            return self.content
+        filepath = os.path.join(folder, str(self.counter))
+        if not os.path.exists(filepath):
+            logger.error("Could not find local attachment %s for email %s",
+                         self.counter, self.email.id)
+            return ""
+        with open(filepath, "rb") as f:
+            content = f.read()
+        return content
+
+    def set_content(self, content):
+        if isinstance(content, str):
+            if self.encoding is not None:
+                content = content.encode(self.encoding)
+            else:
+                content = content.encode('utf-8')
+        self.size = len(content)
+        folder = self._get_folder()
+        if folder is None:
+            self.content = content
+            return
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        with open(os.path.join(folder, str(self.counter)), "wb") as f:
+            f.write(content)
+        self.content = None

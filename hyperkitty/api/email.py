@@ -25,6 +25,7 @@ from rest_framework import serializers, generics
 
 from hyperkitty.models import Email, ArchivePolicy, MailingList
 from hyperkitty.lib.view_helpers import is_mlist_authorized
+from .attachment import AttachmentSerializer
 from .sender import SenderSerializer
 from .utils import (
     MLChildHyperlinkedRelatedField,
@@ -60,10 +61,12 @@ class EmailShortSerializer(serializers.HyperlinkedModelSerializer):
 
 class EmailSerializer(EmailShortSerializer):
     votes = serializers.SerializerMethodField()
+    attachments = AttachmentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Email
-        fields = EmailShortSerializer.Meta.fields + ("votes", "content",)
+        fields = EmailShortSerializer.Meta.fields + (
+            "votes", "content", "attachments")
 
     def get_votes(self, obj):
         return obj.get_votes()

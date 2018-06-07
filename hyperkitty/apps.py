@@ -29,3 +29,4 @@ class HyperKittyConfig(AppConfig):
     def ready(self):
         # flake8: noqa
         import hyperkitty.signals
+        import hyperkitty.checks
