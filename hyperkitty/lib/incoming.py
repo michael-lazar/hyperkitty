@@ -24,6 +24,7 @@ import re
 from email.message import EmailMessage
 
 from django.conf import settings
+from django.db import DataError
 from django.utils import timezone
 from django_mailman3.lib.scrub import Scrubber
 
@@ -146,7 +147,10 @@ def add_to_list(list_name, message):
             email.parent = ref_msg
             email.thread_id = ref_msg.thread_id
 
-    email.save()
+    try:
+        email.save()
+    except DataError as e:
+        raise ValueError(str(e))
 
     # Attachments (email must have been saved before)
     for attachment in attachments:

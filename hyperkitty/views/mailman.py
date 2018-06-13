@@ -119,6 +119,11 @@ def archive(request):
         add_to_list(mlist_fqdn, msg)
     except DuplicateMessage as e:
         logger.info("Duplicate email with message-id '%s'", e.args[0])
+    except ValueError as e:
+        logger.warning("Could not archive the email with message-id '%s': %s",
+                       msg.get("Message-Id", None), e)
+        return HttpResponse(json.dumps({"error": str(e)}),
+                            content_type='application/javascript')
     url = _get_url(mlist_fqdn, msg['Message-Id'])
     logger.info("Archived message %s to %s", msg['Message-Id'], url)
     return HttpResponse(json.dumps({"url": url}),

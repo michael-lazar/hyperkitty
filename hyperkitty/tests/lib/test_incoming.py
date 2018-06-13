@@ -26,8 +26,9 @@ from email.message import EmailMessage
 from email.policy import default
 from email import message_from_file
 
+import mock
 from django.utils import timezone
-from django.db import IntegrityError
+from django.db import IntegrityError, DataError
 from django_mailman3.lib.cache import cache
 
 from hyperkitty.models import MailingList, Email, Thread, Attachment
@@ -519,3 +520,21 @@ class TestAddToList(TestCase):
         except Email.DoesNotExist:
             self.fail("No email found by id")
         self.assertEqual(email.thread, thread)
+
+    def test_data_error(self):
+        # Verify that a DataError exception when calling save() is propertly
+        # propagated.
+        msg = EmailMessage()
+        msg["From"] = "dummy@example.com"
+        msg["Subject"] = "Fake Subject"
+        msg["Message-ID"] = "<dummy>"
+        msg["Date"] = "Fri, 02 Nov 2012 16:07:54"
+        msg.set_payload("Fake Message")
+        email = mock.Mock()
+        email.save.side_effect = DataError("test error")
+        with mock.patch("hyperkitty.lib.incoming.Email") as Email:
+            Email.return_value = email
+            filter_mock = mock.Mock()
+            filter_mock.exists.return_value = False
+            Email.objects.filter.return_value = filter_mock
+            self.assertRaises(ValueError, add_to_list, "example-list", msg)
