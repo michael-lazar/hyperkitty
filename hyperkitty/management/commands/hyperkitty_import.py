@@ -27,7 +27,7 @@ import mailbox
 import os
 import re
 from datetime import datetime
-from email.utils import unquote
+from email.utils import make_msgid, unquote
 from email import message_from_bytes, policy
 from traceback import print_exc
 from math import floor
@@ -148,6 +148,8 @@ class DbImporter(object):
                     "subject", TEXTWRAP_RE.sub(" ", message["subject"]))
             if unixfrom:
                 message.set_unixfrom(unixfrom)
+            if message['message-id'] is None:
+                message['Message-ID'] = make_msgid('generated')
             # Now insert the message
             try:
                 with transaction.atomic():

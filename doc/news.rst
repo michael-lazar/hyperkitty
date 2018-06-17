@@ -13,6 +13,8 @@ News / Changelog
   If you still need it, serve it from the webserver directly. (#176)
 - Add the possibility to store attachments on the filesystem, using the
   ``HYPERKITTY_ATTACHMENT_FOLDER`` config variable.
+- If a message in the mbox passed to ``hyperkitty_import`` is missing a
+  ``Message-ID``, a generated one will be added. (#180)
 
 
 1.1.4

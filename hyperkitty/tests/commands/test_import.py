@@ -131,6 +131,28 @@ class CommandTestCase(TestCase):
         ml = MailingList.objects.first()
         self.assertEqual(ml.name, "list@example.com")
 
+    def test_missing_message_id(self):
+        msg = EmailMessage()
+        msg["From"] = "dummy@example.com"
+        msg["Date"] = "01 Feb 2015 12:00:00"
+        msg.set_payload("msg1")
+        msg2 = EmailMessage()
+        msg2["From"] = "dummy@example.com"
+        msg2["Date"] = "01 Feb 2015 12:00:00"
+        msg2.set_payload("msg2")
+        mbox = mailbox.mbox(os.path.join(self.tmpdir, "test.mbox"))
+        mbox.add(msg)
+        mbox.add(msg2)
+        mbox.close()
+        # do the import
+        output = StringIO()
+        kw = self.common_cmd_args.copy()
+        kw["stdout"] = kw["stderr"] = output
+        call_command('hyperkitty_import',
+                     os.path.join(self.tmpdir, "test.mbox"), **kw)
+        # Both messages should be archived.
+        self.assertEqual(Email.objects.count(), 2)
+
     def test_wrong_encoding(self):
         """badly encoded message, only fails on PostgreSQL"""
         db_engine = settings.DATABASES[DEFAULT_DB_ALIAS]["ENGINE"]
@@ -140,7 +162,6 @@ class CommandTestCase(TestCase):
             msg = message_from_file(email_file)
         mbox = mailbox.mbox(os.path.join(self.tmpdir, "test.mbox"))
         mbox.add(msg)
-        mbox.close()
         # Second message
         msg = EmailMessage()
         msg["From"] = "dummy@example.com"
@@ -148,6 +169,7 @@ class CommandTestCase(TestCase):
         msg["Date"] = "01 Feb 2015 12:00:00"
         msg.set_payload("msg1")
         mbox.add(msg)
+        mbox.close()
         # do the import
         output = StringIO()
         kw = self.common_cmd_args.copy()
