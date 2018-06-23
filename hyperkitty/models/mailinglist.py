@@ -28,7 +28,7 @@ import dateutil.parser
 from django.conf import settings
 from django.db import models
 from django.utils.timezone import now, utc
-from django_mailman3.lib.cache import cache
+from django.core.cache import cache
 from django_mailman3.lib.mailman import get_mailman_client
 from mailmanclient import MailmanConnectionError
 

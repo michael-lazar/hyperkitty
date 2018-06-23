@@ -29,7 +29,7 @@ from email import message_from_file
 import mock
 from django.utils import timezone
 from django.db import IntegrityError, DataError
-from django_mailman3.lib.cache import cache
+from django.core.cache import cache
 
 from hyperkitty.models import MailingList, Email, Thread, Attachment
 from hyperkitty.lib.incoming import add_to_list, DuplicateMessage

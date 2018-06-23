@@ -29,7 +29,7 @@ from binascii import crc32
 from functools import wraps
 
 from django.core.cache.utils import make_template_fragment_key
-from django_mailman3.lib.cache import cache
+from django.core.cache import cache
 from django_q.conf import Conf
 from django_q.tasks import Async
 from mailmanclient import MailmanConnectionError

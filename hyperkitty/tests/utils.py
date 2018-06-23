@@ -36,7 +36,7 @@ from django.db.migrations import Migration, RunSQL, RunPython
 from django.db.migrations.executor import MigrationExecutor
 from django.test import (
     RequestFactory, TestCase as DjangoTestCase, TransactionTestCase)
-from django_mailman3.lib.cache import cache
+from django.core.cache import cache
 from mock import Mock, patch
 
 
