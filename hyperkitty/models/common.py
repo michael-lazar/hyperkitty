@@ -20,7 +20,7 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from django_mailman3.lib.cache import cache
+from django.core.cache import cache
 
 
 class CachedValue(object):

@@ -22,7 +22,7 @@
 
 from django.contrib.auth.models import User
 from urllib.error import HTTPError
-from django_mailman3.lib.cache import cache
+from django.core.cache import cache
 from django_mailman3.tests.utils import FakeMMList, FakeMMPage
 from mock import Mock, patch
 

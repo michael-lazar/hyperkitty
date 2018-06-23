@@ -33,7 +33,7 @@ from mock import Mock
 from bs4 import BeautifulSoup
 from django.contrib.auth.models import User
 from hyperkitty.utils import reverse
-from django_mailman3.lib.cache import cache
+from django.core.cache import cache
 from django_mailman3.tests.utils import FakeMMList, FakeMMMember
 
 from hyperkitty.models import (
