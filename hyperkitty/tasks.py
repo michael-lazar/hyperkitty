@@ -111,15 +111,14 @@ class SingletonAsync(Async):
         the :py:class:`Async` class are accepted here too.
         """
         def delay(*args, **kwargs):
-            async_class = cls
             if kwargs.get("sync", False) or Conf.SYNC:
                 # Singleton locking does not work on sync calls because the
                 # lock is placed after the run() call (to have the task id).
-                async_class = Async
+                return func(*args, **kwargs)
             # Use a more intuitive task name
             if "task_name" not in kwargs:
                 kwargs["task_name"] = func.__name__ if callable(func) else func
-            task = async_class(func, *args, **kwargs)
+            task = cls(func, *args, **kwargs)
             return task.run()
         func.delay = delay
         return func
