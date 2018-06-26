@@ -66,9 +66,7 @@ def _get_thread_replies(request, thread, limit, offset=0):
 
     mlist = thread.mailinglist
     initial_subject = stripped_subject(mlist, thread.starting_email.subject)
-    emails = list(thread.emails.filter(
-            thread_order__isnull=False
-        ).exclude(
+    emails = list(thread.emails.exclude(
             pk=thread.starting_email.pk
         ).order_by(sort_mode)[offset:offset+limit])
     for email in emails:
@@ -79,6 +77,12 @@ def _get_thread_replies(request, thread, limit, offset=0):
             email.myvote = None
         # Threading position
         if sort_mode == "thread_order":
+            # If the email's thread_order is None, we set it to 1 by
+            # default. This field should be re-computed when the async job
+            # compute_thread_order_depth runs for this new email comes in
+            # and fix things.
+            if email.thread_order is None:
+                email.thread_order = 1
             email.level = email.thread_depth - 1  # replies start ragged left
             if email.level > 5:
                 email.level = 5

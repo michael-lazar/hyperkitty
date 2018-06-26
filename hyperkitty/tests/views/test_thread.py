@@ -386,7 +386,10 @@ class ThreadTestCase(TestCase):
         self.assertFalse(resp["more_pending"])
         self.assertIsNone(resp["next_offset"])
 
-    def test_replies_without_pending_emails(self):
+    def test_replies_without_thread_order_show_in_ui(self):
+        # In certain cases, emails without thread_order should show up in UI,
+        # even though they are somewhat staggered in order.
+        # See https://gitlab.com/mailman/hyperkitty/issues/151
         msg = self._make_msg("id1", {"Subject": "Starting email"})
         threadid = msg["Message-ID-Hash"]
         self._make_msg("id2", {
@@ -408,7 +411,8 @@ class ThreadTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         resp = json.loads(response.content.decode(response.charset))
         self.assertNotIn("Starting email", resp["replies_html"])
+        # Make sure there are three emails in the reply.
         self.assertEqual(
-            resp["replies_html"].count('div class="email unread">'), 1)
+            resp["replies_html"].count('div class="email unread">'), 3)
         self.assertFalse(resp["more_pending"])
         self.assertIsNone(resp["next_offset"])
