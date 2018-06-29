@@ -444,9 +444,15 @@ if DEBUG == True:
 #
 # HyperKitty-specific
 #
-
 # Only display mailing-lists from the same virtual host as the webserver
 FILTER_VHOST = False
+# Disable singleton locking for Django-Q tasks.
+HYPERKITTY_DISABLE_SINGLETON_TASKS = False
+# Maximum time between two task runs with same function and arguments.
+# This setting is mostly meant for Mailman Developers and should be used
+# with caution.
+# Default set to 10mins.
+HYPERKITTY_TASK_LOCK_TIMEOUT = 10 * 60
 
 
 try:
