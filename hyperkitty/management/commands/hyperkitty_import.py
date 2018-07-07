@@ -304,9 +304,12 @@ class Command(BaseCommand):
             #     transaction.commit()
         if options["verbosity"] >= 1:
             self.stdout.write("Warming up cache")
-            call_command("hyperkitty_warm_up_cache", list_address)
+        call_command("hyperkitty_warm_up_cache", list_address)
         if options["verbosity"] >= 1:
             self.stdout.write(
-                "The full-text search index will be updated every minute. Run "
-                "the 'manage.py runjob update_index' command to update it now."
+                "The full-text search index is not updated for this list. "
+                "It will not be updated by the 'minutely' incremental "
+                "update job. To update the index for this list, run the "
+                "'manage.py update_index_one_list {}' command."
+                .format(list_address)
                 )
