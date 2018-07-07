@@ -15,6 +15,8 @@ News / Changelog
   ``HYPERKITTY_ATTACHMENT_FOLDER`` config variable.
 - If a message in the mbox passed to ``hyperkitty_import`` is missing a
   ``Message-ID``, a generated one will be added. (#180)
+- There is a new management command ``update_index_one_list`` to update the
+  search index for a single list. (#175)
 
 
 1.1.4
