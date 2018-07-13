@@ -301,6 +301,7 @@ def suggest_tags(request, mlist_fqdn, threadid):
     return HttpResponse(json.dumps(tag_names),
                         content_type='application/javascript')
 
+
 @require_POST
 @check_mlist_private
 def favorite(request, mlist_fqdn, threadid):
