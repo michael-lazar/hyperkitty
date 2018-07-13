@@ -140,12 +140,11 @@ def vote(request, mlist_fqdn, message_id_hash):
                         content_type='application/javascript')
 
 
+@require_POST
 @login_required
 @check_mlist_private
 def reply(request, mlist_fqdn, message_id_hash):
     """Sends a reply to the list."""
-    if request.method != 'POST':
-        raise SuspiciousOperation
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
     form = get_posting_form(ReplyForm, request, mlist, request.POST)
     if not form.is_valid():
