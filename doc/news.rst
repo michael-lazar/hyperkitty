@@ -6,6 +6,12 @@ News / Changelog
 =====
 (201X-XX-XX)
 
+- Several message defects that would cause ``hyperkitty_import`` to abort will
+  now just cause the message to be skipped and allow importing to continue.
+  (#183)
+- If an imported message has no Date: header, ``hyperkitty_import`` will now
+  look for Resent-Date: and the unixfrom date before archiving the message
+  with the current date.  (#184)
 
 
 1.2.0
