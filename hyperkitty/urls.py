@@ -30,7 +30,8 @@ from hyperkitty.api import (
     mailinglist as api_mailinglist, email as api_email,
     thread as api_thread, tag as api_tag)
 from hyperkitty.views import (
-    index, accounts, mlist, message, thread, search, mailman, compat)
+    index, accounts, users, mlist, message, thread, search, categories, tags,
+    mailman, compat)
 
 
 # flake8: noqa
@@ -133,6 +134,7 @@ urlpatterns = [
     ])),
 
     # Users
+    url(r'^users/$', users.users, name='hk_users_overview'),
     url(r'^users/(?P<user_id>[^/]+)/$', accounts.public_profile, name='hk_public_user_profile'),
     url(r'^users/(?P<user_id>[^/]+)/posts$', accounts.posts, name='hk_user_posts'),
 
@@ -152,6 +154,10 @@ urlpatterns = [
     # Search
     url(r'^search$', search.search, name='hk_search'),
 
+
+    # Categories and Tags
+    url(r'^categories/$', categories.categories, name='hk_categories_overview'),
+    url(r'^tags/$', tags.tags, name='hk_tags_overview'),
 
     # Mailman archiver API
     url(r'^api/mailman/urls$', mailman.urls, name='hk_mailman_urls'),
