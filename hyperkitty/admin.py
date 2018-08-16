@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2014-2017 by the Free Software Foundation, Inc.
+# Copyright (C) 2018 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
 #
@@ -17,19 +17,22 @@
 # You should have received a copy of the GNU General Public License along with
 # HyperKitty.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Author: Aurelien Bompard <abompard@fedoraproject.org>
-#
 
-from django.db import models
-from paintstore.fields import ColorPickerField
+from django.contrib import admin
+from hyperkitty import models
 
 
-class ThreadCategory(models.Model):
-    name = models.CharField(max_length=255, db_index=True, unique=True)
-    color = ColorPickerField()
+admin.site.register(models.profile.Profile)
+admin.site.register(models.tag.Tag)
+admin.site.register(models.vote.Vote)
+admin.site.register(models.thread.LastView)
+admin.site.register(models.favorite.Favorite)
+admin.site.register(models.mailinglist.MailingList)
 
-    class Meta:
-        verbose_name_plural = "Thread categories"
 
-    def __str__(self):
-        return 'Thread category "%s"' % self.name
+@admin.register(models.category.ThreadCategory)
+class ThreadCategoryAdmin(admin.ModelAdmin):
+    def save_model(self, request, obj, form, change):
+        obj.name = obj.name.lower()
+        return super(ThreadCategoryAdmin, self).save_model(
+                     request, obj, form, change)
