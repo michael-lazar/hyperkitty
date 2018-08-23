@@ -36,7 +36,7 @@ REQUIRES = [
     "django-extensions>=1.3.7",
     "lockfile>=0.9.1",
     "django-q>=1.0.0",
-    "Django>=1.11,<2.1",
+    "Django>=1.11,<2.2",
 ]
 
 
