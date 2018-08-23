@@ -193,7 +193,7 @@ def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
         # The limit is a safety measure, don't let a bot kill the DB
         context["replies"] = _get_thread_replies(request, thread, limit=1000)
 
-    return render(request, "hyperkitty/thread.html", context)
+    return render(request, "hyperkitty/thread.html", context=context)
 
 
 @check_mlist_private
