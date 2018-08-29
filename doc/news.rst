@@ -12,6 +12,7 @@ News / Changelog
 - If an imported message has no Date: header, ``hyperkitty_import`` will now
   look for Resent-Date: and the unixfrom date before archiving the message
   with the current date.  (#184)
+- Add support for Django 2.1. Hyperkitty now supports Django 1.11-2.1 (#193)
 
 
 1.2.0
