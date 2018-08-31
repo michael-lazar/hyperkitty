@@ -4,7 +4,7 @@ News / Changelog
 
 1.2.1
 =====
-(201X-XX-XX)
+(2018-08-30)
 
 - Several message defects that would cause ``hyperkitty_import`` to abort will
   now just cause the message to be skipped and allow importing to continue.
