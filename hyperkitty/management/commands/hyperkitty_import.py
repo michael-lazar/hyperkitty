@@ -238,7 +238,8 @@ class Command(BaseCommand):
                  "for batch imports)")
         parser.add_argument(
             '--since',
-            help="only import emails later than this date")
+            help="only import emails later than this date.  Defaults to the "
+                 "date of the newest message in the existing archive if any.")
         parser.add_argument(
             '--ignore-mtime',
             action='store_true', default=False,
