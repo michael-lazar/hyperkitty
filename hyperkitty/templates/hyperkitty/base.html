@@ -148,7 +148,7 @@
                     <div class="form-group">
                         <div class="input-group">
                             <input name="q" type="text" class="form-control"
-                                   placeholder="Search {% if mlist %}this list{% else %}all lists{% endif %}"
+                                   placeholder="{% if mlist %}{% trans 'Search this list' %}{% else %}{% trans 'Search all lists' %}{% endif %}"
                                    {% if query %}value="{{ query }}"{% endif %}
                                    />
                             <span class="input-group-btn">
