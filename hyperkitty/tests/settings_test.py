@@ -383,6 +383,5 @@ if DEBUG == True:
 #
 # HyperKitty-specific
 #
-
 # Only display mailing-lists from the same virtual host as the webserver
 FILTER_VHOST = False
