@@ -96,8 +96,8 @@ class MailingList(models.Model):
 
     @property
     def is_new(self):
-        return self.created_at and \
-                now() - self.created_at <= datetime.timedelta(days=30)
+        return (self.created_at and
+                now() - self.created_at <= datetime.timedelta(days=30))
 
     def get_recent_dates(self):
         today = now()
@@ -199,7 +199,7 @@ class MailingList(models.Model):
             self.list_id = self.name.replace("@", ".")
 
     def on_thread_added(self, thread):
-        pass
+        self.cached_values["recent_threads"].add_thread(thread)
 
     def on_thread_deleted(self, thread):
         from hyperkitty.tasks import (
@@ -257,7 +257,8 @@ class RecentThreads(ModelCachedValue):
         begin_date, end_date = self.instance.get_recent_dates()
         thread_ids = self.instance.get_threads_between(
             begin_date, end_date).values_list("id", flat=True)
-        return thread_ids
+        # Convert QuerySet to a list, so that we can add/remove thread_ids.
+        return list(thread_ids)
 
     def rebuild(self):
         value = super(RecentThreads, self).rebuild()
