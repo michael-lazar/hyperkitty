@@ -328,6 +328,11 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
+        'django.template': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': 'True',
+        },
         'hyperkitty': {
             'handlers': ['console'],
             'level': 'DEBUG',
