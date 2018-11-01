@@ -51,7 +51,7 @@ def config_check(app_configs, **kwargs):
                 with open(filepath, "w") as f:
                     f.write("check")
                 os.remove(filepath)
-            except OSError as e:
+            except OSError:
                 errors.append(
                     Error(
                         'Could not write to HyperKitty\'s attachment folder',

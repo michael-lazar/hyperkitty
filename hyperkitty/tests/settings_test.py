@@ -137,13 +137,13 @@ DATABASES = {
         'PORT': '',
     }
     # Example for PostgreSQL (recommanded for production):
-    #'default': {
-    #    'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #    'NAME': 'database_name',
-    #    'USER': 'database_user',
-    #    'PASSWORD': 'database_password',
-    #    'HOST': 'localhost',
-    #}
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'database_name',
+    #     'USER': 'database_user',
+    #     'PASSWORD': 'database_password',
+    #     'HOST': 'localhost',
+    # }
 }
 
 
@@ -217,17 +217,17 @@ LOGOUT_URL = 'account_logout'
 # will appear to be coming from. Make sure you set a valid domain name,
 # otherwise the emails may get rejected.
 # https://docs.djangoproject.com/en/1.8/ref/settings/#default-from-email
-#DEFAULT_FROM_EMAIL = "mailing-lists@you-domain.org"
+# DEFAULT_FROM_EMAIL = "mailing-lists@you-domain.org"
 
 # If you enable email reporting for error messages, this is where those emails
 # will appear to be coming from. Make sure you set a valid domain name,
 # otherwise the emails may get rejected.
 # https://docs.djangoproject.com/en/1.8/ref/settings/#std:setting-SERVER_EMAIL
-#SERVER_EMAIL = 'root@your-domain.org'
+# SERVER_EMAIL = 'root@your-domain.org'
 
 
 # Compatibility with Bootstrap 3
-from django.contrib.messages import constants as messages  # flake8: noqa
+from django.contrib.messages import constants as messages  # noqa: E402
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
@@ -246,7 +246,7 @@ ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
-ACCOUNT_UNIQUE_EMAIL  = True
+ACCOUNT_UNIQUE_EMAIL = True
 
 
 #
@@ -346,14 +346,14 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'WARNING',
         },
-        #'django.db.backends': {
-        #    'level': 'DEBUG',
-        #    'handlers': ['console'],
-        #},
-        #'django.db.backends.schema': {
-        #    'level': 'INFO',
-        #    'handlers': ['console'],
-        #},
+        # 'django.db.backends': {
+        #     'level': 'DEBUG',
+        #     'handlers': ['console'],
+        # },
+        # 'django.db.backends.schema': {
+        #     'level': 'INFO',
+        #     'handlers': ['console'],
+        # },
     },
     'formatters': {
         'verbose': {
@@ -369,18 +369,18 @@ LOGGING = {
 
 # Using the cache infrastructure can significantly improve performance on a
 # production setup. This is an example with a local Memcached server.
-#CACHES = {
-#    'default': {
-#        'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
-#        'LOCATION': '127.0.0.1:11211',
-#    }
-#}
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
+#         'LOCATION': '127.0.0.1:11211',
+#     }
+# }
 
 
 # When DEBUG is True, don't actually send emails to the SMTP server, just store
 # them in a directory. This way you won't accidentally spam your mailing-lists
 # while you're fiddling with the code.
-if DEBUG == True:
+if DEBUG is True:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'emails')
 
