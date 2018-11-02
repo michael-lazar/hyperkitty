@@ -57,7 +57,7 @@ class Sender(models.Model):
                 return  # User not found in Mailman
             # normalize all possible error types
             raise MailmanConnectionError(e)
-        except ValueError as e:
+        except ValueError:
             # This smells like a badly formatted email address (saw it in the
             # wild)
             logger.warning(
