@@ -15,7 +15,7 @@ new_c = '# Copyright (C) {}-{} {}'
 new_n = '# Copyright {}-{} {}'
 
 MODE = (stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
-EXTENSIONS = [".py", ".js"]
+EXTENSIONS = [".py", ".js", ".rst"]
 EXCLUDE_DIRS = [
     '.git', '.tox', '_build', 'example_project', '.sass-cache',
     'develop-eggs', 'eggs', 'parts', 'venv',
