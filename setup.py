@@ -42,7 +42,6 @@ REQUIRES = [
     "djangorestframework>=3.0.0",
     "robot-detection>=0.3",
     "pytz>=2012",
-    "django-paintstore>=0.1.2",
     "django-compressor>=1.3",
     "mailmanclient>=3.1.1",
     "python-dateutil >= 2.0",

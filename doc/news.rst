@@ -3,10 +3,13 @@ News / Changelog
 ================
 
 
-
 1.2.2
 =====
 (201X-XX-XX)
+
+- ``paintstore`` is no longer a dependency of Hyperkitty. This change requires
+  that people change their ``settings.py`` and remove ``paintstore`` from
+  ``INSTALLED_APPS``. (See #72)
 
 
 1.2.1
