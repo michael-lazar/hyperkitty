@@ -75,13 +75,13 @@ def process_task_result(task):
 
     """
     if not task.success:
-        log.info(
+        log.error(
             'AsyncTask task "{0}" with args "{1}" and kwargs "{2}" finished with errors.'.format(  # noqa: E501
                 task.func,
                 task.args,
                 task.kwargs)
         )
-        log.debug(task.result)
+        log.error(task.result)
 
 
 class SingletonAsync(AsyncTask):
