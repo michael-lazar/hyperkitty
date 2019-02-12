@@ -58,7 +58,7 @@ def get_message_id_hash(msg_id):
 
 
 def get_message_id(message):
-    msg_id = email.utils.unquote(message['Message-Id'])
+    msg_id = email.utils.unquote(re.sub(r'\s', '', message['Message-Id']))
     # Protect against extremely long Message-Ids (there is no limit in the
     # email spec), it's set to VARCHAR(255) in the database
     if len(msg_id) >= 255:

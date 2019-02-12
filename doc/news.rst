@@ -10,6 +10,7 @@ News / Changelog
 - ``paintstore`` is no longer a dependency of Hyperkitty. This change requires
   that people change their ``settings.py`` and remove ``paintstore`` from
   ``INSTALLED_APPS``. (See #72)
+- Folded Message-ID headers will no longer break threading.  (#216)
 
 
 1.2.1
