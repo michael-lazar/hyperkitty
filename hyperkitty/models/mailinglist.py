@@ -59,7 +59,7 @@ class MailingList(models.Model):
     name = models.CharField(max_length=254, unique=True)
     list_id = models.CharField(max_length=254, null=True, unique=True)
     display_name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(null=True)
     subject_prefix = models.CharField(max_length=255)
     archive_policy = models.IntegerField(
         choices=[(p.value, p.name) for p in ArchivePolicy],

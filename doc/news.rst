@@ -11,6 +11,8 @@ News / Changelog
   that people change their ``settings.py`` and remove ``paintstore`` from
   ``INSTALLED_APPS``. (See #72)
 - Folded Message-ID headers will no longer break threading.  (#216)
+- MailingList descriptions are no longer a required field. This makes HyperKity
+  more aligned with Core. (Closes #211)
 
 
 1.2.1
