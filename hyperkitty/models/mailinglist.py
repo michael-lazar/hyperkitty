@@ -90,6 +90,9 @@ class MailingList(models.Model):
                 ]
             ]
 
+    def __str__(self):
+        return '<MailingList {}>'.format(self.name)
+
     @property
     def is_private(self):
         return self.archive_policy == ArchivePolicy.private.value
