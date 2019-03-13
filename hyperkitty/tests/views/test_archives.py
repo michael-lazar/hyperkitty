@@ -21,25 +21,26 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-import os
 import datetime
 import gzip
 import mailbox
+import os
 import shutil
 from email import message_from_bytes, policy
 from email.message import EmailMessage
 
-from mock import Mock
-from bs4 import BeautifulSoup
 from django.contrib.auth.models import User
-from hyperkitty.utils import reverse
 from django.core.cache import cache
-from django_mailman3.tests.utils import FakeMMList, FakeMMMember
 
-from hyperkitty.models import (
-    MailingList, ArchivePolicy, Sender, Thread, Favorite, Email)
+from bs4 import BeautifulSoup
+from django_mailman3.tests.utils import FakeMMList, FakeMMMember
+from mock import Mock
+
 from hyperkitty.lib.incoming import add_to_list
+from hyperkitty.models import (
+    ArchivePolicy, Email, Favorite, MailingList, Sender, Thread)
 from hyperkitty.tests.utils import TestCase
+from hyperkitty.utils import reverse
 
 
 class ListArchivesTestCase(TestCase):

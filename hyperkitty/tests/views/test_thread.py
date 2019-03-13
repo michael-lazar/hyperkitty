@@ -26,16 +26,16 @@ import re
 import urllib
 from email.message import EmailMessage
 
+from django.contrib.auth.models import User
+
 from bs4 import BeautifulSoup
+from django_mailman3.tests.utils import get_flash_messages
 from mock import patch
 
-from django.contrib.auth.models import User
-from hyperkitty.utils import reverse
-from django_mailman3.tests.utils import get_flash_messages
-
 from hyperkitty.lib.incoming import add_to_list
-from hyperkitty.models import MailingList, Thread, Tag, Tagging, Email
-from hyperkitty.tests.utils import TestCase, SearchEnabledTestCase
+from hyperkitty.models import Email, MailingList, Tag, Tagging, Thread
+from hyperkitty.tests.utils import SearchEnabledTestCase, TestCase
+from hyperkitty.utils import reverse
 
 
 class ReattachTestCase(SearchEnabledTestCase):

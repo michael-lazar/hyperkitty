@@ -34,11 +34,12 @@ from email.policy import default
 from hashlib import sha1
 from tempfile import gettempdir
 
-import dateutil.parser
-import dateutil.tz
 from django.conf import settings
 from django.db import connection
 from django.utils import timezone
+
+import dateutil.parser
+import dateutil.tz
 from lockfile import AlreadyLocked, LockFailed
 from lockfile.pidlockfile import PIDLockFile
 

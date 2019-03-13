@@ -1,10 +1,10 @@
 #! /usr/bin/env python3
 
+import argparse
+import datetime
 import os
 import re
 import stat
-import datetime
-import argparse
 
 
 FSF = 'by the Free Software Foundation, Inc.'

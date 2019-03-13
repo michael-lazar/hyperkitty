@@ -20,10 +20,9 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
-from hyperkitty.tests.utils import TestCase
-
 from hyperkitty.templatetags.hk_generic import snip_quoted
 from hyperkitty.templatetags.hk_haystack import nolongterms
+from hyperkitty.tests.utils import TestCase
 
 
 class SnipQuotedTestCase(TestCase):

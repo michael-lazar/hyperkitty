@@ -21,18 +21,20 @@
 #
 
 import datetime
+import json
 import re
 from collections import OrderedDict
 
-import json
-from dateutil.tz import tzoffset
 from django import template
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.utils.timezone import utc
 
+from dateutil.tz import tzoffset
+
 import hyperkitty.lib.posting
 from hyperkitty.lib.utils import stripped_subject
+
 
 register = template.Library()
 

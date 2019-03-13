@@ -20,7 +20,9 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
+import logging
 from collections import namedtuple
+
 from django.conf import settings
 from django.db import models
 from django.utils.timezone import now, utc
@@ -29,7 +31,6 @@ from hyperkitty.lib.analysis import compute_thread_order_and_depth
 from .common import ModelCachedValue, VotesCachedValue
 
 
-import logging
 logger = logging.getLogger(__name__)
 
 

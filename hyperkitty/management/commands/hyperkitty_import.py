@@ -27,22 +27,24 @@ import mailbox
 import os
 import re
 from datetime import datetime
-from email.utils import make_msgid, unquote
 from email import message_from_bytes, policy
-from traceback import print_exc
+from email.utils import make_msgid, unquote
 from math import floor
+from traceback import print_exc
 
-from dateutil.parser import parse as parse_date
-from dateutil import tz
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
-from django.db import transaction, Error as DatabaseError
+from django.db import Error as DatabaseError
+from django.db import transaction
 from django.utils.timezone import utc
 
-from hyperkitty.lib.incoming import add_to_list, DuplicateMessage
-from hyperkitty.lib.mailman import sync_with_mailman
+from dateutil import tz
+from dateutil.parser import parse as parse_date
+
 from hyperkitty.lib.analysis import compute_thread_order_and_depth
+from hyperkitty.lib.incoming import DuplicateMessage, add_to_list
+from hyperkitty.lib.mailman import sync_with_mailman
 from hyperkitty.lib.utils import get_message_id
 from hyperkitty.management.utils import setup_logging
 from hyperkitty.models import Email, Thread
