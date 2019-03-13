@@ -20,13 +20,14 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
+import logging
 import os
 import re
 from email.message import EmailMessage
 
 from django.conf import settings
-from django.db import models, IntegrityError
-from django.utils.timezone import now, get_fixed_timezone
+from django.db import IntegrityError, models
+from django.utils.timezone import get_fixed_timezone, now
 
 from hyperkitty.lib.analysis import compute_thread_order_and_depth
 from .common import VotesCachedValue
@@ -34,7 +35,7 @@ from .mailinglist import MailingList
 from .thread import Thread
 from .vote import Vote
 
-import logging
+
 logger = logging.getLogger(__name__)
 
 

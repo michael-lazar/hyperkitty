@@ -29,8 +29,9 @@ from binascii import crc32
 from functools import wraps
 
 from django.conf import settings
-from django.core.cache.utils import make_template_fragment_key
 from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
+
 from django_q.conf import Conf
 from django_q.tasks import AsyncTask
 from mailmanclient import MailmanConnectionError
@@ -42,6 +43,7 @@ from hyperkitty.models.mailinglist import MailingList
 from hyperkitty.models.sender import Sender
 from hyperkitty.models.thread import Thread
 from hyperkitty.search_indexes import update_index
+
 
 log = logging.getLogger(__name__)
 

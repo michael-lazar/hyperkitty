@@ -22,12 +22,13 @@
 
 from email.message import EmailMessage
 
+from mock import patch
+
 from hyperkitty import tasks
 from hyperkitty.lib.incoming import add_to_list
 from hyperkitty.models.email import Email
 from hyperkitty.models.thread import Thread
 from hyperkitty.tests.utils import TestCase
-from mock import patch
 
 
 class TaskTestCase(TestCase):

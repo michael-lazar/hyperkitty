@@ -20,21 +20,23 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 
+import logging
 import re
 from email.message import EmailMessage
 
 from django.conf import settings
 from django.db import DataError
 from django.utils import timezone
+
 from django_mailman3.lib.scrub import Scrubber
 
 from hyperkitty.lib.utils import (
-    get_ref, parseaddr, parsedate, header_to_unicode, get_message_id)
+    get_message_id, get_ref, header_to_unicode, parseaddr, parsedate)
 from hyperkitty.models import (
-    MailingList, Sender, Email, Attachment, ArchivePolicy)
-from hyperkitty.tasks import update_from_mailman, sender_mailman_id
+    ArchivePolicy, Attachment, Email, MailingList, Sender)
+from hyperkitty.tasks import sender_mailman_id, update_from_mailman
 
-import logging
+
 logger = logging.getLogger(__name__)
 
 

@@ -20,7 +20,7 @@
 import re
 import sys
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 
 # extract the version number without importing the package
@@ -77,6 +77,9 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=REQUIRES,
+    setup_requires=[
+        "isort",
+    ],
     tests_require=[
         "mock",
         "Whoosh>=2.5.7",

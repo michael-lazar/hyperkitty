@@ -24,14 +24,15 @@ import datetime
 from functools import wraps
 
 from django.http import Http404
-from django.utils.timezone import utc
-from django.utils.decorators import available_attrs
 from django.shortcuts import render
+from django.utils.decorators import available_attrs
+from django.utils.timezone import utc
+
 from django_mailman3.lib.mailman import get_subscriptions
 
-from hyperkitty.models import ThreadCategory, MailingList
 from hyperkitty.forms import CategoryForm
 from hyperkitty.lib.posting import get_sender
+from hyperkitty.models import MailingList, ThreadCategory
 
 
 def get_months(mlist):

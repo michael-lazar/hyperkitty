@@ -24,22 +24,22 @@ import datetime
 import json
 import zlib
 
-
-from django.urls import reverse
 from django.http import (
-    Http404, HttpResponse, StreamingHttpResponse, HttpResponseBadRequest)
-from django.shortcuts import redirect, render, get_object_or_404
+    Http404, HttpResponse, HttpResponseBadRequest, StreamingHttpResponse)
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import formats, timezone
 from django.utils.dateformat import format as date_format
 from django.utils.translation import gettext as _
 from django.views.decorators.cache import cache_page
+
 from django_mailman3.lib.mailman import get_mailman_user_id
 from django_mailman3.lib.paginator import paginate
 
-from hyperkitty.models import Favorite, MailingList
 from hyperkitty.lib.view_helpers import (
-    get_category_widget, get_months, get_display_dates, daterange,
-    check_mlist_private)
+    check_mlist_private, daterange, get_category_widget,
+    get_display_dates, get_months)
+from hyperkitty.models import Favorite, MailingList
 
 
 @check_mlist_private

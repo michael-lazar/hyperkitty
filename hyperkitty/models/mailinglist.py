@@ -21,14 +21,16 @@
 #
 
 import datetime
+import logging
 from enum import Enum
 from urllib.error import HTTPError
 
-import dateutil.parser
 from django.conf import settings
+from django.core.cache import cache
 from django.db import models
 from django.utils.timezone import now, utc
-from django.core.cache import cache
+
+import dateutil.parser
 from django_mailman3.lib.mailman import get_mailman_client
 from mailmanclient import MailmanConnectionError
 
@@ -36,7 +38,7 @@ from hyperkitty.lib.utils import pgsql_disable_indexscan
 from .common import ModelCachedValue
 from .thread import Thread
 
-import logging
+
 logger = logging.getLogger(__name__)
 
 
