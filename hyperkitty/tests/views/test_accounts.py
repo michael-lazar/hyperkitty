@@ -275,7 +275,7 @@ class LastViewsTestCase(TestCase):
         now = datetime.datetime.now()
         response = self.client.get(reverse('hk_archives_with_month', args=(
                     "list@example.com", now.year, now.month)))
-        self.assertContains(response, "fa-envelope",
+        self.assertContains(response, "unread",
                             count=2, status_code=200)
 
     def test_overview_top_threads(self):
