@@ -48,7 +48,12 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+
+				.fa-envelope {
+						color: #08c;
+				}
     }
+
     .thread-id {
         font-weight: bold;
         color: $headingColor;
