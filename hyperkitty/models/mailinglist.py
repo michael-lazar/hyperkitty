@@ -122,9 +122,15 @@ class MailingList(models.Model):
             ).values("sender_id").distinct().count()
 
     def get_threads_between(self, begin_date, end_date):
+        """Get MailingList threads between the dates.
+
+        :param begin_date: The cutoff for oldest thread, decided by the posting
+            date of the first email.
+        :param end_date: The cutoff for the newest thread.
+        """
         return self.threads.filter(
-                starting_email__date__lt=end_date,
-                date_active__gte=begin_date
+            starting_email__date__lt=end_date,
+            date_active__gte=begin_date
             ).order_by("-date_active")
 
     @property
