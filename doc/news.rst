@@ -13,6 +13,14 @@ News / Changelog
 - Folded Message-ID headers will no longer break threading.  (#216)
 - MailingList descriptions are no longer a required field. This makes HyperKity
   more aligned with Core. (Closes #211)
+- Unread messages now have a blue envelope icon, instead of a gray one before to
+  to make them more visible.
+- Quoted text in emails have different visual background to improve readability.
+- Quoted text is now visually quoted to 3 levels of replies with different visual
+  background to improve readability.
+- Add a new "All Threads" button in MailingList overview page to point to all the
+  the threads in reverse date order. This should give a continuous list of threads.
+
 
 
 1.2.1
