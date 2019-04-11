@@ -36,12 +36,12 @@ from hyperkitty.models import MailingList, ThreadCategory
 
 
 def get_months(mlist):
-    """ Return a dictionnary of years, months for which there are
+    """Return a dictionnary of years, months for which there are
     potentially archives available for a given list (based on the
     oldest post on the list).
 
-    :arg list_name, name of the mailing list in which this email
-    should be searched.
+    :param mlist: name of the mailing list in which this email should be
+    searched.
     """
     date_first = mlist.cached_values["first_date"]()
     now = datetime.datetime.now()

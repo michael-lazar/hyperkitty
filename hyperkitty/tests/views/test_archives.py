@@ -53,18 +53,14 @@ class ListArchivesTestCase(TestCase):
         msg.set_payload("Dummy message")
         add_to_list("list@example.com", msg)
 
-    def test_no_date(self):
-        today = datetime.date.today()
+    def test_latest_archives(self):
         response = self.client.get(reverse(
                 'hk_archives_latest', args=['list@example.com']))
-        final_url = reverse(
-            'hk_archives_with_month',
-            kwargs={
-                'mlist_fqdn': 'list@example.com',
-                'year': today.year,
-                'month': today.month,
-            })
-        self.assertRedirects(response, final_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["threads"]), 1)
+        self.assertEqual(response.context["no_results_text"],
+                         "for this MailingList")
+        self.assertEqual(response.context["list_title"], "")
 
     def test_wrong_date(self):
         response = self.client.get(reverse(
