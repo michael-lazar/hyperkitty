@@ -58,7 +58,10 @@ def archives(request, mlist_fqdn, year=None, month=None, day=None):
         # Since we don't need any special filtering, just return *all* the
         # threads ordered by date_active.
         threads = mlist.threads.order_by("-date_active")
-        begin_date = threads.first().starting_email.date
+        if threads:
+            begin_date = threads.first().starting_email.date
+        else:
+            begin_date = end_date
         # Set the month and year to be today's.
         year = end_date.year
         month = end_date.month

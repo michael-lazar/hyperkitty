@@ -62,6 +62,20 @@ class ListArchivesTestCase(TestCase):
                          "for this MailingList")
         self.assertEqual(response.context["list_title"], "")
 
+    def test_latest_archives_no_threads(self):
+        # Remove all messages.
+        Thread.objects.all().delete()
+        response = self.client.get(reverse(
+            'hk_archives_latest', args=['list@example.com']))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["threads"]), 0)
+        self.assertEqual(response.context["no_results_text"],
+                         "for this MailingList")
+        self.assertEqual(response.context["list_title"], "")
+        self.assertTrue(
+            "Sorry no email threads could be found for this MailingList."
+            in response.content.decode())
+
     def test_wrong_date(self):
         response = self.client.get(reverse(
                 'hk_archives_with_month', kwargs={
