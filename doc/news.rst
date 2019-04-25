@@ -22,6 +22,7 @@ News / Changelog
   the threads in reverse date order. This should give a continuous list of threads.
 - Fixes a bug where "All Threads" button leads to 500 page if there aren't any
   threads. (Closes #230)
+- Add support for Django 2.2.
 
 
 1.2.1
