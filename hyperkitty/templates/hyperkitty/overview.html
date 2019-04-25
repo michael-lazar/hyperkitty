@@ -64,13 +64,13 @@
                 <a href="{% url "hk_message_new" mlist_fqdn=mlist.name %}"
                     class="btn btn-default{% if not user.is_authenticated %} disabled" title="{% trans 'You must be logged-in to create a thread.' %}{% endif %}">
                     <i class="fa fa-plus"></i>
-                    <span class="hidden-tn hidden-xs">Start a n</span><span class="hidden-sm hidden-md hidden-lg">N</span>ew thread
+                    {% trans '<span class="hidden-tn hidden-xs">Start a </span><span class="hidden-sm hidden-md hidden-lg">N</span>ew thread' %}
                 </a>
                 {% if 'postorius' in INSTALLED_APPS %}
                 <!-- Subscription -->
                 <a class="btn btn-default" href="{% url 'list_summary' mlist.list_id %}">
                   <i class="fa fa-inbox"></i>
-                  <span class="hidden-tn hidden-xs">Manage s</span><span class="hidden-sm hidden-md hidden-lg">S</span>ubscription</a>
+                  {% trans '<span class="hidden-tn hidden-xs">Manage s</span><span class="hidden-sm hidden-md hidden-lg">S</span>ubscription' %}</a>
                 {% endif %}
                 <a href="{% url 'hk_archives_latest' mlist_fqdn=mlist.name %}" class="btn btn-default">{% trans "All Threads" %}</a>
             </div>
