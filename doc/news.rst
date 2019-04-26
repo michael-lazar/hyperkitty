@@ -23,7 +23,8 @@ News / Changelog
 - Fixes a bug where "All Threads" button leads to 500 page if there aren't any
   threads. (Closes #230)
 - Add support for Django 2.2.
-
+- Fix a bug where bad Date header could cause ``hyperkitty_import`` to exit with
+  ``TypeError`` due to bad date type.
 
 1.2.1
 =====
