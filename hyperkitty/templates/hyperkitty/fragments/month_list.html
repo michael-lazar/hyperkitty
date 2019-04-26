@@ -71,6 +71,12 @@
        <span class="fa fa-backward"></span>
        {% trans "List overview" %}</a></p>
     {% endif %}
+    {% if pagename == 'thread' %}
+    <p><a href="{% url 'hk_archives_latest' mlist_fqdn=mlist.name %}"
+       class="btn btn-default btn-sm">
+       <span class="fa fa-backward"></span>
+       {% trans "All Threads" %}</a></p>
+    {% endif %}
 
     <!-- Download as mbox -->
     {% if pagename == 'overview' %}
