@@ -26,6 +26,7 @@ Import the content of a mbox file into the database.
 import mailbox
 import os
 import re
+from contextlib import suppress
 from datetime import datetime
 from email import message_from_bytes, policy
 from email.utils import make_msgid, unquote
@@ -134,6 +135,7 @@ class DbImporter(object):
                     "Can't get {} header in message {}: {}.".format(
                         header, message["message-id"], e))
             return None
+
         return date
 
     def from_mbox(self, mbfile):
@@ -157,11 +159,15 @@ class DbImporter(object):
                     self._get_date(message, "resent-date"))
             if unixfrom and not date:
                 date = " ".join(unixfrom.split()[1:])
+
             if date:
-                try:
-                    message.replace_header('date', date)
-                except KeyError:
+                # Make sure this date can be parsed before setting it as as the
+                # header. If not, a TypeError is raised and we just keep the
+                # old Header.
+                with suppress(TypeError):
+                    del message['Date']
                     message['Date'] = date
+
             if self._is_too_old(message):
                 continue
             progress_marker.tick(message["Message-Id"])
