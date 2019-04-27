@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Hyperkitty\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-27 15:16+0200\n"
-"PO-Revision-Date: 2019-04-17 12:30+0200\n"
+"PO-Revision-Date: 2019-04-27 15:28+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -220,11 +220,11 @@ msgstr "Listen verwalten"
 
 #: templates/hyperkitty/base.html:193
 msgid "Powered by"
-msgstr ""
+msgstr "Betrieben mit"
 
 #: templates/hyperkitty/base.html:193
 msgid "version"
-msgstr ""
+msgstr "Version"
 
 #: templates/hyperkitty/errors/notimplemented.html:8
 msgid "Not implemented yet"
@@ -272,10 +272,8 @@ msgstr "Listenübersicht"
 
 #: templates/hyperkitty/fragments/month_list.html:78
 #: templates/hyperkitty/overview.html:75
-#, fuzzy
-#| msgid "Thread"
 msgid "All Threads"
-msgstr "Diskussionsstrang"
+msgstr "Alle Diskussionsstränge"
 
 #: templates/hyperkitty/fragments/month_list.html:87 views/message.py:74
 #: views/mlist.py:96 views/thread.py:166
@@ -510,10 +508,8 @@ msgid "Sender's time:"
 msgstr "Absendezeit:"
 
 #: templates/hyperkitty/messages/message.html:51
-#, fuzzy
-#| msgid "Subject"
 msgid "New subject:"
-msgstr "Betreff"
+msgstr "Neuer Betreff:"
 
 #: templates/hyperkitty/messages/message.html:62
 msgid "Attachments:"
@@ -624,12 +620,18 @@ msgid ""
 "<span class=\"hidden-tn hidden-xs\">Start a </span><span class=\"hidden-sm "
 "hidden-md hidden-lg\">N</span>ew thread"
 msgstr ""
+"<span class=\"hidden-tn hidden-xs\">Beginne  einen n</span><span class="
+"\"hidden-sm hidden-md hidden-lg\">N</span>eue<span class=\"hidden-tn hidden-"
+"xs\">n</span><span class=\"hidden-sm hidden-md hidden-lg\">r</span> "
+"Diskussionsstrang"
 
 #: templates/hyperkitty/overview.html:73
 msgid ""
 "<span class=\"hidden-tn hidden-xs\">Manage s</span><span class=\"hidden-sm "
 "hidden-md hidden-lg\">S</span>ubscription"
 msgstr ""
+"<span class=\"hidden-tn hidden-xs\">Verwalte A</span><span class=\"hidden-sm "
+"hidden-md hidden-lg\">A</span>bonnement"
 
 #: templates/hyperkitty/overview.html:80
 msgid "Search this list"
@@ -724,10 +726,8 @@ msgid "(there's no undoing!), or"
 msgstr "(es gibt kein zurück!), oder"
 
 #: templates/hyperkitty/reattach.html:52
-#, fuzzy
-#| msgid "go back to the thread</a>."
 msgid "go back to the thread"
-msgstr "zurück zum Diskussionsstrang</a>."
+msgstr "zurück zum Diskussionsstrang"
 
 #: templates/hyperkitty/search_results.html:9
 msgid "Search results for"
@@ -1122,14 +1122,12 @@ msgid "Successfully deleted %(count)s messages."
 msgstr "Erfolgreich %(count)s Nachrichten gelöscht."
 
 #: views/mlist.py:82
-#, fuzzy
-#| msgid "This month"
 msgid "for this month"
-msgstr "Diesen Monat"
+msgstr "in diesem Monat"
 
 #: views/mlist.py:85
 msgid "for this day"
-msgstr ""
+msgstr "an diesem Tag"
 
 #: views/mlist.py:97
 msgid "This month in gzipped mbox format"
