@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-17 12:58+0200\n"
+"POT-Creation-Date: 2019-04-27 15:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -197,6 +197,14 @@ msgstr ""
 msgid "Manage lists"
 msgstr ""
 
+#: templates/hyperkitty/base.html:193
+msgid "Powered by"
+msgstr ""
+
+#: templates/hyperkitty/base.html:193
+msgid "version"
+msgstr ""
+
 #: templates/hyperkitty/errors/notimplemented.html:8
 msgid "Not implemented yet"
 msgstr ""
@@ -239,20 +247,25 @@ msgstr ""
 msgid "List overview"
 msgstr ""
 
-#: templates/hyperkitty/fragments/month_list.html:81 views/message.py:74
+#: templates/hyperkitty/fragments/month_list.html:78
+#: templates/hyperkitty/overview.html:75
+msgid "All Threads"
+msgstr ""
+
+#: templates/hyperkitty/fragments/month_list.html:87 views/message.py:74
 #: views/mlist.py:96 views/thread.py:166
 msgid "Download"
 msgstr ""
 
-#: templates/hyperkitty/fragments/month_list.html:84
+#: templates/hyperkitty/fragments/month_list.html:90
 msgid "Past 30 days"
 msgstr ""
 
-#: templates/hyperkitty/fragments/month_list.html:85
+#: templates/hyperkitty/fragments/month_list.html:91
 msgid "This month"
 msgstr ""
 
-#: templates/hyperkitty/fragments/month_list.html:88
+#: templates/hyperkitty/fragments/month_list.html:94
 msgid "Entire archive"
 msgstr ""
 
@@ -567,8 +580,16 @@ msgstr ""
 msgid "You must be logged-in to create a thread."
 msgstr ""
 
-#: templates/hyperkitty/overview.html:75
-msgid "All Threads"
+#: templates/hyperkitty/overview.html:67
+msgid ""
+"<span class=\"hidden-tn hidden-xs\">Start a </span><span class=\"hidden-sm "
+"hidden-md hidden-lg\">N</span>ew thread"
+msgstr ""
+
+#: templates/hyperkitty/overview.html:73
+msgid ""
+"<span class=\"hidden-tn hidden-xs\">Manage s</span><span class=\"hidden-sm "
+"hidden-md hidden-lg\">S</span>ubscription"
 msgstr ""
 
 #: templates/hyperkitty/overview.html:80
@@ -664,7 +685,7 @@ msgid "(there's no undoing!), or"
 msgstr ""
 
 #: templates/hyperkitty/reattach.html:52
-msgid "go back to the thread</a>."
+msgid "go back to the thread"
 msgstr ""
 
 #: templates/hyperkitty/search_results.html:9
