@@ -25,6 +25,8 @@ News / Changelog
 - Add support for Django 2.2.
 - Fix a bug where bad Date header could cause ``hyperkitty_import`` to exit with
   ``TypeError`` due to bad date type.
+- Change the Overview page to remove the List of months from left side bar and
+	convert different thread categories into tabs.
 
 1.2.1
 =====
