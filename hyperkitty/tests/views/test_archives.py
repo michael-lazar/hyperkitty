@@ -387,11 +387,19 @@ class MonthsListTestCase(TestCase):
             else:
                 self._assertCollapsed(panel)
 
+    def _assertMonthsDropdown(self, html):
+        """
+        Checks that there is a months dropdown.
+        """
+        soup = BeautifulSoup(html, "html.parser")
+        months_list = soup.find(id="navbarMonthsListDrop")
+        self.assertIsNotNone(months_list)
+
     def test_overview(self):
         response = self.client.get(reverse(
             'hk_list_overview', args=["list@example.com"]))
         self.assertEqual(response.status_code, 200)
-        self._assertActivePanel(response.content, 0)
+        self._assertMonthsDropdown(response.content)
 
     def test_month_list(self):
         response = self.client.get(reverse(
