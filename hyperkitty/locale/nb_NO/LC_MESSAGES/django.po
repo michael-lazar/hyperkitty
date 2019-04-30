@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-17 12:59+0200\n"
-"PO-Revision-Date: 2019-05-16 22:48+0000\n"
+"PO-Revision-Date: 2019-05-01 20:48+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "gnu-mailman/hyperkitty/nb_NO/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.7-dev\n"
+"X-Generator: Weblate 3.6.1\n"
 
 #: forms.py:64
 msgid "Attach a file"
@@ -215,14 +215,6 @@ msgstr "Behandle denne listen"
 msgid "Manage lists"
 msgstr "Behandle lister"
 
-#: templates/hyperkitty/base.html:193
-msgid "Powered by"
-msgstr ""
-
-#: templates/hyperkitty/base.html:193
-msgid "version"
-msgstr ""
-
 #: templates/hyperkitty/errors/notimplemented.html:8
 msgid "Not implemented yet"
 msgstr "Ikke implementert enda"
@@ -267,25 +259,20 @@ msgstr "Gå til"
 msgid "List overview"
 msgstr "Listeoversikt"
 
-#: templates/hyperkitty/fragments/month_list.html:78
-#: templates/hyperkitty/overview.html:75
-msgid "All Threads"
-msgstr "Alle tråder"
-
-#: templates/hyperkitty/fragments/month_list.html:87 views/message.py:74
+#: templates/hyperkitty/fragments/month_list.html:81 views/message.py:74
 #: views/mlist.py:96 views/thread.py:166
 msgid "Download"
 msgstr "Nedlasting"
 
-#: templates/hyperkitty/fragments/month_list.html:90
+#: templates/hyperkitty/fragments/month_list.html:84
 msgid "Past 30 days"
 msgstr "Siste 30 dager"
 
-#: templates/hyperkitty/fragments/month_list.html:91
+#: templates/hyperkitty/fragments/month_list.html:85
 msgid "This month"
 msgstr "Denne måneden"
 
-#: templates/hyperkitty/fragments/month_list.html:94
+#: templates/hyperkitty/fragments/month_list.html:88
 msgid "Entire archive"
 msgstr "Hele arkivet"
 
@@ -625,6 +612,10 @@ msgstr "aktivitet"
 #: templates/hyperkitty/thread_list.html:48
 msgid "You must be logged-in to create a thread."
 msgstr "Du må være innlogget for å lage en tråd."
+
+#: templates/hyperkitty/overview.html:75
+msgid "All Threads"
+msgstr "Alle tråder"
 
 #: templates/hyperkitty/overview.html:80
 msgid "Search this list"
