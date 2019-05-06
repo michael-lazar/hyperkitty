@@ -1,17 +1,18 @@
-# German translation for hyperkitty. It uses the informal "du"
-# Copyright (C) 2018
-# This file is distributed under the same license as the main repo.
-# Daniel <dsd.trash@gmail.com>, 2018.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Hyperkitty\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-14 09:53+0200\n"
-"PO-Revision-Date: 2019-06-14 09:53+0200\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: de_DE\n"
+"POT-Creation-Date: 2019-04-02 20:18-0700\n"
+"PO-Revision-Date: 2019-05-07 12:48+0000\n"
+"Last-Translator: Daniel <daniel-other+weblate@dadosch.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/gnu-mailman/"
+"hyperkitty/de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -557,15 +558,15 @@ msgstr[1] ""
 "                %(email.attachments.count)s Anhänge\n"
 "                "
 
-#: templates/hyperkitty/messages/message.html:130
+#: templates/hyperkitty/messages/message.html:133
 msgid "Quote"
 msgstr "Zitat"
 
-#: templates/hyperkitty/messages/message.html:131
+#: templates/hyperkitty/messages/message.html:134
 msgid "Create new thread"
 msgstr "Neuen Diskussionsstrang erstellen"
 
-#: templates/hyperkitty/messages/message.html:134
+#: templates/hyperkitty/messages/message.html:137
 msgid "Use email software"
 msgstr "E-Mail Software benutzen"
 
@@ -592,31 +593,31 @@ msgstr ""
 "                                von %(name)s\n"
 "                            "
 
-#: templates/hyperkitty/overview.html:35
+#: templates/hyperkitty/overview.html:37
 msgid "Home"
 msgstr "Startseite"
 
-#: templates/hyperkitty/overview.html:38 templates/hyperkitty/thread.html:75
+#: templates/hyperkitty/overview.html:40 templates/hyperkitty/thread.html:75
 msgid "Stats"
 msgstr "Statistiken"
 
-#: templates/hyperkitty/overview.html:41
+#: templates/hyperkitty/overview.html:43
 msgid "Discussions"
 msgstr "Diskussionen"
 
-#: templates/hyperkitty/overview.html:44
+#: templates/hyperkitty/overview.html:46
 msgid "most recent"
 msgstr "neuste"
 
-#: templates/hyperkitty/overview.html:47
+#: templates/hyperkitty/overview.html:49
 msgid "most popular"
 msgstr "beliebteste"
 
-#: templates/hyperkitty/overview.html:50
+#: templates/hyperkitty/overview.html:52
 msgid "most active"
 msgstr "aktivste"
 
-#: templates/hyperkitty/overview.html:60
+#: templates/hyperkitty/overview.html:65
 #: templates/hyperkitty/thread_list.html:48
 msgid "You must be logged-in to create a thread."
 msgstr "Sie müssen angemeldet sein, um einen Diskussionsstrang zu erstellen."
@@ -644,51 +645,51 @@ msgstr ""
 msgid "Discussions You've Flagged"
 msgstr "Diskussionen, die Sie markiert haben"
 
-#: templates/hyperkitty/overview.html:126
+#: templates/hyperkitty/overview.html:97
 msgid "Discussions You've Posted to"
 msgstr "Diskussionen, zu denen Sie beigetragen haben"
 
-#: templates/hyperkitty/overview.html:97
+#: templates/hyperkitty/overview.html:111
 msgid "Recently active discussions"
 msgstr "Zuletzt aktive Diskussionen"
 
-#: templates/hyperkitty/overview.html:104
+#: templates/hyperkitty/overview.html:119
 msgid "Most popular discussions"
 msgstr "Beliebteste Diskussionen"
 
-#: templates/hyperkitty/overview.html:111
+#: templates/hyperkitty/overview.html:127
 msgid "Most active discussions"
 msgstr "Aktivste Diskussionen"
 
-#: templates/hyperkitty/overview.html:140
+#: templates/hyperkitty/overview.html:138
 msgid "Activity Summary"
 msgstr "Aktivitätszusammenfassung"
 
-#: templates/hyperkitty/overview.html:142
+#: templates/hyperkitty/overview.html:140
 msgid "Post volume over the past <strong>30</strong> days."
 msgstr "Posting-Umfang der letzten <strong>30</strong> Tage."
 
-#: templates/hyperkitty/overview.html:147
+#: templates/hyperkitty/overview.html:145
 msgid "The following statistics are from"
 msgstr "Die folgenden Statistiken sind von"
 
-#: templates/hyperkitty/overview.html:148
+#: templates/hyperkitty/overview.html:146
 msgid "In"
 msgstr "In"
 
-#: templates/hyperkitty/overview.html:149
+#: templates/hyperkitty/overview.html:147
 msgid "the past <strong>30</strong> days:"
 msgstr "den letzten <strong>30</strong> Tage:"
 
-#: templates/hyperkitty/overview.html:158
+#: templates/hyperkitty/overview.html:156
 msgid "Most active posters"
 msgstr "Die aktivsten Poster"
 
-#: templates/hyperkitty/overview.html:167
+#: templates/hyperkitty/overview.html:165
 msgid "Prominent posters"
 msgstr "Prominente Poster"
 
-#: templates/hyperkitty/overview.html:182
+#: templates/hyperkitty/overview.html:180
 msgid "kudos"
 msgstr "Kudos"
 
@@ -1136,19 +1137,19 @@ msgstr "an diesem Tag"
 msgid "This month in gzipped mbox format"
 msgstr "Dieser Monat in komprimiertem (gzip) mbox-Format"
 
-#: views/mlist.py:192 views/mlist.py:216
+#: views/mlist.py:173 views/mlist.py:197
 msgid "No discussions this month (yet)."
 msgstr "(Noch) keine Diskussionen in diesem Monat."
 
-#: views/mlist.py:204
+#: views/mlist.py:185
 msgid "No vote has been cast this month (yet)."
 msgstr "Es wurden in diesem Monat (noch) keine Stimmen abgegeben."
 
-#: views/mlist.py:233
+#: views/mlist.py:214
 msgid "You have not flagged any discussions (yet)."
 msgstr "Sie haben (noch) keine Diskussionen markiert."
 
-#: views/mlist.py:256
+#: views/mlist.py:237
 msgid "You have not posted to this list (yet)."
 msgstr "Sie haben (noch) nichts an diese Liste gesendet."
 
@@ -1160,4 +1161,3 @@ msgstr "Parsing Fehler: %(error)s"
 #: views/thread.py:167
 msgid "This thread in gzipped mbox format"
 msgstr "Diesen Diskussionsstrang im komprimierten (gzip) mbox-Format"
-
