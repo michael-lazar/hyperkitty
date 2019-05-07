@@ -24,7 +24,8 @@ News / Changelog
 - Replace unmaintained ``lockfile`` dependency with ``flufl.lock``.
 - Remove ``SingletonAsync`` implementation of ``AsyncTask`` and use the upstream
   version for better maintenance.  
-
+- Run update_index job hourly by default instead of minutely for performance
+  reasons of whoosh.
 
 1.2.2
 =====
