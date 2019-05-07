@@ -3,16 +3,10 @@ News / Changelog
 ================
 
 
-1.2.2
+1.2.3
 =====
-(2019-02-22)
+(2019-XX-XX)
 
-- ``paintstore`` is no longer a dependency of Hyperkitty. This change requires
-  that people change their ``settings.py`` and remove ``paintstore`` from
-  ``INSTALLED_APPS``. (See #72)
-- Folded Message-ID headers will no longer break threading.  (#216)
-- MailingList descriptions are no longer a required field. This makes HyperKity
-  more aligned with Core. (Closes #211)
 - Unread messages now have a blue envelope icon, instead of a gray one before to
   to make them more visible.
 - Quoted text in emails have different visual background to improve readability.
@@ -26,7 +20,20 @@ News / Changelog
 - Fix a bug where bad Date header could cause ``hyperkitty_import`` to exit with
   ``TypeError`` due to bad date type.
 - Change the Overview page to remove the List of months from left side bar and
-	convert different thread categories into tabs.
+  convert different thread categories into tabs.
+
+
+1.2.2
+=====
+(2019-02-22)
+
+- ``paintstore`` is no longer a dependency of Hyperkitty. This change requires
+  that people change their ``settings.py`` and remove ``paintstore`` from
+  ``INSTALLED_APPS``. (See #72)
+- Folded Message-ID headers will no longer break threading.  (#216)
+- MailingList descriptions are no longer a required field. This makes HyperKity
+  more aligned with Core. (Closes #211)
+
 
 1.2.1
 =====
