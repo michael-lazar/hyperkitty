@@ -207,7 +207,7 @@ class Email(models.Model):
         if not getattr(settings, "HYPERKITTY_BATCH_MODE", False):
             # For batch imports, let the cron job do the work
             from hyperkitty.tasks import check_orphans
-            check_orphans.delay(self.id)
+            check_orphans(self.id)
 
     def on_pre_save(self):
         self._set_message_id_hash()
@@ -265,7 +265,7 @@ class Email(models.Model):
 
     def on_vote_added(self, vote):
         from hyperkitty.tasks import rebuild_email_cache_votes
-        rebuild_email_cache_votes.delay(self.id)
+        rebuild_email_cache_votes(self.id)
 
     on_vote_deleted = on_vote_added
 

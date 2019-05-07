@@ -21,7 +21,6 @@
 
 
 import email.utils
-import errno
 import logging
 import os
 import os.path
@@ -40,8 +39,7 @@ from django.utils import timezone
 
 import dateutil.parser
 import dateutil.tz
-from lockfile import AlreadyLocked, LockFailed
-from lockfile.pidlockfile import PIDLockFile
+from flufl.lock import Lock
 
 
 log = logging.getLogger(__name__)
@@ -158,43 +156,19 @@ def stripped_subject(mlist, subject):
 
 
 # File-based locking
-
 def run_with_lock(fn, *args, **kwargs):
-    lock = PIDLockFile(getattr(
+    lock = Lock(getattr(
         settings, "HYPERKITTY_JOBS_UPDATE_INDEX_LOCKFILE",
         os.path.join(gettempdir(), "hyperkitty-jobs-update-index.lock")))
-    try:
-        lock.acquire(timeout=-1)
-    except AlreadyLocked:
-        if check_pid(lock.read_pid()):
-            log.warning("The job 'update_index' is already running")
-            return
-        else:
-            lock.break_lock()
-            lock.acquire(timeout=-1)
-    except LockFailed as e:
-        log.warning("Could not obtain a lock for the 'update_index' "
-                    "job (%s)", e)
+    if lock.is_locked:
+        log.warning(
+            "Update index lock is accquited by: {}".format(*lock.details))
         return
-    try:
-        fn(*args, **kwargs)
-    except Exception as e:
-        log.exception("Failed to update the fulltext index: %s", e)
-    finally:
-        lock.release()
-
-
-def check_pid(pid):
-    """ Check For the existence of a unix pid. """
-    if pid is None:
-        return False
-    try:
-        os.kill(pid, 0)
-    except OSError as e:
-        if e.errno == errno.ESRCH:
-            # if errno !=3, we may just not be allowed to send the signal
-            return False
-    return True
+    with lock:
+        try:
+            fn(*args, **kwargs)
+        except Exception as e:
+            log.exception("Failed to update the fulltext index: %s", e)
 
 
 @contextmanager
@@ -210,18 +184,3 @@ def pgsql_disable_indexscan():
             yield
         finally:
             cursor.execute("SET enable_indexscan = ON")
-
-
-# import time
-# from collections import defaultdict
-# LASTTIME = None
-# TIMES = defaultdict(list)
-#
-# def timeit(name):
-#     global LASTTIME
-#     now = time.time()
-#     if LASTTIME is not None:
-#         spent = now - LASTTIME
-#         TIMES[name].append(spent)
-#         print("{}: {}".format(name, spent))
-#     LASTTIME = now
