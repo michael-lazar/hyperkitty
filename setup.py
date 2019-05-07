@@ -49,7 +49,7 @@ REQUIRES = [
     "networkx>=1.9.1",
     "django-haystack>=2.8.0",
     "django-extensions>=1.3.7",
-    "lockfile>=0.9.1",
+    "flufl.lock",
     "django-q>=1.0.0",
 ]
 

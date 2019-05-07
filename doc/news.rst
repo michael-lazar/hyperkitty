@@ -21,6 +21,9 @@ News / Changelog
   ``TypeError`` due to bad date type.
 - Change the Overview page to remove the List of months from left side bar and
   convert different thread categories into tabs.
+- Replace unmaintained ``lockfile`` dependency with ``flufl.lock``.
+- Remove ``SingletonAsync`` implementation of ``AsyncTask`` and use the upstream
+  version for better maintenance.  
 
 
 1.2.2

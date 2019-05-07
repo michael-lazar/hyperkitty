@@ -220,8 +220,8 @@ class MailingList(models.Model):
         begin_date, end_date = self.get_recent_dates()
         if thread.date_active >= begin_date and thread.date_active < end_date:
             # It's a recent thread
-            rebuild_mailinglist_cache_recent.delay(self.name)
-        rebuild_mailinglist_cache_for_month.delay(
+            rebuild_mailinglist_cache_recent(self.name)
+        rebuild_mailinglist_cache_for_month(
             self.name, thread.date_active.year, thread.date_active.month)
 
     def on_email_added(self, email):
@@ -234,8 +234,8 @@ class MailingList(models.Model):
             rebuild_mailinglist_cache_recent,
             rebuild_mailinglist_cache_for_month,
             )
-        rebuild_mailinglist_cache_recent.delay(self.name)
-        rebuild_mailinglist_cache_for_month.delay(
+        rebuild_mailinglist_cache_recent(self.name)
+        rebuild_mailinglist_cache_for_month(
             self.name, email.date.year, email.date.month)
 
     def on_email_deleted(self, email):
@@ -253,7 +253,7 @@ class MailingList(models.Model):
 
     def on_vote_added(self, vote):
         from hyperkitty.tasks import rebuild_cache_popular_threads
-        rebuild_cache_popular_threads.delay(self.name)
+        rebuild_cache_popular_threads(self.name)
 
     on_vote_deleted = on_vote_added
 
