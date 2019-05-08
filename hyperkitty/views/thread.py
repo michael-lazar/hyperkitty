@@ -296,9 +296,9 @@ def suggest_tags(request, mlist_fqdn, threadid):
             name__istartswith=term)
     else:
         tags_db = Tag.objects.all()
-    tag_names = [
-        t.encode("utf-8") for t in tags_db.exclude(
-            name__in=current_tags).values_list("name", flat=True)[:20]]
+
+    tag_names = list(tags_db.exclude(
+        name__in=current_tags).values_list("name", flat=True)[:20])
     return HttpResponse(json.dumps(tag_names),
                         content_type='application/javascript')
 
