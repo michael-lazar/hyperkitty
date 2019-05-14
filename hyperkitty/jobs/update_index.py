@@ -23,8 +23,6 @@
 Update the full-text index
 """
 
-import warnings
-
 from django_extensions.management.jobs import BaseJob
 
 from hyperkitty.lib.utils import run_with_lock
@@ -36,9 +34,4 @@ class Job(BaseJob):
     when = "hourly"
 
     def execute(self):
-
-        warnings.warn(
-            'update_index job has been deprecated and will be removed in '
-            'future releases. Use "python manage.py update_index --age 1"'
-            ' instead as an hourly cron job to update index every hour.')
         run_with_lock(update_index, remove=False)
