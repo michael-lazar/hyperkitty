@@ -51,8 +51,8 @@ Then download the components of HyperKitty::
 Configuration
 =============
 
-For a development setup, you should create a
-``example_project/settings_local.py`` file with at least the following
+For a development setup, you should create a file
+``example_project/settings_local.py`` with at least the following
 content::
 
     DEBUG = True
