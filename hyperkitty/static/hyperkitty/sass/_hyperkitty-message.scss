@@ -117,7 +117,7 @@ $oddEmailColor: rgb(238, 238, 238);
 }
 
 .email-body {
-    white-space: pre-line;
+    white-space: pre-wrap;
     word-wrap: break-word;
 
     span.read-more a,

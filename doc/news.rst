@@ -26,6 +26,8 @@ News / Changelog
   version for better maintenance.  
 - Run update_index job hourly by default instead of minutely for performance
   reasons of whoosh.
+- Email body now preserves leading whitespaces on lines and wraps around line
+  boundary. (Closes #239)
 
 1.2.2
 =====
