@@ -210,6 +210,14 @@ class DbImporter(object):
                     "Message %s failed to import, skipping"
                     % unquote(message["Message-Id"]))
                 continue
+            except Exception as e:
+                # In case of *any* exception, log and continue to import the
+                # rest of the archive.
+                self.stderr.write(
+                    "Message %s failed to import, skipping".format(
+                        unquote(message["Message-ID"])))
+                self.stderr.write(e)
+                continue
             email = Email.objects.get(
                 mailinglist__name=self.list_address,
                 message_id=get_message_id(message))
