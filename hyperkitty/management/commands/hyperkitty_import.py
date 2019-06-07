@@ -214,7 +214,7 @@ class DbImporter(object):
                 # In case of *any* exception, log and continue to import the
                 # rest of the archive.
                 self.stderr.write(
-                    "Message %s failed to import, skipping".format(
+                    "Message {} failed to import, skipping".format(
                         unquote(message["Message-ID"])))
                 self.stderr.write(e)
                 continue
