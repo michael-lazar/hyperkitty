@@ -38,7 +38,7 @@ def index(request):
     sort_mode = request.GET.get("sort", "popular")
 
     # Domain filtering
-    if settings.FILTER_VHOST:
+    if getattr(settings, 'FILTER_VHOST', False):
         domain = request.get_host().split(":")[0]
         if domain.startswith("www."):
             domain = domain[4:]
