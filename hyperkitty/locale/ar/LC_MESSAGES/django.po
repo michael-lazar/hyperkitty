@@ -3,41 +3,42 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-27 15:16+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2019-06-19 13:01+0000\n"
+"Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
+"Language-Team: Arabic <https://hosted.weblate.org/projects/gnu-mailman/"
+"hyperkitty/ar/>\n"
+"Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
-"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+"X-Generator: Weblate 3.7\n"
 
 #: forms.py:64
 msgid "Attach a file"
-msgstr ""
+msgstr "ارفق ملفا"
 
 #: forms.py:65
 msgid "Attach another file"
-msgstr ""
+msgstr "ارفق ملفا آخر"
 
 #: forms.py:66
 msgid "Remove this file"
-msgstr ""
+msgstr "احذف هذا الملف"
 
 #: templates/hyperkitty/404.html:28
 msgid "Error 404"
-msgstr ""
+msgstr "خطأ 404"
 
 #: templates/hyperkitty/404.html:30 templates/hyperkitty/500.html:31
 msgid "Oh No!"
-msgstr ""
+msgstr "أوه لا!"
 
 #: templates/hyperkitty/404.html:32
 msgid "I can't find this page."
@@ -45,11 +46,11 @@ msgstr ""
 
 #: templates/hyperkitty/404.html:33 templates/hyperkitty/500.html:34
 msgid "Go back home"
-msgstr ""
+msgstr "عد إلى الصفحة الرئيسية"
 
 #: templates/hyperkitty/500.html:29
 msgid "Error 500"
-msgstr ""
+msgstr "خطأ 500"
 
 #: templates/hyperkitty/500.html:33
 msgid "Sorry, but the requested page is unavailable due to a server hiccup."
@@ -63,7 +64,7 @@ msgstr ""
 #: templates/hyperkitty/ajax/reattach_suggest.html:7
 #: templates/hyperkitty/reattach.html:25
 msgid "last active:"
-msgstr ""
+msgstr "آخر نشاط:"
 
 #: templates/hyperkitty/ajax/reattach_suggest.html:8
 msgid "see this thread"
@@ -71,11 +72,11 @@ msgstr ""
 
 #: templates/hyperkitty/ajax/reattach_suggest.html:12
 msgid "(no suggestions)"
-msgstr ""
+msgstr "(بدون اقتراحات)"
 
 #: templates/hyperkitty/ajax/temp_message.html:12
 msgid "Sent just now, not yet distributed"
-msgstr ""
+msgstr "أرسلت الآن، ولم توزع بعد"
 
 #: templates/hyperkitty/api.html:5
 msgid "REST API"
@@ -89,7 +90,7 @@ msgstr ""
 
 #: templates/hyperkitty/api.html:10
 msgid "Formats"
-msgstr ""
+msgstr "التنسيقات"
 
 #: templates/hyperkitty/api.html:12
 msgid ""
@@ -104,15 +105,15 @@ msgstr ""
 
 #: templates/hyperkitty/api.html:16
 msgid "The list of available formats is:"
-msgstr ""
+msgstr "قائمة التنسيقات المتاحة هي:"
 
 #: templates/hyperkitty/api.html:20
 msgid "Plain text"
-msgstr ""
+msgstr "نص عادي"
 
 #: templates/hyperkitty/api.html:26
 msgid "List of mailing-lists"
-msgstr ""
+msgstr "قائمة القوائم البريدية"
 
 #: templates/hyperkitty/api.html:27 templates/hyperkitty/api.html:33
 #: templates/hyperkitty/api.html:39 templates/hyperkitty/api.html:45
@@ -125,6 +126,8 @@ msgid ""
 "Using this address you will be able to retrieve the information known about "
 "all the mailing lists."
 msgstr ""
+"باستخدام هذا العنوان سوف يكون بمقدورك استرجاع المعلومات المعروفة عن كافة "
+"القوائم البريدية."
 
 #: templates/hyperkitty/api.html:32
 msgid "Threads in a mailing list"
@@ -170,7 +173,7 @@ msgstr ""
 
 #: templates/hyperkitty/base.html:62 templates/hyperkitty/base.html:104
 msgid "Mailman settings"
-msgstr ""
+msgstr "إعدادات مايل مان"
 
 #: templates/hyperkitty/base.html:67 templates/hyperkitty/base.html:109
 #: templates/hyperkitty/user_profile/base.html:16
@@ -180,23 +183,23 @@ msgstr ""
 
 #: templates/hyperkitty/base.html:72 templates/hyperkitty/base.html:114
 msgid "Logout"
-msgstr ""
+msgstr "خروج"
 
 #: templates/hyperkitty/base.html:77 templates/hyperkitty/base.html:121
 msgid "Sign In"
-msgstr ""
+msgstr "لِج"
 
 #: templates/hyperkitty/base.html:81 templates/hyperkitty/base.html:125
 msgid "Sign Up"
-msgstr ""
+msgstr "إنشاء حساب"
 
 #: templates/hyperkitty/base.html:135
 msgid "Manage this list"
-msgstr ""
+msgstr "أدر هذه القائمة"
 
 #: templates/hyperkitty/base.html:140
 msgid "Manage lists"
-msgstr ""
+msgstr "إدارة القوائم"
 
 #: templates/hyperkitty/base.html:193
 msgid "Powered by"
@@ -220,7 +223,7 @@ msgstr ""
 
 #: templates/hyperkitty/errors/private.html:8
 msgid "Error: private list"
-msgstr ""
+msgstr "خطأ: قائمة خاصة"
 
 #: templates/hyperkitty/errors/private.html:20
 msgid ""
@@ -238,11 +241,11 @@ msgstr ""
 #: templates/hyperkitty/fragments/like_form.html:27
 #: templates/hyperkitty/fragments/like_form.html:31
 msgid "You must be logged-in to vote."
-msgstr ""
+msgstr "يجب أن تكون مسجلاً للتصويت."
 
 #: templates/hyperkitty/fragments/month_list.html:5
 msgid "Go to"
-msgstr ""
+msgstr "الانتقال إلى"
 
 #: templates/hyperkitty/fragments/month_list.html:72
 msgid "List overview"
@@ -256,7 +259,7 @@ msgstr ""
 #: templates/hyperkitty/fragments/month_list.html:87 views/message.py:74
 #: views/mlist.py:96 views/thread.py:166
 msgid "Download"
-msgstr ""
+msgstr "تنزيل"
 
 #: templates/hyperkitty/fragments/month_list.html:90
 msgid "Past 30 days"
@@ -264,19 +267,19 @@ msgstr ""
 
 #: templates/hyperkitty/fragments/month_list.html:91
 msgid "This month"
-msgstr ""
+msgstr "هذا الشهر"
 
 #: templates/hyperkitty/fragments/month_list.html:94
 msgid "Entire archive"
-msgstr ""
+msgstr "كامل الأرشيف"
 
 #: templates/hyperkitty/fragments/overview_threads.html:9
 msgid "More..."
-msgstr ""
+msgstr "المزيد…"
 
 #: templates/hyperkitty/fragments/overview_threads.html:17
 msgid "New messages in this thread"
-msgstr ""
+msgstr "رسائل جديدة في هذا الموضوع"
 
 #: templates/hyperkitty/fragments/overview_top_posters.html:19
 msgid "See the profile"
@@ -292,11 +295,11 @@ msgstr ""
 
 #: templates/hyperkitty/fragments/send_as.html:5
 msgid "This message will be sent as:"
-msgstr ""
+msgstr "سيتم إرسال هذه الرسالة على شكل:"
 
 #: templates/hyperkitty/fragments/send_as.html:6
 msgid "Change sender"
-msgstr ""
+msgstr "تغيير المرسِل"
 
 #: templates/hyperkitty/fragments/send_as.html:16
 msgid "Link another address"
@@ -304,12 +307,12 @@ msgstr ""
 
 #: templates/hyperkitty/index.html:9 templates/hyperkitty/index.html:63
 msgid "Available lists"
-msgstr ""
+msgstr "القوائم المتاحة"
 
 #: templates/hyperkitty/index.html:22 templates/hyperkitty/index.html:27
 #: templates/hyperkitty/index.html:72
 msgid "Most popular"
-msgstr ""
+msgstr "الأكثر شعبية"
 
 #: templates/hyperkitty/index.html:26
 msgid "Sort by number of recent participants"
@@ -318,7 +321,7 @@ msgstr ""
 #: templates/hyperkitty/index.html:32 templates/hyperkitty/index.html:37
 #: templates/hyperkitty/index.html:75
 msgid "Most active"
-msgstr ""
+msgstr "الأكثر نشاطا"
 
 #: templates/hyperkitty/index.html:36
 msgid "Sort by number of recent discussions"
@@ -327,16 +330,16 @@ msgstr ""
 #: templates/hyperkitty/index.html:42 templates/hyperkitty/index.html:47
 #: templates/hyperkitty/index.html:78
 msgid "By name"
-msgstr ""
+msgstr "حسب الاسم"
 
 #: templates/hyperkitty/index.html:46
 msgid "Sort alphabetically"
-msgstr ""
+msgstr "ترتيب أبجدي"
 
 #: templates/hyperkitty/index.html:52 templates/hyperkitty/index.html:57
 #: templates/hyperkitty/index.html:81
 msgid "Newest"
-msgstr ""
+msgstr "الأحدث"
 
 #: templates/hyperkitty/index.html:56
 msgid "Sort by list creation date"
@@ -344,7 +347,7 @@ msgstr ""
 
 #: templates/hyperkitty/index.html:68
 msgid "Sort by"
-msgstr ""
+msgstr "ترتيب حسب"
 
 #: templates/hyperkitty/index.html:91
 msgid "Hide inactive"
@@ -366,7 +369,7 @@ msgstr ""
 
 #: templates/hyperkitty/index.html:134 templates/hyperkitty/index.html:204
 msgid "private"
-msgstr ""
+msgstr "خاصة"
 
 #: templates/hyperkitty/index.html:136 templates/hyperkitty/index.html:206
 msgid "inactive"
@@ -381,7 +384,7 @@ msgstr ""
 #: templates/hyperkitty/overview.html:159 templates/hyperkitty/reattach.html:39
 #: templates/hyperkitty/thread.html:108
 msgid "Loading..."
-msgstr ""
+msgstr "جارٍ التحميل…"
 
 #: templates/hyperkitty/index.html:148 templates/hyperkitty/index.html:221
 #: templates/hyperkitty/overview.html:151
@@ -390,7 +393,7 @@ msgstr ""
 #: templates/hyperkitty/threads/right_col.html:98
 #: templates/hyperkitty/threads/summary_thread_large.html:49
 msgid "participants"
-msgstr ""
+msgstr "المشاركون"
 
 #: templates/hyperkitty/index.html:153 templates/hyperkitty/index.html:226
 #: templates/hyperkitty/overview.html:152
@@ -409,11 +412,11 @@ msgstr ""
 #: templates/hyperkitty/user_profile/subscriptions.html:41
 #: templates/hyperkitty/user_profile/votes.html:46
 msgid "List"
-msgstr ""
+msgstr "القائمة"
 
 #: templates/hyperkitty/index.html:175
 msgid "Description"
-msgstr ""
+msgstr "الوصف"
 
 #: templates/hyperkitty/index.html:176
 msgid "Activity in the past 30 days"
@@ -438,13 +441,13 @@ msgstr ""
 
 #: templates/hyperkitty/message_delete.html:45
 msgid "Delete"
-msgstr ""
+msgstr "احذف"
 
 #: templates/hyperkitty/message_delete.html:46
 #: templates/hyperkitty/message_new.html:54
 #: templates/hyperkitty/messages/message.html:145
 msgid "or"
-msgstr ""
+msgstr "أو"
 
 #: templates/hyperkitty/message_delete.html:46
 #: templates/hyperkitty/message_new.html:54
@@ -452,7 +455,7 @@ msgstr ""
 #: templates/hyperkitty/user_profile/votes.html:36
 #: templates/hyperkitty/user_profile/votes.html:74
 msgid "cancel"
-msgstr ""
+msgstr "إلغاء"
 
 #: templates/hyperkitty/message_new.html:9
 #: templates/hyperkitty/message_new.html:22
@@ -467,7 +470,7 @@ msgstr ""
 #: templates/hyperkitty/message_new.html:53
 #: templates/hyperkitty/messages/message.html:144
 msgid "Send"
-msgstr ""
+msgstr "أرسل"
 
 #: templates/hyperkitty/messages/message.html:18
 #, python-format
