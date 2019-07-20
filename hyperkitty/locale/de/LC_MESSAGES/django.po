@@ -25,7 +25,7 @@ msgstr "Eine Datei anhängen"
 
 #: forms.py:65
 msgid "Attach another file"
-msgstr "Noch eine Datei anhängen"
+msgstr "Eine weitere Datei anhängen"
 
 #: forms.py:66
 msgid "Remove this file"
@@ -112,10 +112,7 @@ msgstr ""
 
 #: templates/hyperkitty/api.html:16
 msgid "The list of available formats is:"
-msgstr ""
-"Die Liste der verfügbaren Formate ist\n"
-"\n"
-":"
+msgstr "Die Liste der verfügbaren Formate ist:"
 
 #: templates/hyperkitty/api.html:20
 msgid "Plain text"
