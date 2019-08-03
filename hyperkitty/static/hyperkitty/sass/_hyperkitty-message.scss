@@ -254,6 +254,34 @@ $oddEmailColor: rgb(238, 238, 238);
 }
 
 
+/* Set the indent of the replies based on the size of the screen.*/
+.reply-level-1 {
+    margin-left: 2em;
+}
+.reply-level-2 {
+    margin-left: 4em;
+}
+.reply-level-3 {
+    margin-left: 6em;
+}
+.reply-level-4 {
+    margin-left: 8em;
+}
+.reply-level-5 {
+    margin-left: 10em;
+}
+
+
+/* On smaller screens, do not indent replies as it gets harder to read emails
+ *  at level 5.
+ */
+@media (max-width: 768px) {
+    .reply-level-1, .reply-level-2, .reply-level-3, .reply-level-4, .reply-level-5 {
+        margin-left: 0em;
+    }
+}
+
+
 /* The email thread */
 .view-thread .replies {
     margin-top: -15px;
