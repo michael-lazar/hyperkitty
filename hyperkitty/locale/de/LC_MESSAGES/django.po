@@ -1,14 +1,14 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# German translation for hyperkitty. It uses the informal "du"
+# Copyright (C) 2018
+# This file is distributed under the same license as the main repo.
+# Daniel <dsd.trash@gmail.com>, 2018.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Hyperkitty\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-27 15:16+0200\n"
-"PO-Revision-Date: 2019-04-27 15:28+0200\n"
+"POT-Creation-Date: 2019-06-14 09:53+0200\n"
+"PO-Revision-Date: 2019-06-14 09:53+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -100,7 +100,7 @@ msgid ""
 "This REST API can return the information into several formats.  The default "
 "format is html to allow human readibility."
 msgstr ""
-"Die REST-API kann die Informationen in mehreren Formaten zurück liefern. Die "
+"Die REST-API kann die Informationen in mehreren Formaten zurückliefern. Die "
 "Standardeinstellung ist das für Menschen lesbare HTML Format."
 
 #: templates/hyperkitty/api.html:14
@@ -215,6 +215,14 @@ msgstr "Diese Liste verwalten"
 msgid "Manage lists"
 msgstr "Listen verwalten"
 
+#: templates/hyperkitty/base.html:151 templates/hyperkitty/overview.html:78
+msgid "Search this list"
+msgstr "Die Liste suchen"
+
+#: templates/hyperkitty/base.html:151
+msgid "Search all lists"
+msgstr "Alle Listen durchsuchen"
+
 #: templates/hyperkitty/base.html:193
 msgid "Powered by"
 msgstr "Betrieben mit"
@@ -259,41 +267,42 @@ msgstr "Ihnen gefällt es nicht (abbrechen)"
 msgid "You must be logged-in to vote."
 msgstr "Sie müssen sich anmelden, um abstimmen zu dürfen."
 
-#: templates/hyperkitty/fragments/month_list.html:5
-msgid "Go to"
-msgstr "Gehe zu"
+#: templates/hyperkitty/fragments/month_list.html:6
+msgid "Threads by"
+msgstr "Diskussionsstränge nach"
 
-#: templates/hyperkitty/fragments/month_list.html:72
+#: templates/hyperkitty/fragments/month_list.html:6
+msgid " month"
+msgstr " Monat"
+
+#: templates/hyperkitty/fragments/month_list.html:74
 msgid "List overview"
 msgstr "Listenübersicht"
 
-#: templates/hyperkitty/fragments/month_list.html:78
-#: templates/hyperkitty/overview.html:75
+#: templates/hyperkitty/fragments/month_list.html:80
+#: templates/hyperkitty/fragments/overview_threads.html:37
+#: templates/hyperkitty/overview.html:73
 msgid "All Threads"
 msgstr "Alle Diskussionsstränge"
 
-#: templates/hyperkitty/fragments/month_list.html:87 views/message.py:74
+#: templates/hyperkitty/fragments/month_list.html:89 views/message.py:74
 #: views/mlist.py:96 views/thread.py:166
 msgid "Download"
 msgstr "Herunterladen"
 
-#: templates/hyperkitty/fragments/month_list.html:90
+#: templates/hyperkitty/fragments/month_list.html:92
 msgid "Past 30 days"
 msgstr "Die letzten 30 Tage"
 
-#: templates/hyperkitty/fragments/month_list.html:91
+#: templates/hyperkitty/fragments/month_list.html:93
 msgid "This month"
 msgstr "Diesen Monat"
 
-#: templates/hyperkitty/fragments/month_list.html:94
+#: templates/hyperkitty/fragments/month_list.html:96
 msgid "Entire archive"
 msgstr "Ganzes Archiv"
 
-#: templates/hyperkitty/fragments/overview_threads.html:9
-msgid "More..."
-msgstr "Mehr..."
-
-#: templates/hyperkitty/fragments/overview_threads.html:17
+#: templates/hyperkitty/fragments/overview_threads.html:12
 msgid "New messages in this thread"
 msgstr "Neue Nachrichten in diesem Diskussionsstrang"
 
@@ -392,18 +401,18 @@ msgid "inactive"
 msgstr "inaktiv"
 
 #: templates/hyperkitty/index.html:142 templates/hyperkitty/index.html:232
-#: templates/hyperkitty/overview.html:94 templates/hyperkitty/overview.html:102
-#: templates/hyperkitty/overview.html:114
+#: templates/hyperkitty/overview.html:99 templates/hyperkitty/overview.html:106
+#: templates/hyperkitty/overview.html:113
 #: templates/hyperkitty/overview.html:122
 #: templates/hyperkitty/overview.html:130
-#: templates/hyperkitty/overview.html:142
-#: templates/hyperkitty/overview.html:159 templates/hyperkitty/reattach.html:39
+#: templates/hyperkitty/overview.html:143
+#: templates/hyperkitty/overview.html:160 templates/hyperkitty/reattach.html:39
 #: templates/hyperkitty/thread.html:108
 msgid "Loading..."
 msgstr "Laden..."
 
 #: templates/hyperkitty/index.html:148 templates/hyperkitty/index.html:221
-#: templates/hyperkitty/overview.html:151
+#: templates/hyperkitty/overview.html:152
 #: templates/hyperkitty/thread_list.html:40
 #: templates/hyperkitty/threads/right_col.html:45
 #: templates/hyperkitty/threads/right_col.html:98
@@ -412,7 +421,7 @@ msgid "participants"
 msgstr "Teilnehmer"
 
 #: templates/hyperkitty/index.html:153 templates/hyperkitty/index.html:226
-#: templates/hyperkitty/overview.html:152
+#: templates/hyperkitty/overview.html:153
 #: templates/hyperkitty/thread_list.html:45
 msgid "discussions"
 msgstr "Diskussionen"
@@ -445,7 +454,7 @@ msgstr "Diskussionsstrang"
 #: templates/hyperkitty/message_delete.html:8
 #: templates/hyperkitty/message_delete.html:21
 msgid "Delete message(s)"
-msgstr "Nachricht(en)  löschen"
+msgstr "Nachricht(en) löschen"
 
 #: templates/hyperkitty/message_delete.html:26
 #, python-format
@@ -583,38 +592,39 @@ msgstr ""
 "                                von %(name)s\n"
 "                            "
 
-#: templates/hyperkitty/overview.html:37
+#: templates/hyperkitty/overview.html:35
 msgid "Home"
 msgstr "Startseite"
 
-#: templates/hyperkitty/overview.html:40 templates/hyperkitty/thread.html:75
+#: templates/hyperkitty/overview.html:38 templates/hyperkitty/thread.html:75
 msgid "Stats"
 msgstr "Statistiken"
 
-#: templates/hyperkitty/overview.html:43
+#: templates/hyperkitty/overview.html:41
 msgid "Discussions"
 msgstr "Diskussionen"
 
-#: templates/hyperkitty/overview.html:46
+#: templates/hyperkitty/overview.html:44
 msgid "most recent"
 msgstr "neuste"
 
-#: templates/hyperkitty/overview.html:49
+#: templates/hyperkitty/overview.html:47
 msgid "most popular"
 msgstr "beliebteste"
 
-#: templates/hyperkitty/overview.html:52
+#: templates/hyperkitty/overview.html:50
 msgid "most active"
 msgstr "aktivste"
 
-#: templates/hyperkitty/overview.html:65
+#: templates/hyperkitty/overview.html:60
 #: templates/hyperkitty/thread_list.html:48
 msgid "You must be logged-in to create a thread."
 msgstr "Sie müssen angemeldet sein, um einen Diskussionsstrang zu erstellen."
 
-#: templates/hyperkitty/overview.html:67
+#: templates/hyperkitty/overview.html:62
+#: templates/hyperkitty/thread_list.html:52
 msgid ""
-"<span class=\"hidden-tn hidden-xs\">Start a </span><span class=\"hidden-sm "
+"<span class=\"hidden-tn hidden-xs\">Start a n</span><span class=\"hidden-sm "
 "hidden-md hidden-lg\">N</span>ew thread"
 msgstr ""
 "<span class=\"hidden-tn hidden-xs\">Beginne  einen n</span><span class="
@@ -622,7 +632,7 @@ msgstr ""
 "xs\">n</span><span class=\"hidden-sm hidden-md hidden-lg\">r</span> "
 "Diskussionsstrang"
 
-#: templates/hyperkitty/overview.html:73
+#: templates/hyperkitty/overview.html:71
 msgid ""
 "<span class=\"hidden-tn hidden-xs\">Manage s</span><span class=\"hidden-sm "
 "hidden-md hidden-lg\">S</span>ubscription"
@@ -630,59 +640,55 @@ msgstr ""
 "<span class=\"hidden-tn hidden-xs\">Verwalte A</span><span class=\"hidden-sm "
 "hidden-md hidden-lg\">A</span>bonnement"
 
-#: templates/hyperkitty/overview.html:80
-msgid "Search this list"
-msgstr "Die Liste suchen"
-
-#: templates/hyperkitty/overview.html:90
+#: templates/hyperkitty/overview.html:118
 msgid "Discussions You've Flagged"
 msgstr "Diskussionen, die Sie markiert haben"
 
-#: templates/hyperkitty/overview.html:98
+#: templates/hyperkitty/overview.html:126
 msgid "Discussions You've Posted to"
 msgstr "Diskussionen, zu denen Sie beigetragen haben"
 
-#: templates/hyperkitty/overview.html:112
+#: templates/hyperkitty/overview.html:97
 msgid "Recently active discussions"
 msgstr "Zuletzt aktive Diskussionen"
 
-#: templates/hyperkitty/overview.html:120
+#: templates/hyperkitty/overview.html:104
 msgid "Most popular discussions"
 msgstr "Beliebteste Diskussionen"
 
-#: templates/hyperkitty/overview.html:128
+#: templates/hyperkitty/overview.html:111
 msgid "Most active discussions"
 msgstr "Aktivste Diskussionen"
 
-#: templates/hyperkitty/overview.html:139
+#: templates/hyperkitty/overview.html:140
 msgid "Activity Summary"
 msgstr "Aktivitätszusammenfassung"
 
-#: templates/hyperkitty/overview.html:141
+#: templates/hyperkitty/overview.html:142
 msgid "Post volume over the past <strong>30</strong> days."
 msgstr "Posting-Umfang der letzten <strong>30</strong> Tage."
 
-#: templates/hyperkitty/overview.html:146
+#: templates/hyperkitty/overview.html:147
 msgid "The following statistics are from"
 msgstr "Die folgenden Statistiken sind von"
 
-#: templates/hyperkitty/overview.html:147
+#: templates/hyperkitty/overview.html:148
 msgid "In"
 msgstr "In"
 
-#: templates/hyperkitty/overview.html:148
+#: templates/hyperkitty/overview.html:149
 msgid "the past <strong>30</strong> days:"
 msgstr "den letzten <strong>30</strong> Tage:"
 
-#: templates/hyperkitty/overview.html:157
+#: templates/hyperkitty/overview.html:158
 msgid "Most active posters"
 msgstr "Die aktivsten Poster"
 
-#: templates/hyperkitty/overview.html:166
+#: templates/hyperkitty/overview.html:167
 msgid "Prominent posters"
 msgstr "Prominente Poster"
 
-#: templates/hyperkitty/overview.html:181
+#: templates/hyperkitty/overview.html:182
 msgid "kudos"
 msgstr "Kudos"
 
@@ -1154,3 +1160,4 @@ msgstr "Parsing Fehler: %(error)s"
 #: views/thread.py:167
 msgid "This thread in gzipped mbox format"
 msgstr "Diesen Diskussionsstrang im komprimierten (gzip) mbox-Format"
+
