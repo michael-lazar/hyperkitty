@@ -151,6 +151,14 @@ Make sure that the user running the Django process (for example, ``apache`` or
 ``www-data``) has the permissions to write in this directory.
 
 
+If you want to disable support for gravatars_ in Hyperkitty, you can set
+``GRAVATAR_SECURE_URL = ''``. This will prevent Hyperkitty to go out to
+gravatar to load images for email senders.
+
+.. _gravatars: https://en.gravatar.com/
+
+
+
 Upgrading
 =========
 
