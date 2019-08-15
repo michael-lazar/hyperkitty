@@ -29,6 +29,8 @@ News / Changelog
 - Email body now preserves leading whitespaces on lines and wraps around line
   boundary. (Closes #239)
 - Do not indent replies on small screens. (Closes #224)
+- Add a keyboard shortcut ``?`` to bring up list of keyboard shortcuts.
+	(Closes #240)
 
 1.2.2
 =====

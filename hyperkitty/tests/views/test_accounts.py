@@ -275,8 +275,10 @@ class LastViewsTestCase(TestCase):
         now = datetime.datetime.now()
         response = self.client.get(reverse('hk_archives_with_month', args=(
                     "list@example.com", now.year, now.month)))
+        # Two count comes from the keyboard shortcut models and two should come
+        # from here.
         self.assertContains(response, "unread",
-                            count=2, status_code=200)
+                            count=4, status_code=200)
 
     def test_overview_top_threads(self):
         response = self.client.get(reverse(
