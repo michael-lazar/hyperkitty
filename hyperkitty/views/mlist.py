@@ -39,7 +39,7 @@ from django_mailman3.lib.paginator import paginate
 from hyperkitty.lib.view_helpers import (
     check_mlist_private, daterange, get_category_widget,
     get_display_dates, get_months)
-from hyperkitty.models import Favorite, MailingList
+from hyperkitty.models import Email, Favorite, MailingList
 
 
 @check_mlist_private
@@ -59,7 +59,7 @@ def archives(request, mlist_fqdn, year=None, month=None, day=None):
         # threads ordered by date_active.
         threads = mlist.threads.order_by("-date_active")
         if threads:
-            begin_date = threads.first().starting_email.date
+            begin_date = Email.objects.order_by('date').first().date
         else:
             begin_date = end_date
         # Set the month and year to be today's.
