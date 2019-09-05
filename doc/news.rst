@@ -3,9 +3,9 @@ News / Changelog
 ================
 
 
-1.2.3
+1.3.0
 =====
-(2019-XX-XX)
+(2019-09-04)
 
 - Unread messages now have a blue envelope icon, instead of a gray one before to
   to make them more visible.
