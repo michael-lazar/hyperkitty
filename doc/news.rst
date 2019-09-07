@@ -8,6 +8,8 @@ News / Changelog
 
 (20XX-XX-XX)
 
+- Add support to delete mailing list. (Closes #3)
+
 
 1.3.0
 =====

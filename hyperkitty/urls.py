@@ -61,6 +61,7 @@ list_patterns = [
         mlist.overview_top_posters, name='hk_list_overview_top_posters'),
     url(r'^export/(?P<filename>[^/]+)\.mbox.gz$',
         mlist.export_mbox, name='hk_list_export_mbox'),
+    url(r'delete/', mlist.delete, name='hk_list_delete'),
 ]
 
 

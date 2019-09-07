@@ -57,10 +57,14 @@ class Email(models.Model):
     timezone = models.SmallIntegerField()
     in_reply_to = models.CharField(
         max_length=255, null=True, blank=True, db_index=True)
-    # Delete behavior is handled by on_pre_delete()
+    # XXX(maxking): Delete behavior is handled by on_pre_delete(). Since we
+    # manually make sure that we set and unset parents and handle the fact that
+    # they can't be None for more than one Email in a thread, we don't want
+    # database engine to enforce the relationship is valid. Hence, we set the
+    # on_delete=DO_NOTHING and db_constraint=False.
     parent = models.ForeignKey(
         "self", blank=True, null=True, on_delete=models.DO_NOTHING,
-        related_name="children")
+        related_name="children", db_constraint=False)
     thread = models.ForeignKey(
         "Thread", related_name="emails", on_delete=models.CASCADE)
     archived_date = models.DateTimeField(default=now, db_index=True)
