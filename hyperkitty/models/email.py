@@ -179,16 +179,14 @@ class Email(models.Model):
         # Body
         content = self.ADDRESS_REPLACE_RE.sub(r"\1(a)\2", self.content)
 
-        # Enforce `multipart/mixed` even when there are no attachments
-        # Q: Why are all emails supposed to be multipart?
-        if self.attachments.count() == 0:
-            msg.set_content(content, subtype='plain')
-            msg.make_mixed()
+        # Enforce `multipart/mixed` even when there are no attachments.
+        msg.set_content(content, subtype='plain')
+        msg.make_mixed()
 
         # Attachments
         for attachment in self.attachments.order_by("counter"):
             mimetype = attachment.content_type.split('/', 1)
-            msg.add_attachment(attachment.content, maintype=mimetype[0],
+            msg.add_attachment(attachment.get_content(), maintype=mimetype[0],
                                subtype=mimetype[1], filename=attachment.name)
 
         return msg

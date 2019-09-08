@@ -9,7 +9,10 @@ News / Changelog
 (20XX-XX-XX)
 
 - Add support to delete mailing list. (Closes #3)
-
+- Fix a bug where messages with attachments would skip adding the body when
+  exporting the email. (Closes #252)
+- Fix a bug where exporting mbox with messages that have attachments saved
+  to disk would raise exception and return a corrupt mbox. (Closes #258)
 
 1.3.0
 =====
