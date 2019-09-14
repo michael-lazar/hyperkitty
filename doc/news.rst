@@ -13,6 +13,8 @@ News / Changelog
   exporting the email. (Closes #252)
 - Fix a bug where exporting mbox with messages that have attachments saved
   to disk would raise exception and return a corrupt mbox. (Closes #258)
+- Fix a bug where downloaded attachments are returned as a memoryview object
+  instead of bytes and hence fail to download. (Closes #247)
 
 1.3.0
 =====
