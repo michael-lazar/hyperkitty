@@ -270,7 +270,7 @@ msgstr "Listeoversikt"
 #: templates/hyperkitty/fragments/month_list.html:78
 #: templates/hyperkitty/overview.html:75
 msgid "All Threads"
-msgstr ""
+msgstr "Alle tråder"
 
 #: templates/hyperkitty/fragments/month_list.html:87 views/message.py:74
 #: views/mlist.py:96 views/thread.py:166
@@ -625,10 +625,6 @@ msgstr "aktivitet"
 #: templates/hyperkitty/thread_list.html:48
 msgid "You must be logged-in to create a thread."
 msgstr "Du må være innlogget for å lage en tråd."
-
-#: templates/hyperkitty/overview.html:75
-msgid "All Threads"
-msgstr "Alle tråder"
 
 #: templates/hyperkitty/overview.html:80
 msgid "Search this list"
