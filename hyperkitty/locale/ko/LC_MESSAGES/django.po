@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-27 15:16+0200\n"
 "PO-Revision-Date: 2019-10-04 00:04+0000\n"
-"Last-Translator: hyunwoo shin <harryshin96@gmail.com>\n"
+"Last-Translator: ParkSeongSoo <syvf64@naver.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/gnu-mailman/"
 "hyperkitty/ko/>\n"
 "Language: ko\n"
@@ -200,11 +200,11 @@ msgstr "목록 관리하기"
 
 #: templates/hyperkitty/base.html:193
 msgid "Powered by"
-msgstr ""
+msgstr "에 의해 구동"
 
 #: templates/hyperkitty/base.html:193
 msgid "version"
-msgstr ""
+msgstr "버전"
 
 #: templates/hyperkitty/errors/notimplemented.html:8
 msgid "Not implemented yet"
@@ -251,7 +251,7 @@ msgstr "목록 개요"
 #: templates/hyperkitty/fragments/month_list.html:78
 #: templates/hyperkitty/overview.html:75
 msgid "All Threads"
-msgstr ""
+msgstr "모든 스레드"
 
 #: templates/hyperkitty/fragments/month_list.html:87 views/message.py:74
 #: views/mlist.py:96 views/thread.py:166
