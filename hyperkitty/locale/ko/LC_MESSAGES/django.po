@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-27 15:16+0200\n"
 "PO-Revision-Date: 2019-10-04 00:04+0000\n"
-"Last-Translator: ParkSeongSoo <syvf64@naver.com>\n"
+"Last-Translator: 김상남 <ksn7491@naver.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/gnu-mailman/"
 "hyperkitty/ko/>\n"
 "Language: ko\n"
@@ -184,7 +184,7 @@ msgstr "로그아웃"
 
 #: templates/hyperkitty/base.html:77 templates/hyperkitty/base.html:121
 msgid "Sign In"
-msgstr "서명하새요"
+msgstr "로그인"
 
 #: templates/hyperkitty/base.html:81 templates/hyperkitty/base.html:125
 msgid "Sign Up"
