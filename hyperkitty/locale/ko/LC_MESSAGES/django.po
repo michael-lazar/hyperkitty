@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-27 15:16+0200\n"
-"PO-Revision-Date: 2019-06-02 06:38+0000\n"
-"Last-Translator: Jun Hyung Shin <shmishmi79@gmail.com>\n"
+"PO-Revision-Date: 2019-10-03 14:11+0000\n"
+"Last-Translator: ParkSeongSoo <syvf64@naver.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/gnu-mailman/"
 "hyperkitty/ko/>\n"
 "Language: ko\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.7-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 
 #: forms.py:64
 msgid "Attach a file"
@@ -184,11 +184,11 @@ msgstr "로그아웃"
 
 #: templates/hyperkitty/base.html:77 templates/hyperkitty/base.html:121
 msgid "Sign In"
-msgstr "로그인"
+msgstr "서명하새요"
 
 #: templates/hyperkitty/base.html:81 templates/hyperkitty/base.html:125
 msgid "Sign Up"
-msgstr "회원가입"
+msgstr "서명하다"
 
 #: templates/hyperkitty/base.html:135
 msgid "Manage this list"
@@ -872,7 +872,7 @@ msgstr "태그 검색하기"
 
 #: templates/hyperkitty/threads/tags.html:15
 msgid "Remove"
-msgstr "제거하기"
+msgstr "제거"
 
 #: templates/hyperkitty/user_posts.html:9
 #: templates/hyperkitty/user_posts.html:22
@@ -898,7 +898,7 @@ msgstr "사용자의 게시글 활동내역"
 #: templates/hyperkitty/user_public_profile.html:8
 #: templates/hyperkitty/user_public_profile.html:15
 msgid "for"
-msgstr "for"
+msgstr "위하여"
 
 #: templates/hyperkitty/user_profile/base.html:20
 #: templates/hyperkitty/user_profile/base.html:21
