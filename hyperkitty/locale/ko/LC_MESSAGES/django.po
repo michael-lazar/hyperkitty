@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-27 15:16+0200\n"
-"PO-Revision-Date: 2019-06-02 06:38+0000\n"
-"Last-Translator: Jun Hyung Shin <shmishmi79@gmail.com>\n"
+"PO-Revision-Date: 2019-10-04 00:04+0000\n"
+"Last-Translator: 김상남 <ksn7491@naver.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/gnu-mailman/"
 "hyperkitty/ko/>\n"
 "Language: ko\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.7-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 
 #: forms.py:64
 msgid "Attach a file"
@@ -188,7 +188,7 @@ msgstr "로그인"
 
 #: templates/hyperkitty/base.html:81 templates/hyperkitty/base.html:125
 msgid "Sign Up"
-msgstr "회원가입"
+msgstr "서명하다"
 
 #: templates/hyperkitty/base.html:135
 msgid "Manage this list"
@@ -200,11 +200,11 @@ msgstr "목록 관리하기"
 
 #: templates/hyperkitty/base.html:193
 msgid "Powered by"
-msgstr ""
+msgstr "에 의해 구동"
 
 #: templates/hyperkitty/base.html:193
 msgid "version"
-msgstr ""
+msgstr "버전"
 
 #: templates/hyperkitty/errors/notimplemented.html:8
 msgid "Not implemented yet"
@@ -251,7 +251,7 @@ msgstr "목록 개요"
 #: templates/hyperkitty/fragments/month_list.html:78
 #: templates/hyperkitty/overview.html:75
 msgid "All Threads"
-msgstr ""
+msgstr "모든 스레드"
 
 #: templates/hyperkitty/fragments/month_list.html:87 views/message.py:74
 #: views/mlist.py:96 views/thread.py:166
@@ -872,7 +872,7 @@ msgstr "태그 검색하기"
 
 #: templates/hyperkitty/threads/tags.html:15
 msgid "Remove"
-msgstr "제거하기"
+msgstr "제거"
 
 #: templates/hyperkitty/user_posts.html:9
 #: templates/hyperkitty/user_posts.html:22
@@ -898,7 +898,7 @@ msgstr "사용자의 게시글 활동내역"
 #: templates/hyperkitty/user_public_profile.html:8
 #: templates/hyperkitty/user_public_profile.html:15
 msgid "for"
-msgstr "for"
+msgstr "위해"
 
 #: templates/hyperkitty/user_profile/base.html:20
 #: templates/hyperkitty/user_profile/base.html:21
