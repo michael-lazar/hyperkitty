@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-27 15:16+0200\n"
-"PO-Revision-Date: 2019-11-01 04:03+0000\n"
-"Last-Translator: 김상남 <ksn7491@naver.com>\n"
+"PO-Revision-Date: 2019-11-19 12:04+0000\n"
+"Last-Translator: hyunwoo shin <harryshin96@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/gnu-mailman/"
 "hyperkitty/ko/>\n"
 "Language: ko\n"
@@ -601,7 +601,9 @@ msgstr ""
 msgid ""
 "<span class=\"hidden-tn hidden-xs\">Manage s</span><span class=\"hidden-sm "
 "hidden-md hidden-lg\">S</span>ubscription"
-msgstr "모든 스레드"
+msgstr ""
+"<span class=\"hidden-tn hidden-xs\">Manage s</span><span class=\"hidden-sm "
+"hidden-md hidden-lg\">S</span>비구독"
 
 #: templates/hyperkitty/overview.html:80
 msgid "Search this list"
@@ -697,7 +699,7 @@ msgstr "(되돌리기 할 것이 없습니다!), 또는"
 
 #: templates/hyperkitty/reattach.html:52
 msgid "go back to the thread"
-msgstr "스레드로 돌아가기</a>."
+msgstr "스레드로 돌아가기"
 
 #: templates/hyperkitty/search_results.html:9
 msgid "Search results for"
