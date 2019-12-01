@@ -15,6 +15,8 @@ News / Changelog
   to disk would raise exception and return a corrupt mbox. (Closes #258)
 - Fix a bug where downloaded attachments are returned as a memoryview object
   instead of bytes and hence fail to download. (Closes #247)
+- Fix a bug where migrations would fail with exceptions on postgresl. (Closes
+  #266)
 
 1.3.0
 =====
