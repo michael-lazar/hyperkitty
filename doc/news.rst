@@ -35,6 +35,8 @@ News / Changelog
 - Fix a bug where migrations would fail with exceptions on postgresl. (Closes
   #266)
 - Add support for Django 3.0.
+- Add support for Python 3.8 with Django 2.2.
+
 
 1.3.0
 =====
