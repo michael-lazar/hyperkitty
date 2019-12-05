@@ -17,6 +17,7 @@ News / Changelog
   instead of bytes and hence fail to download. (Closes #247)
 - Fix a bug where migrations would fail with exceptions on postgresl. (Closes
   #266)
+- Add support for Django 3.0.
 
 1.3.0
 =====
