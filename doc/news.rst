@@ -6,7 +6,7 @@ News / Changelog
 1.3.1
 =====
 
-(20XX-XX-XX)
+(2019-12-08)
 
 - Add support to delete mailing list. (Closes #3)
 - Fix a bug where messages with attachments would skip adding the body when
