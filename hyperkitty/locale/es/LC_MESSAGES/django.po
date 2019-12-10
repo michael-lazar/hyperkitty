@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-27 15:16+0200\n"
-"PO-Revision-Date: 2019-12-10 16:24+0000\n"
-"Last-Translator: Pablo Montepagano <pmontepagano@gmail.com>\n"
+"PO-Revision-Date: 2019-12-11 14:52+0000\n"
+"Last-Translator: Federico Sayd <federicosayd@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/gnu-mailman/"
 "hyperkitty/es/>\n"
 "Language: es\n"
@@ -199,7 +199,7 @@ msgstr "Salir"
 
 #: templates/hyperkitty/base.html:77 templates/hyperkitty/base.html:121
 msgid "Sign In"
-msgstr "Acceder"
+msgstr "Registrarse"
 
 #: templates/hyperkitty/base.html:81 templates/hyperkitty/base.html:125
 msgid "Sign Up"
@@ -463,7 +463,7 @@ msgstr "Eliminar"
 #: templates/hyperkitty/message_new.html:54
 #: templates/hyperkitty/messages/message.html:145
 msgid "or"
-msgstr "o bien"
+msgstr "o"
 
 #: templates/hyperkitty/message_delete.html:46
 #: templates/hyperkitty/message_new.html:54
