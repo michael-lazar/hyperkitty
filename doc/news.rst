@@ -8,6 +8,8 @@ News / Changelog
 
 (20XX-XX-XX)
 
+- Remove support for Django 1.11. (Closes #273)
+
 
 1.3.1
 =====
