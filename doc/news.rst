@@ -11,6 +11,7 @@ News / Changelog
 - Remove support for Django 1.11. (Closes #273)
 - Skip ``Thread.DoesNotExist`` exception when raised within
   ``rebuild_thread_cache_votes``. (Closes #245)
+- Send 400 status code for ``ValueError`` when archiving. (Closes #271)
 
 1.3.1
 =====
