@@ -9,7 +9,8 @@ News / Changelog
 (20XX-XX-XX)
 
 - Remove support for Django 1.11. (Closes #273)
-
+- Skip ``Thread.DoesNotExist`` exception when raised within
+  ``rebuild_thread_cache_votes``. (Closes #245)
 
 1.3.1
 =====
@@ -47,7 +48,7 @@ News / Changelog
   convert different thread categories into tabs.
 - Replace unmaintained ``lockfile`` dependency with ``flufl.lock``.
 - Remove ``SingletonAsync`` implementation of ``AsyncTask`` and use the upstream
-  version for better maintenance.  
+  version for better maintenance.
 - Run update_index job hourly by default instead of minutely for performance
   reasons of whoosh.
 - Email body now preserves leading whitespaces on lines and wraps around line
