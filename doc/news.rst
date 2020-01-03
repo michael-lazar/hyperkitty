@@ -12,6 +12,7 @@ News / Changelog
 - Skip ``Thread.DoesNotExist`` exception when raised within
   ``rebuild_thread_cache_votes``. (Closes #245)
 - Send 400 status code for ``ValueError`` when archiving. (Closes #271)
+- Fix a bug where exception for elasticsearch backend would not be caught. (Closes #263)
 
 1.3.1
 =====
