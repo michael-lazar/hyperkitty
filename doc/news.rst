@@ -6,7 +6,7 @@ News / Changelog
 1.3.2
 =====
 
-(20XX-XX-XX)
+(2020-01-12)
 
 - Remove support for Django 1.11. (Closes #273)
 - Skip ``Thread.DoesNotExist`` exception when raised within
