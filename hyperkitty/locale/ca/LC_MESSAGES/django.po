@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-27 15:16+0200\n"
-"PO-Revision-Date: 2020-02-05 13:16+0000\n"
-"Last-Translator: Leandro Navarro <leandro@pangea.org>\n"
+"PO-Revision-Date: 2020-02-06 10:12+0000\n"
+"Last-Translator: Paco <pacoc@pangea.org>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/gnu-mailman/"
 "hyperkitty/ca/>\n"
 "Language: ca\n"
@@ -114,7 +114,7 @@ msgstr "La llista de formats disponibles és:"
 
 #: templates/hyperkitty/api.html:20
 msgid "Plain text"
-msgstr "Text senzill"
+msgstr "Text sense format"
 
 #: templates/hyperkitty/api.html:26
 msgid "List of mailing-lists"
