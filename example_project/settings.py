@@ -455,6 +455,9 @@ HYPERKITTY_DISABLE_SINGLETON_TASKS = False
 # Default set to 10mins.
 HYPERKITTY_TASK_LOCK_TIMEOUT = 10 * 60
 
+# Inactive List Setting
+SHOW_INACTIVE_LISTS_DEFAULT = False
+
 
 try:
     from settings_local import *

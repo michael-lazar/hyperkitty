@@ -391,3 +391,6 @@ if DEBUG is True:
 #
 # Only display mailing-lists from the same virtual host as the webserver
 FILTER_VHOST = False
+
+# Inactive List Setting
+SHOW_INACTIVE_LISTS_DEFAULT = False
