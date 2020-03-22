@@ -24,6 +24,7 @@
 import json
 from email.message import EmailMessage
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import override_settings
 
@@ -199,6 +200,24 @@ class FindTestCase(TestCase):
         response = self.client.get(reverse("hk_root"), {"name": "List Two"})
         self.assertRedirects(response, reverse("hk_list_overview", kwargs={
             "mlist_fqdn": "list-two@example.com"}))
+
+    def test_show_inactive_list_default(self):
+        response = self.client.get(reverse("hk_root"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            '<label><input type="checkbox" value="inactive" />Hide inactive'
+            '</label>' in
+            str(response.content))
+
+    @override_settings(SHOW_INACTIVE_LISTS_DEFAULT=True)
+    def test_show_inactive_list_true(self):
+        response = self.client.get(reverse("hk_root"))
+        self.assertTrue(settings.SHOW_INACTIVE_LISTS_DEFAULT)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            '<label><input type="checkbox" value="inactive" checked="checked"'
+            '/>Hide inactive</label>' in
+            str(response.content))
 
 
 @override_settings(FILTER_VHOST=True, ALLOWED_HOSTS=["*"])

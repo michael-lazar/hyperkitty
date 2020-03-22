@@ -88,6 +88,9 @@ def index(request):
         return HttpResponse("Wrong search parameter",
                             content_type="text/plain", status=500)
 
+    # Inactive List Setting
+    show_inactive = getattr(settings, 'SHOW_INACTIVE_LISTS_DEFAULT', False)
+
     mlists = paginate(mlists, request.GET.get('page'),
                       request.GET.get('count'))
 
@@ -95,7 +98,8 @@ def index(request):
         'view_name': 'all_lists',
         'all_lists': mlists,
         'sort_mode': sort_mode,
-        }
+        'show_inactive': show_inactive
+    }
     return render(request, "hyperkitty/index.html", context)
 
 
