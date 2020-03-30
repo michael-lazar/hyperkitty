@@ -345,7 +345,7 @@ LOGGING = {
         },
         'django-q': {
             'handlers': ['console'],
-            'level': 'WARNING',
+            'level': 'ERROR',
         },
         # 'django.db.backends': {
         #     'level': 'DEBUG',
