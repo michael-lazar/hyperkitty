@@ -9,7 +9,8 @@ News / Changelog
 (20XX-XX-XX)
 
 - Allow ``SHOW_INACTIVE_LISTS_DEFAULT`` setting to be configurable. (Closes #276)
-
+- Fix a bug where the user couldn't chose the address to send reply or new post
+  as. (Closes #288(
 
 1.3.2
 =====
