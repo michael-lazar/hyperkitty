@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-27 15:17+0200\n"
-"PO-Revision-Date: 2020-03-31 20:13+0000\n"
+"PO-Revision-Date: 2020-03-31 22:55+0000\n"
 "Last-Translator: Derek Zhou <derek@3qin.us>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "gnu-mailman/hyperkitty/zh_Hans/>\n"
@@ -687,53 +687,53 @@ msgstr "搜索"
 
 #: templates/hyperkitty/reattach.html:44
 msgid "this thread ID:"
-msgstr ""
+msgstr "这个线索号:"
 
 #: templates/hyperkitty/reattach.html:50
 msgid "Do it"
-msgstr ""
+msgstr "做吧"
 
 #: templates/hyperkitty/reattach.html:50
 msgid "(there's no undoing!), or"
-msgstr ""
+msgstr "(无法撤回!), 或者"
 
 #: templates/hyperkitty/reattach.html:52
 msgid "go back to the thread"
-msgstr ""
+msgstr "回到线索"
 
 #: templates/hyperkitty/search_results.html:9
 msgid "Search results for"
-msgstr ""
+msgstr "搜索结果属于"
 
 #: templates/hyperkitty/search_results.html:31
 msgid "search results"
-msgstr ""
+msgstr "搜索结果"
 
 #: templates/hyperkitty/search_results.html:33
 msgid "Search results"
-msgstr ""
+msgstr "搜索结果"
 
 #: templates/hyperkitty/search_results.html:35
 msgid "for query"
-msgstr ""
+msgstr "为查询"
 
 #: templates/hyperkitty/search_results.html:45
 #: templates/hyperkitty/threads/right_col.html:50
 #: templates/hyperkitty/user_posts.html:35
 msgid "messages"
-msgstr ""
+msgstr "消息"
 
 #: templates/hyperkitty/search_results.html:58
 msgid "sort by score"
-msgstr ""
+msgstr "以打分排序"
 
 #: templates/hyperkitty/search_results.html:61
 msgid "sort by latest first"
-msgstr ""
+msgstr "以从新到旧排序"
 
 #: templates/hyperkitty/search_results.html:64
 msgid "sort by earliest first"
-msgstr ""
+msgstr "以从旧到新排序"
 
 #: templates/hyperkitty/search_results.html:66
 msgid "Update"
@@ -741,115 +741,115 @@ msgstr "更新"
 
 #: templates/hyperkitty/search_results.html:86
 msgid "Sorry no email could be found for this query."
-msgstr ""
+msgstr "对不起, 找不到相应的邮件."
 
 #: templates/hyperkitty/search_results.html:89
 msgid "Sorry but your query looks empty."
-msgstr ""
+msgstr "对不起, 你的查询为空."
 
 #: templates/hyperkitty/search_results.html:90
 msgid "these are not the messages you are looking for"
-msgstr ""
+msgstr "这些不是你要找的消息"
 
 #: templates/hyperkitty/thread.html:30
 msgid "newer"
-msgstr ""
+msgstr "较新的"
 
 #: templates/hyperkitty/thread.html:44
 msgid "older"
-msgstr ""
+msgstr "较旧的"
 
 #: templates/hyperkitty/thread.html:69
 msgid "First Post"
-msgstr ""
+msgstr "第一贴"
 
 #: templates/hyperkitty/thread.html:72
 #: templates/hyperkitty/user_profile/favorites.html:45
 #: templates/hyperkitty/user_profile/last_views.html:50
 msgid "Replies"
-msgstr ""
+msgstr "回复"
 
 #: templates/hyperkitty/thread.html:94
 msgid "Show replies by thread"
-msgstr ""
+msgstr "显示线索内回复"
 
 #: templates/hyperkitty/thread.html:97
 msgid "Show replies by date"
-msgstr ""
+msgstr "显示某日回复"
 
 #: templates/hyperkitty/thread_list.html:60
 msgid "Sorry no email threads could be found"
-msgstr ""
+msgstr "对不起, 找不到你要的邮件线索"
 
 #: templates/hyperkitty/threads/category.html:7
 msgid "Click to edit"
-msgstr ""
+msgstr "点击编辑"
 
 #: templates/hyperkitty/threads/category.html:9
 msgid "You must be logged-in to edit."
-msgstr ""
+msgstr "你必须先登录才能编辑."
 
 #: templates/hyperkitty/threads/category.html:15
 msgid "no category"
-msgstr ""
+msgstr "没有组别"
 
 #: templates/hyperkitty/threads/right_col.html:13
 msgid "days inactive"
-msgstr ""
+msgstr "不活跃天数"
 
 #: templates/hyperkitty/threads/right_col.html:19
 msgid "days old"
-msgstr ""
+msgstr "活的天数"
 
 #: templates/hyperkitty/threads/right_col.html:41
 #: templates/hyperkitty/threads/summary_thread_large.html:53
 msgid "comments"
-msgstr ""
+msgstr "评论"
 
 #: templates/hyperkitty/threads/right_col.html:49
 msgid "unread"
-msgstr ""
+msgstr "未读"
 
 #: templates/hyperkitty/threads/right_col.html:60
 msgid "You must be logged-in to have favorites."
-msgstr ""
+msgstr "你必须先登录才能设定喜好."
 
 #: templates/hyperkitty/threads/right_col.html:61
 msgid "Add to favorites"
-msgstr ""
+msgstr "加入喜好"
 
 #: templates/hyperkitty/threads/right_col.html:63
 msgid "Remove from favorites"
-msgstr ""
+msgstr "从喜好中去除"
 
 #: templates/hyperkitty/threads/right_col.html:72
 msgid "Reattach this thread"
-msgstr ""
+msgstr "重连线索"
 
 #: templates/hyperkitty/threads/right_col.html:76
 msgid "Delete this thread"
-msgstr ""
+msgstr "删除线索"
 
 #: templates/hyperkitty/threads/right_col.html:114
 msgid "Unreads:"
-msgstr ""
+msgstr "未读:"
 
 #: templates/hyperkitty/threads/right_col.html:116
 msgid "Go to:"
-msgstr ""
+msgstr "前往:"
 
 #: templates/hyperkitty/threads/right_col.html:116
 msgid "next"
-msgstr ""
+msgstr "下一个"
 
 #: templates/hyperkitty/threads/right_col.html:117
 msgid "prev"
-msgstr ""
+msgstr "上一个"
 
 #: templates/hyperkitty/threads/summary_thread_large.html:24
 #: templates/hyperkitty/threads/summary_thread_large.html:26
 msgid "Favorite"
-msgstr ""
+msgstr "喜好"
 
 #: templates/hyperkitty/threads/summary_thread_large.html:32
 #, python-format
@@ -858,18 +858,21 @@ msgid ""
 "                                        by %(name)s\n"
 "                                    "
 msgstr ""
+"\n"
+"                                        由%(name)s\n"
+"                                    "
 
 #: templates/hyperkitty/threads/summary_thread_large.html:42
 msgid "Most recent thread activity"
-msgstr ""
+msgstr "最近线索内活动"
 
 #: templates/hyperkitty/threads/tags.html:3
 msgid "tags"
-msgstr ""
+msgstr "标签"
 
 #: templates/hyperkitty/threads/tags.html:9
 msgid "Search for tag"
-msgstr ""
+msgstr "搜索标签"
 
 #: templates/hyperkitty/threads/tags.html:15
 msgid "Remove"
@@ -879,21 +882,21 @@ msgstr "去掉"
 #: templates/hyperkitty/user_posts.html:22
 #: templates/hyperkitty/user_posts.html:26
 msgid "Messages by"
-msgstr ""
+msgstr "消息来自"
 
 #: templates/hyperkitty/user_posts.html:39
 #, python-format
 msgid "Back to %(fullname)s's profile"
-msgstr ""
+msgstr "回到%(fullname)s的用户信息"
 
 #: templates/hyperkitty/user_posts.html:49
 msgid "Sorry no email could be found by this user."
-msgstr ""
+msgstr "对不起, 找不到该用户的邮件."
 
 #: templates/hyperkitty/user_profile/base.html:5
 #: templates/hyperkitty/user_profile/base.html:12
 msgid "User posting activity"
-msgstr ""
+msgstr "用户的发帖活动"
 
 #: templates/hyperkitty/user_profile/base.html:12
 #: templates/hyperkitty/user_public_profile.html:8
