@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-27 15:17+0200\n"
-"PO-Revision-Date: 2020-04-01 20:47+0000\n"
+"PO-Revision-Date: 2020-04-01 23:49+0000\n"
 "Last-Translator: Derek Zhou <derek@3qin.us>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "gnu-mailman/hyperkitty/zh_Hans/>\n"
@@ -447,7 +447,7 @@ msgstr "删除"
 #: templates/hyperkitty/message_new.html:54
 #: templates/hyperkitty/messages/message.html:145
 msgid "or"
-msgstr "或者"
+msgstr "或"
 
 #: templates/hyperkitty/message_delete.html:46
 #: templates/hyperkitty/message_new.html:54
@@ -1079,51 +1079,51 @@ msgstr "电子邮件地址:"
 
 #: views/message.py:75
 msgid "This message in gzipped mbox format"
-msgstr ""
+msgstr "gzip后的mbox格式下的本消息"
 
 #: views/message.py:278
 #, python-format
 msgid "Could not delete message %(msg_id_hash)s: %(error)s"
-msgstr ""
+msgstr "无法删除消息%(msg_id_hash)s: %(error)s"
 
 #: views/message.py:287
 #, python-format
 msgid "Successfully deleted %(count)s messages."
-msgstr ""
+msgstr "顺利删除%(count)s个消息."
 
 #: views/mlist.py:82
 msgid "for this month"
-msgstr ""
+msgstr "本月的"
 
 #: views/mlist.py:85
 msgid "for this day"
-msgstr ""
+msgstr "本日的"
 
 #: views/mlist.py:97
 msgid "This month in gzipped mbox format"
-msgstr ""
+msgstr "gzip后的mbox格式下本月全部"
 
 #: views/mlist.py:192 views/mlist.py:216
 msgid "No discussions this month (yet)."
-msgstr ""
+msgstr "本月尚无讨论."
 
 #: views/mlist.py:204
 msgid "No vote has been cast this month (yet)."
-msgstr ""
+msgstr "本月尚无投票行动."
 
 #: views/mlist.py:233
 msgid "You have not flagged any discussions (yet)."
-msgstr ""
+msgstr "你尚未标记任何讨论."
 
 #: views/mlist.py:256
 msgid "You have not posted to this list (yet)."
-msgstr ""
+msgstr "你尚未对本列表发帖."
 
 #: views/search.py:105
 #, python-format
 msgid "Parsing error: %(error)s"
-msgstr ""
+msgstr "语意分析错误: %(error)s"
 
 #: views/thread.py:167
 msgid "This thread in gzipped mbox format"
-msgstr ""
+msgstr "gzip后的mbox格式下的本线索"
