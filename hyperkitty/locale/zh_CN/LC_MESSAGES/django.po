@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-27 15:17+0200\n"
-"PO-Revision-Date: 2020-03-31 22:55+0000\n"
+"PO-Revision-Date: 2020-04-01 03:41+0000\n"
 "Last-Translator: Derek Zhou <derek@3qin.us>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "gnu-mailman/hyperkitty/zh_Hans/>\n"
@@ -907,79 +907,79 @@ msgstr "为了"
 #: templates/hyperkitty/user_profile/base.html:20
 #: templates/hyperkitty/user_profile/base.html:21
 msgid "Favorites"
-msgstr ""
+msgstr "喜好"
 
 #: templates/hyperkitty/user_profile/base.html:24
 #: templates/hyperkitty/user_profile/base.html:25
 msgid "Threads you have read"
-msgstr ""
+msgstr "你读过的线索"
 
 #: templates/hyperkitty/user_profile/base.html:28
 #: templates/hyperkitty/user_profile/base.html:29
 #: templates/hyperkitty/user_profile/profile.html:18
 #: templates/hyperkitty/user_profile/subscriptions.html:45
 msgid "Votes"
-msgstr ""
+msgstr "投票"
 
 #: templates/hyperkitty/user_profile/base.html:32
 #: templates/hyperkitty/user_profile/base.html:33
 msgid "Subscriptions"
-msgstr ""
+msgstr "订阅"
 
 #: templates/hyperkitty/user_profile/favorites.html:24
 #: templates/hyperkitty/user_profile/last_views.html:27
 #: templates/hyperkitty/user_profile/votes.html:23
 msgid "Original author:"
-msgstr ""
+msgstr "原作者:"
 
 #: templates/hyperkitty/user_profile/favorites.html:26
 #: templates/hyperkitty/user_profile/last_views.html:29
 #: templates/hyperkitty/user_profile/votes.html:25
 msgid "Started on:"
-msgstr ""
+msgstr "开始于:"
 
 #: templates/hyperkitty/user_profile/favorites.html:28
 #: templates/hyperkitty/user_profile/last_views.html:31
 msgid "Last activity:"
-msgstr ""
+msgstr "最后的活动:"
 
 #: templates/hyperkitty/user_profile/favorites.html:30
 #: templates/hyperkitty/user_profile/last_views.html:33
 msgid "Replies:"
-msgstr ""
+msgstr "回复:"
 
 #: templates/hyperkitty/user_profile/favorites.html:41
 #: templates/hyperkitty/user_profile/last_views.html:46
 #: templates/hyperkitty/user_profile/profile.html:16
 #: templates/hyperkitty/user_profile/votes.html:47
 msgid "Subject"
-msgstr ""
+msgstr "主题"
 
 #: templates/hyperkitty/user_profile/favorites.html:42
 #: templates/hyperkitty/user_profile/last_views.html:47
 #: templates/hyperkitty/user_profile/votes.html:48
 msgid "Original author"
-msgstr ""
+msgstr "原作者"
 
 #: templates/hyperkitty/user_profile/favorites.html:43
 #: templates/hyperkitty/user_profile/last_views.html:48
 #: templates/hyperkitty/user_profile/votes.html:49
 msgid "Start date"
-msgstr ""
+msgstr "开始日期"
 
 #: templates/hyperkitty/user_profile/favorites.html:44
 #: templates/hyperkitty/user_profile/last_views.html:49
 msgid "Last activity"
-msgstr ""
+msgstr "最后的活动"
 
 #: templates/hyperkitty/user_profile/favorites.html:71
 msgid "No favorites yet."
-msgstr ""
+msgstr "还没有喜好."
 
 #: templates/hyperkitty/user_profile/last_views.html:22
 #: templates/hyperkitty/user_profile/last_views.html:59
 msgid "New comments"
-msgstr ""
+msgstr "新评论"
 
 #: templates/hyperkitty/user_profile/last_views.html:82
 msgid "Nothing read yet."
