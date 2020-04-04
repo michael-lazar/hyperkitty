@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-27 15:16+0200\n"
-"PO-Revision-Date: 2020-03-31 20:13+0000\n"
-"Last-Translator: Julien Rabier <taziden@flexiden.org>\n"
+"PO-Revision-Date: 2020-04-02 21:58+0000\n"
+"Last-Translator: Frédéric Lehobey <weblate@proxience.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/gnu-mailman/"
 "hyperkitty/fr/>\n"
 "Language: fr\n"
@@ -975,7 +975,7 @@ msgstr "Réponses :"
 #: templates/hyperkitty/user_profile/profile.html:16
 #: templates/hyperkitty/user_profile/votes.html:47
 msgid "Subject"
-msgstr "Sujets"
+msgstr "Objet"
 
 #: templates/hyperkitty/user_profile/favorites.html:42
 #: templates/hyperkitty/user_profile/last_views.html:47
