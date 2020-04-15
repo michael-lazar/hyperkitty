@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-27 15:17+0200\n"
-"PO-Revision-Date: 2020-04-13 16:21+0000\n"
+"PO-Revision-Date: 2020-04-16 11:08+0000\n"
 "Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/gnu-mailman/"
 "hyperkitty/tr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.0.1-dev\n"
 
 #: forms.py:64
 msgid "Attach a file"
@@ -108,7 +108,7 @@ msgstr "Biçimi değiştirmek için, URL'ye <em>?format=&lt;BİÇİM&gt;</em> ek
 
 #: templates/hyperkitty/api.html:16
 msgid "The list of available formats is:"
-msgstr "Mevcut biçimlerin listesi:"
+msgstr "Kullanılabilir biçimlerin listesi:"
 
 #: templates/hyperkitty/api.html:20
 msgid "Plain text"
@@ -317,7 +317,7 @@ msgstr "Başka bir adres bağla"
 
 #: templates/hyperkitty/index.html:9 templates/hyperkitty/index.html:63
 msgid "Available lists"
-msgstr "Mevcut listeler"
+msgstr "Kullanılabilir listeler"
 
 #: templates/hyperkitty/index.html:22 templates/hyperkitty/index.html:27
 #: templates/hyperkitty/index.html:72
