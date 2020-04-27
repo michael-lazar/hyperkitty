@@ -10,7 +10,9 @@ News / Changelog
 
 - Allow ``SHOW_INACTIVE_LISTS_DEFAULT`` setting to be configurable. (Closes #276)
 - Fix a bug where the user couldn't chose the address to send reply or new post
-  as. (Closes #288(
+  as. (Closes #288)
+- Improve the Django admin command reference from hyperkitty_import.
+  (Closes #281)
 
 1.3.2
 =====

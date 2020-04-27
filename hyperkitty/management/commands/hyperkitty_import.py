@@ -348,6 +348,7 @@ class Command(BaseCommand):
                 "The full-text search index is not updated for this list. "
                 "It will not be updated by the 'minutely' incremental "
                 "update job. To update the index for this list, run the "
-                "'manage.py update_index_one_list {}' command."
+                "Django admin command with arguments "
+                "'update_index_one_list {}'."
                 .format(list_address)
                 )
