@@ -26,8 +26,10 @@ from email.message import EmailMessage
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.test import override_settings
 
+from django_mailman3.models import MailDomain
 from django_mailman3.tests.utils import FakeMMList, FakeMMMember
 from mock import Mock
 
@@ -222,6 +224,12 @@ class FindTestCase(TestCase):
 
 @override_settings(FILTER_VHOST=True, ALLOWED_HOSTS=["*"])
 class DomainFilteringTestCase(TestCase):
+
+    def setUp(self):
+        self._site = Site.objects.create(domain='www.example.com',
+                                         name='www')
+        self.mail_domain2 = MailDomain.objects.create(
+            site=self._site, mail_domain="example.com")
 
     def _do_test(self, listdomain, vhost, expected):
         MailingList.objects.get_or_create(

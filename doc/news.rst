@@ -13,6 +13,8 @@ News / Changelog
   as. (Closes #288)
 - Improve the Django admin command reference from hyperkitty_import.
   (Closes #281)
+- Fix ``FILTER_VHOST`` to work with web hosts other than the email host.
+  (Closes #254)
 
 1.3.2
 =====
