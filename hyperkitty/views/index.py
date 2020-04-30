@@ -41,6 +41,7 @@ def index(request):
 
     # Domain filtering
     if getattr(settings, 'FILTER_VHOST', False):
+        our_lists = MailingList.objects.none()
         domain = request.get_host().split(":")[0]
         mail_hosts = []
         for mlist in mlists:
@@ -52,11 +53,12 @@ def index(request):
                         mail_hosts.append(mail_host)
             except MailDomain.DoesNotExist:
                 pass
-        if len(mail_hosts) == 1:
-            domain = "@%s" % mail_hosts[0]
-        else:
-            domain = "@%s" % domain
-        mlists = mlists.filter(name__iendswith=domain)
+        if len(mail_hosts) == 0:
+            mail_hosts = [domain]
+        for domain in mail_hosts:
+            domain = '@%s' % domain
+            our_lists = our_lists.union(mlists.filter(name__iendswith=domain))
+        mlists = our_lists
 
     # Name filtering
     name_filter = request.GET.get('name')
