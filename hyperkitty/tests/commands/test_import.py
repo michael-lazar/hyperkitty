@@ -241,6 +241,81 @@ class CommandTestCase(TestCase):
         self.assertEqual(Email.objects.all()[0].date,
                          datetime(1999, 11, 9, 21, 54, 11, tzinfo=utc))
 
+    def test_bad_date_tz_and_no_resent_date(self):
+        # If the Dete: header is bad and no Resent-Date: header, fall back
+        # to the unixfrom date.
+        with open(get_test_file("bad_date_tz.txt")) as email_file:
+            msg = message_from_file(email_file)
+        mbox = mailbox.mbox(os.path.join(self.tmpdir, "test.mbox"))
+        mbox.add(msg)
+        mbox.close()
+        # do the import
+        output = StringIO()
+        kw = self.common_cmd_args.copy()
+        kw["stdout"] = kw["stderr"] = output
+        call_command('hyperkitty_import',
+                     os.path.join(self.tmpdir, "test.mbox"), **kw)
+        # The message should be archived.
+        self.assertEqual(Email.objects.count(), 1)
+        # The archived_date should be Dec  1 00:56:19 1999 1999
+        self.assertEqual(Email.objects.all()[0].date,
+                         datetime(1999, 12, 1, 0, 56, 19, tzinfo=utc))
+
+    def test_cant_write_error(self):
+        # This message throws an exception which is caught by the catchall
+        # except clause. Ensure we can then write the error message.
+        with open(get_test_file("cant_write_error_message.txt")) as email_file:
+            msg = message_from_file(email_file)
+        mbox = mailbox.mbox(os.path.join(self.tmpdir, "test.mbox"))
+        mbox.add(msg)
+        # Add a scond message because we need to archive something.
+        msg = EmailMessage()
+        msg["From"] = "dummy@example.com"
+        msg["Message-ID"] = "<msg2>"
+        msg["Date"] = "01 Feb 2015 12:00:00"
+        msg.set_payload("msg2")
+        mbox.add(msg)
+        mbox.close()
+        # do the import
+        output = StringIO()
+        kw = self.common_cmd_args.copy()
+        kw["stdout"] = kw["stderr"] = output
+        call_command('hyperkitty_import',
+                     os.path.join(self.tmpdir, "test.mbox"), **kw)
+        # Message 1 must have been rejected, but no crash
+        self.assertIn("failed to import, skipping",
+                      output.getvalue())
+        # Message 2 must have been accepted
+        self.assertEqual(MailingList.objects.count(), 1)
+        self.assertEqual(Email.objects.count(), 1)
+
+    def test_unconvertable_message(self):
+        # This message can't be converted to an email.message.EmailMessage.
+        mbox = mailbox.mbox(os.path.join(self.tmpdir, "test.mbox"))
+        # We have to do it this way to see the exception.
+        with open(get_test_file("unconvertable_message.txt"), "rb") as em_file:
+            with open(os.path.join(self.tmpdir, "test.mbox"), "wb") as mb_file:
+                mb_file.write(em_file.read())
+        # Add a scond message because we need to archive something.
+        msg = EmailMessage()
+        msg["From"] = "dummy@example.com"
+        msg["Message-ID"] = "<msg2>"
+        msg["Date"] = "01 Feb 2015 12:00:00"
+        msg.set_payload("msg2")
+        mbox.add(msg)
+        mbox.close()
+        # do the import
+        output = StringIO()
+        kw = self.common_cmd_args.copy()
+        kw["stdout"] = kw["stderr"] = output
+        call_command('hyperkitty_import',
+                     os.path.join(self.tmpdir, "test.mbox"), **kw)
+        # Message 1 must have been rejected, but no crash
+        self.assertIn("Failed to convert", output.getvalue())
+        # Message 2 must have been accepted
+        self.assertEqual(MailingList.objects.count(), 1)
+        self.assertEqual(Email.objects.count(), 1)
+
     def test_unknown_encoding(self):
         # Spam messages have been seen with bogus charset= encodings which
         # throw LookupError.

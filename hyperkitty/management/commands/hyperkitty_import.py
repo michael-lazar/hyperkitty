@@ -129,7 +129,7 @@ class DbImporter(object):
     def _get_date(self, message, header):
         try:
             date = message.get(header)
-        except TypeError as e:
+        except (TypeError, ValueError) as e:
             if self.verbose:
                 self.stderr.write(
                     "Can't get {} header in message {}: {}.".format(
@@ -153,7 +153,13 @@ class DbImporter(object):
             # email.message.EmailMessage
             msg_raw = msg.as_bytes(unixfrom=False)
             unixfrom = msg.get_from()
-            message = message_from_bytes(msg_raw, policy=policy.default)
+            try:
+                message = message_from_bytes(msg_raw, policy=policy.default)
+            except UnicodeError as e:
+                self.stderr.write('Failed to convert {} to '
+                                  'email.message.Message\n    {}'.format(
+                                   unquote(msg["Message-Id"]), e))
+                continue
             # Fix missing and wierd Date: headers.
             date = (self._get_date(message, "date") or
                     self._get_date(message, "resent-date"))
@@ -214,9 +220,8 @@ class DbImporter(object):
                 # In case of *any* exception, log and continue to import the
                 # rest of the archive.
                 self.stderr.write(
-                    "Message {} failed to import, skipping".format(
-                        unquote(message["Message-ID"])))
-                self.stderr.write(e)
+                    "Message {} failed to import, skipping\n    {}".format(
+                        unquote(message["Message-ID"]), e))
                 continue
             email = Email.objects.get(
                 mailinglist__name=self.list_address,
