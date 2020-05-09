@@ -57,7 +57,7 @@ def index(request):
             mail_hosts = [domain]
         for domain in mail_hosts:
             domain = '@%s' % domain
-            our_lists = our_lists.union(mlists.filter(name__iendswith=domain))
+            our_lists = our_lists | mlists.filter(name__iendswith=domain)
         mlists = our_lists
 
     # Name filtering
