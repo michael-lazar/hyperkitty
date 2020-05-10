@@ -3,10 +3,10 @@ News / Changelog
 ================
 
 
-1.3.3
-=====
+1.3.3rc1
+========
 
-(20XX-XX-XX)
+(2020-05-09)
 
 - Allow ``SHOW_INACTIVE_LISTS_DEFAULT`` setting to be configurable. (Closes #276)
 - Fix a bug where the user couldn't chose the address to send reply or new post
