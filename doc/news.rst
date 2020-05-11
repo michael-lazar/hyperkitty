@@ -3,10 +3,10 @@ News / Changelog
 ================
 
 
-1.3.3rc1
+1.3.3
 ========
 
-(2020-05-09)
+(2020-xx-xx)
 
 - Allow ``SHOW_INACTIVE_LISTS_DEFAULT`` setting to be configurable. (Closes #276)
 - Fix a bug where the user couldn't chose the address to send reply or new post
@@ -15,6 +15,8 @@ News / Changelog
   (Closes #281)
 - Fix ``FILTER_VHOST`` to work with web hosts other than the email host.
   (Closes #254)
+- Fixed a bug where ``export`` can fail if certain headers are wrapped.
+  (Closes #292)
 
 1.3.2
 =====
