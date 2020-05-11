@@ -261,6 +261,27 @@ class CommandTestCase(TestCase):
         self.assertEqual(Email.objects.all()[0].date,
                          datetime(1999, 12, 1, 0, 56, 19, tzinfo=utc))
 
+    def test_folding_with_cr(self):
+        # See https://gitlab.com/mailman/hyperkitty/-/issues/280 for the
+        # issue.
+        with open(get_test_file("bad_folding.txt")) as email_file:
+            msg = message_from_file(email_file)
+        mbox = mailbox.mbox(os.path.join(self.tmpdir, "test.mbox"))
+        mbox.add(msg)
+        mbox.close()
+        # do the import
+        output = StringIO()
+        kw = self.common_cmd_args.copy()
+        kw["stdout"] = kw["stderr"] = output
+        call_command('hyperkitty_import',
+                     os.path.join(self.tmpdir, "test.mbox"), **kw)
+        # The message should be archived.
+        self.assertEqual(Email.objects.count(), 1)
+        # The subject should be ???
+        self.assertEqual(Email.objects.all()[0].subject,
+                         '[<redacted>]  Sicherheit 2005: Stichworte und '
+                         'Vorschlag PC-Mitglieder; Ergänzung!')
+
     def test_cant_write_error(self):
         # This message throws an exception which is caught by the catchall
         # except clause. Ensure we can then write the error message.

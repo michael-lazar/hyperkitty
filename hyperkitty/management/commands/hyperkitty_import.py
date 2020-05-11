@@ -51,7 +51,8 @@ from hyperkitty.management.utils import setup_logging
 from hyperkitty.models import Email, Thread
 
 
-TEXTWRAP_RE = re.compile(r"\n\s*")
+# Allow all wierd line endings.
+TEXTWRAP_RE = re.compile(r"(\n|\r|\r\n|\n\r)\s*")
 
 
 class ProgressMarker(object):
