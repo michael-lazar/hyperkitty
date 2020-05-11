@@ -17,6 +17,8 @@ News / Changelog
   (Closes #254)
 - Fixed a bug where ``export`` can fail if certain headers are wrapped.
   (Closes #292)
+- Fixed ``hyperkitty_import`` to allow odd line endings in a folded message
+  subject.  (Closes #280)
 
 1.3.2
 =====
