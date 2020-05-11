@@ -153,6 +153,8 @@ class Email(models.Model):
         msg = EmailMessage()
 
         # Headers
+        def unfold(hdr):
+            return re.sub('[\r\n]', '', hdr)
         unixfrom = "From %s %s" % (
             self.sender.address, self.archived_date.strftime("%c"))
         assert isinstance(self.sender.address, str)
@@ -167,14 +169,14 @@ class Email(models.Model):
             ("Subject", self.subject),
             )
         for header_name, header_value in headers:
-            msg[header_name] = header_value
+            msg[header_name] = unfold(header_value)
         tz = get_fixed_timezone(self.timezone)
         header_date = self.date.astimezone(tz).replace(microsecond=0)
         # Date format: http://tools.ietf.org/html/rfc5322#section-3.3
         msg["Date"] = header_date.strftime("%a, %d %b %Y %H:%M:%S %z")
         msg["Message-ID"] = "<%s>" % self.message_id
         if self.in_reply_to:
-            msg["In-Reply-To"] = self.in_reply_to
+            msg["In-Reply-To"] = unfold(self.in_reply_to)
 
         # Body
         content = self.ADDRESS_REPLACE_RE.sub(r"\1(a)\2", self.content)
