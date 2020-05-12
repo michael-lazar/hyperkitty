@@ -24,6 +24,7 @@ import logging
 import os
 import re
 from email.message import EmailMessage
+from email.utils import formataddr
 
 from django.conf import settings
 from django.db import IntegrityError, models
@@ -160,7 +161,7 @@ class Email(models.Model):
         assert isinstance(self.sender.address, str)
         header_from = self.sender.address
         if self.sender_name and self.sender_name != self.sender.address:
-            header_from = "%s <%s>" % (self.sender_name, header_from)
+            header_from = formataddr((self.sender_name, header_from))
         header_to = self.mailinglist.name
         msg.set_unixfrom(unixfrom)
         headers = (
