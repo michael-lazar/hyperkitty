@@ -165,6 +165,21 @@ class EmailTestCase(TestCase):
         msg = email.as_message()
         self.assertEqual(msg["Subject"], "This is a folded subject")
 
+    def test_as_message_specials_in_name(self):
+        sender = Sender(address="dummy@example.com")
+        mlist = MailingList(name="list@example.com")
+        email = Email(archived_date=datetime(2012, 11, 2, 12, 7, 54),
+                      timezone=0,
+                      message_id="msgid",
+                      sender=sender,
+                      sender_name="Team: J.Q. Doe",
+                      date=datetime(2012, 11, 2, 12, 7, 54),
+                      mailinglist=mlist,
+                      subject="Message subject",
+                      content="Dummy message")
+        msg = email.as_message()
+        self.assertEqual(msg['from'], '"Team: J.Q. Doe" <dummy@example.com>')
+
 
 class EmailSetParentTestCase(TestCase):
 

@@ -19,6 +19,8 @@ News / Changelog
   (Closes #292)
 - Fixed ``hyperkitty_import`` to allow odd line endings in a folded message
   subject.  (Closes #280)
+- Fixed a bug that could throw an ``IndexError`` when exporting messages.
+  (Closes #293)
 
 1.3.2
 =====
