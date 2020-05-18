@@ -78,12 +78,17 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.twitter',
     'allauth.socialaccount.providers.stackexchange',
+
+    # Dev only dependencies. Do not include in any production site.
+    'debug_toolbar',
 )
 
 
 MIDDLEWARE = (
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # NOTE: Do not include DebugToolbarMiddleware in any production site.
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -324,7 +329,7 @@ COMPRESS_PRECOMPILERS = (
 # COMPRESS_OFFLINE = True
 
 # Needed for debug mode
-# INTERNAL_IPS = ('127.0.0.1',)
+INTERNAL_IPS = ('127.0.0.1',)
 
 
 #

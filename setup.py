@@ -83,5 +83,6 @@ setup(
         "mock",
         "Whoosh>=2.5.7",
         "beautifulsoup4>=4.3.2",
+        "django-debug-toolbar",
         ],
     )
