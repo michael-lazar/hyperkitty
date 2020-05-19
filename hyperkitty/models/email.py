@@ -328,7 +328,7 @@ class Attachment(models.Model):
     def set_content(self, content):
         if isinstance(content, str):
             if self.encoding is not None:
-                content = content.encode(self.encoding)
+                content = content.encode(self.encoding, errors='replace')
             else:
                 content = content.encode('utf-8')
         self.size = len(content)

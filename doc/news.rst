@@ -21,6 +21,7 @@ News / Changelog
   subject.  (Closes #280)
 - Fixed a bug that could throw an ``IndexError`` when exporting messages.
   (Closes #293)
+- Use ``errors='replace'`` when encoding attachments.  (Closes #294)
 
 1.3.2
 =====
