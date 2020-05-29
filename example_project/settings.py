@@ -143,6 +143,8 @@ DATABASES = {
         'HOST': '',
         # PORT: set to empty string for default.
         'PORT': '',
+        # OPTIONS: for mysql engine only, do not use with other engines.
+        # 'OPTIONS': {'charset': 'utf8mb4'}  # Enable utf8 4-byte encodings.
     }
     # Example for PostgreSQL (recommanded for production):
     #'default': {
