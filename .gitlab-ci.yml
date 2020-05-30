@@ -58,7 +58,7 @@ docs:
 coverage:
   stage: quality-assurance
   script:
-    - tox -e py36-django111-coverage
+    - tox -e py38-django22-coverage
 
 
 sast:
