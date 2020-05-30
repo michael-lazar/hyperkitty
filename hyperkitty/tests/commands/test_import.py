@@ -395,6 +395,24 @@ class CommandTestCase(TestCase):
         self.assertEqual(MailingList.objects.count(), 1)
         self.assertEqual(Email.objects.count(), 1)
 
+    def test_another_wrong_encoding_part_two(self):
+        # This is gb2312 with a bad character. Since above failure was fixed,
+        # test current behavior.
+        with open(get_test_file("another-wrong-encoding.txt")) as email_file:
+            msg = message_from_file(email_file)
+        mbox = mailbox.mbox(os.path.join(self.tmpdir, "test.mbox"))
+        mbox.add(msg)
+        # do the import
+        output = StringIO()
+        kw = self.common_cmd_args.copy()
+        kw["stdout"] = kw["stderr"] = output
+        call_command('hyperkitty_import',
+                     os.path.join(self.tmpdir, "test.mbox"), **kw)
+        self.assertEqual(MailingList.objects.count(), 1)
+        self.assertEqual(Email.objects.count(), 1)
+
+    @expectedFailure
+    # This fails because the fix at django-mailman3!88 'fixes' this too.
     def test_bad_content_type(self):
         # Content-Type: binary/octet-stream throws KeyError.
         with open(get_test_file("bad_content_type.txt")) as email_file:
@@ -419,6 +437,22 @@ class CommandTestCase(TestCase):
         self.assertIn("Failed adding message <msg@id>:",
                       output.getvalue())
         # Message 2 must have been accepted
+        self.assertEqual(MailingList.objects.count(), 1)
+        self.assertEqual(Email.objects.count(), 1)
+
+    def test_bad_content_type_part_two(self):
+        # Content-Type: binary/octet-stream.  Since above failure was fixed,
+        # test current behavior.
+        with open(get_test_file("bad_content_type.txt")) as email_file:
+            msg = message_from_file(email_file)
+        mbox = mailbox.mbox(os.path.join(self.tmpdir, "test.mbox"))
+        mbox.add(msg)
+        # do the import
+        output = StringIO()
+        kw = self.common_cmd_args.copy()
+        kw["stdout"] = kw["stderr"] = output
+        call_command('hyperkitty_import',
+                     os.path.join(self.tmpdir, "test.mbox"), **kw)
         self.assertEqual(MailingList.objects.count(), 1)
         self.assertEqual(Email.objects.count(), 1)
 
