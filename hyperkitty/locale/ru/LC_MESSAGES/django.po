@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-17 12:59+0200\n"
-"PO-Revision-Date: 2020-05-27 04:08+0000\n"
-"Last-Translator: Margo Radzivilava <Margoihnid@gmail.com>\n"
+"PO-Revision-Date: 2020-05-30 00:39+0000\n"
+"Last-Translator: Juri Grabowski <hosted-weblate@jugra.de>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/gnu-mailman/"
 "hyperkitty/ru/>\n"
 "Language: ru\n"
@@ -435,7 +435,7 @@ msgstr ""
 
 #: templates/hyperkitty/index.html:175
 msgid "Description"
-msgstr ""
+msgstr "Описание"
 
 #: templates/hyperkitty/index.html:176
 msgid "Activity in the past 30 days"
@@ -931,7 +931,7 @@ msgstr ""
 #: templates/hyperkitty/user_profile/base.html:32
 #: templates/hyperkitty/user_profile/base.html:33
 msgid "Subscriptions"
-msgstr ""
+msgstr "Подписки"
 
 #: templates/hyperkitty/user_profile/favorites.html:24
 #: templates/hyperkitty/user_profile/last_views.html:27
