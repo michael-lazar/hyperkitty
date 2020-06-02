@@ -557,7 +557,6 @@ msgstr[2] ""
 "\n"
 "                %(email.attachments.count)s прикреплённых файлов\n"
 "                "
-msgstr[3] ""
 
 #: templates/hyperkitty/messages/message.html:130
 msgid "Quote"
