@@ -32,6 +32,7 @@ from django.utils.timezone import now, utc
 
 import dateutil.parser
 from django_mailman3.lib.mailman import get_mailman_client
+from django_mailman3.lib.user import get_django_user
 from mailmanclient import MailmanConnectionError
 
 from hyperkitty.lib.utils import pgsql_disable_indexscan
@@ -67,6 +68,12 @@ class MailingList(models.Model):
         choices=[(p.value, p.name) for p in ArchivePolicy],
         default=ArchivePolicy.public.value)
     created_at = models.DateTimeField(default=now)
+
+    owners = models.ManyToManyField(settings.AUTH_USER_MODEL,
+                                    related_name='owned_lists')
+
+    moderators = models.ManyToManyField(settings.AUTH_USER_MODEL,
+                                        related_name='moderated_lists')
 
     MAILMAN_ATTRIBUTES = (
         "display_name", "description", "subject_prefix",
@@ -201,6 +208,24 @@ class MailingList(models.Model):
                 value = converters[propname](value)
             setattr(self, propname, value)
         self.save()
+        # Update the owners and moderators from Mailman 3 API.
+        self._update_owner_mods_from_mailman(mm_list)
+
+    def _update_owner_mods_from_mailman(self, mm_list):
+        """Update Owners and moderators from Mailman."""
+        for owner in mm_list.owners:
+            user = get_django_user(owner)
+            if user and not bool(self.owners.filter(id=user.id)):
+                logger.debug('Adding %s as owner of MailingList: %s',
+                             user, self.list_id)
+                self.owners.add(user)
+
+        for mod in mm_list.moderators:
+            user = get_django_user(mod)
+            if user and not bool(self.moderators.filter(id=user.id)):
+                logger.debug('Adding %s as moderator of MailingList: %s',
+                             user, self.list_id)
+                self.moderators.add(user)
 
     # Events (signal callbacks)
 

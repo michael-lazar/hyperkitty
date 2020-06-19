@@ -8,6 +8,8 @@ News / Changelog
 
 (2020-XX-XX)
 
+- Sync owners and moderators from Mailman Core for MailingList. (Fixes #302)
+
 
 1.3.3
 =====
