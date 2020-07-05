@@ -458,9 +458,20 @@ FILTER_VHOST = False
 HYPERKITTY_DISABLE_SINGLETON_TASKS = False
 # Maximum time between two task runs with same function and arguments.
 # This setting is mostly meant for Mailman Developers and should be used
-# with caution.
+# with caution.  This setting seems unused.
 # Default set to 10mins.
 HYPERKITTY_TASK_LOCK_TIMEOUT = 10 * 60
+
+# The location of the lock file for the update_index and update_and_clean_index
+# jobs can be set as HYPERKITTY_JOBS_UPDATE_INDEX_LOCKFILE.  The default is a
+# file named hyperkitty-jobs-update-index.lock in the directory returned by
+# tempfile.gettempdir().
+
+# The monthly update_and_clean_index job runs for a long time and its lock can
+# be broken by the hourly update_index job if it's lock lifetime is too short.
+# The default is 900 seconds (15 minutes).  If the monthly job fails with
+# flufl.lock._lockfile.NotLockedError: Already unlocked, increase it.
+HYPERKITTY_JOBS_UPDATE_INDEX_LOCK_LIFE = 900
 
 # Inactive List Setting
 SHOW_INACTIVE_LISTS_DEFAULT = False

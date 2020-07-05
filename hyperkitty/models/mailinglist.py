@@ -19,7 +19,6 @@
 #
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
-
 import datetime
 import logging
 from enum import Enum
@@ -239,9 +238,8 @@ class MailingList(models.Model):
 
     def on_thread_deleted(self, thread):
         from hyperkitty.tasks import (
-            rebuild_mailinglist_cache_recent,
             rebuild_mailinglist_cache_for_month,
-            )
+            rebuild_mailinglist_cache_recent)
         begin_date, end_date = self.get_recent_dates()
         if thread.date_active >= begin_date and thread.date_active < end_date:
             # It's a recent thread
@@ -256,9 +254,8 @@ class MailingList(models.Model):
             return
         # Rebuild the cached values.
         from hyperkitty.tasks import (
-            rebuild_mailinglist_cache_recent,
             rebuild_mailinglist_cache_for_month,
-            )
+            rebuild_mailinglist_cache_recent)
         rebuild_mailinglist_cache_recent(self.name)
         rebuild_mailinglist_cache_for_month(
             self.name, email.date.year, email.date.month)
