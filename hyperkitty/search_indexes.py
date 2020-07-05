@@ -19,14 +19,13 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 # Modified by Mark Sapiro <mark@msapiro.net>
 #
-
 from django.core.management.base import CommandError
 from django.http.response import Http404
 from django.shortcuts import get_object_or_404
 
 from haystack import indexes
-from haystack.management.commands.update_index import \
-    Command as UpdateIndexCommand
+from haystack.management.commands.update_index import (
+    Command as UpdateIndexCommand)
 from haystack.query import SearchQuerySet
 
 from hyperkitty.models import Email, MailingList
@@ -109,8 +108,8 @@ def update_index(remove=False, listname=None, verbosity=0):
     update_cmd.commit = True
     update_cmd.remove = remove
     try:
-        from haystack.management.commands.update_index import \
-            DEFAULT_MAX_RETRIES
+        from haystack.management.commands.update_index import (
+            DEFAULT_MAX_RETRIES)
     except ImportError:
         pass
     else:

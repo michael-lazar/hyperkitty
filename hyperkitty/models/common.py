@@ -19,7 +19,6 @@
 #
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
-
 from django.core.cache import cache
 
 
@@ -78,8 +77,8 @@ class VotesCachedValue(ModelCachedValue):
     cache_key = "votes"
 
     def get_value(self):
-        from .thread import Thread
         from .email import Email
+        from .thread import Thread
         from .vote import Vote
         if isinstance(self.instance, Thread):
             filters = {"email__thread_id": self.instance.id}

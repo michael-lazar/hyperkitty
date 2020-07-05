@@ -19,7 +19,6 @@
 #
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
-
 import logging
 from collections import namedtuple
 
@@ -173,15 +172,15 @@ class Thread(models.Model):
             # Cache handling and thread positions will be handled at the end of
             # the import process.
             from hyperkitty.tasks import (
-                rebuild_thread_cache_new_email,
-                compute_thread_positions,
-                )
+                compute_thread_positions, rebuild_thread_cache_new_email)
             rebuild_thread_cache_new_email(self.id)
             compute_thread_positions(self.id)
 
     def on_email_deleted(self, email):
         from hyperkitty.tasks import rebuild_thread_cache_new_email
-        # update or cleanup thread
+
+
+        # update or cleanup thread                  # noqa: E303 (isort issue)
         if self.emails.count() == 0:
             self.delete()
         else:

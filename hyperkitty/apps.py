@@ -18,7 +18,6 @@
 #
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
-
 from django.apps import AppConfig
 
 
@@ -28,5 +27,5 @@ class HyperKittyConfig(AppConfig):
 
     def ready(self):
         # flake8: noqa
-        import hyperkitty.signals
         import hyperkitty.checks
+        import hyperkitty.signals
