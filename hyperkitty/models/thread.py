@@ -179,8 +179,7 @@ class Thread(models.Model):
     def on_email_deleted(self, email):
         from hyperkitty.tasks import rebuild_thread_cache_new_email
 
-
-        # update or cleanup thread                  # noqa: E303 (isort issue)
+        # update or cleanup thread
         if self.emails.count() == 0:
             self.delete()
         else:
