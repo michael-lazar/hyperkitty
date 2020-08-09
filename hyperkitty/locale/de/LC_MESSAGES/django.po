@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Hyperkitty\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-02 20:18-0700\n"
-"PO-Revision-Date: 2020-01-19 13:09+0000\n"
-"Last-Translator: arnep <pottharst@gmx.de>\n"
+"PO-Revision-Date: 2020-06-24 04:33+0000\n"
+"Last-Translator: Milo Ivir <mail@milotype.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/gnu-mailman/"
 "hyperkitty/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10.2\n"
+"X-Generator: Weblate 4.2-dev\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 #: forms.py:64
@@ -434,7 +434,7 @@ msgstr "Diskussionsstrang"
 #: templates/hyperkitty/message_delete.html:8
 #: templates/hyperkitty/message_delete.html:21
 msgid "Delete message(s)"
-msgstr "Nachricht(en)  löschen"
+msgstr "Nachricht(en) löschen"
 
 #: templates/hyperkitty/message_delete.html:26
 #, python-format
