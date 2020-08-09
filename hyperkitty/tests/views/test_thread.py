@@ -27,6 +27,7 @@ import urllib
 from email.message import EmailMessage
 
 from django.contrib.auth.models import User
+from django.test import override_settings
 
 from bs4 import BeautifulSoup
 from django_mailman3.tests.utils import get_flash_messages
@@ -304,6 +305,22 @@ class ThreadTestCase(TestCase):
         self.assertTrue(link is not None)
         self.assertTrue("reply-mailto" in link["class"])
         check_mailto(link)
+
+    @override_settings(HYPERKITTY_ALLOW_WEB_POSTING=False)
+    def test_reply_button_when_disabled_posting(self):
+        url = reverse('hk_thread', args=["list@example.com", self.threadid])
+        # Authenticated request
+        response = self.client.get(url)
+        soup = BeautifulSoup(response.content, "html.parser")
+        self.assertEqual(len(soup.find_all("a", class_="reply-mailto")), 0)
+        self.assertIsNone(soup.find("a", class_="reply"))
+
+        # Anonymous request.
+        self.client.logout()
+        response = self.client.get(url)
+        soup = BeautifulSoup(response.content, "html.parser")
+        self.assertEqual(len(soup.find_all("a", class_="reply-mailto")), 0)
+        self.assertIsNone(soup.find("a", class_="reply"))
 
     def test_subject_changed(self):
         # Test the detection of subject change

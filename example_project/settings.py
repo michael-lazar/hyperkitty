@@ -476,6 +476,9 @@ HYPERKITTY_JOBS_UPDATE_INDEX_LOCK_LIFE = 900
 # Inactive List Setting
 SHOW_INACTIVE_LISTS_DEFAULT = False
 
+# Disable Posting
+HYPERKITTY_ALLOW_WEB_POSTING = True
+
 
 try:
     from settings_local import *
