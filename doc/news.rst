@@ -11,6 +11,8 @@ News / Changelog
 - Sync owners and moderators from Mailman Core for MailingList. (Fixes #302)
 - Implemented a new ``HYPERKITTY_JOBS_UPDATE_INDEX_LOCK_LIFE`` setting to set
   the lock lifetime for the ``update_and_clean_index`` job.  (Closes #300)
+- Implemented a new ``HYPERKITTY_ALLOW_WEB_POSTING`` that allows disabling the
+  web posting feature. (Closes #264)
 
 
 1.3.3

@@ -25,6 +25,7 @@ import datetime
 import json
 import re
 
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import SuspiciousOperation
 from django.http import Http404, HttpResponse
@@ -187,6 +188,8 @@ def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
         'category_form': category_form,
         'category': category,
         'export': export,
+        'posting_enabled': getattr(
+            settings, 'HYPERKITTY_ALLOW_WEB_POSTING', True),
     }
 
     if is_bot:
