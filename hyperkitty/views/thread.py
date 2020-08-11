@@ -220,6 +220,8 @@ def replies(request, mlist_fqdn, threadid):
         'threadid': thread,
         'reply_form': get_posting_form(ReplyForm, request, mlist),
         'last_view': last_view,
+        'posting_enabled': getattr(
+            settings, 'HYPERKITTY_ALLOW_WEB_POSTING', True),
     }
     context["replies"] = _get_thread_replies(request, thread, offset=offset,
                                              limit=chunk_size)

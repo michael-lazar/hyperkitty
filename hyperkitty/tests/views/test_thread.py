@@ -445,3 +445,29 @@ class ThreadTestCase(TestCase):
             resp["replies_html"].count('div class="email unread">'), 3)
         self.assertFalse(resp["more_pending"])
         self.assertIsNone(resp["next_offset"])
+
+    def test_replies_have_reply_button(self):
+        msg = self._make_msg('id1', {'Subject': 'Starting email'})
+        threadid = msg.get('Message-ID-Hash')
+        self._make_msg('id2', {
+            'In-Reply-To': '<id1>', 'Subject': 'Re: Starting email'
+        })
+        url = reverse('hk_thread_replies', args=('list@example.com', threadid))
+        response = self.client.get(url)
+        resp = json.loads(response.content.decode(response.charset))
+        self.assertEqual(
+            resp['replies_html'].count('div class="email unread"'), 1)
+        self.assertEqual(
+            resp['replies_html'].count('a class="reply"'), 1)
+
+        # When the web posting is disabled, the reply button shouldn't show up.
+        with override_settings(HYPERKITTY_ALLOW_WEB_POSTING=False):
+            response = self.client.get(url)
+            resp = json.loads(
+                response.content.decode(response.charset))
+            self.assertEqual(
+                resp['replies_html'].count(
+                    'div class="email unread"'), 1)
+            self.assertEqual(
+                resp['replies_html'].count(
+                    'a class="reply"'), 0)
