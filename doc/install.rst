@@ -107,6 +107,11 @@ After having made these changes, you must restart Mailman. Check its log files
 to make sure the emails are correctly archived. You should not see "``Broken
 archiver: hyperkitty``" messages.
 
+.. note::
+    Make sure you installed the ``mailman_hyperkitty`` module
+    in the same environment in which Mailman's daemon is executed
+    otherwise it will raise an exception.
+
 
 Initial setup
 =============
