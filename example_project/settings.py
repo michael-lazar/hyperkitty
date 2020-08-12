@@ -480,6 +480,8 @@ SHOW_INACTIVE_LISTS_DEFAULT = False
 HYPERKITTY_ALLOW_WEB_POSTING = True
 
 
+HYPERKITY_ENABLE_GRAVATAR = True
+
 try:
     from settings_local import *
 except ImportError:

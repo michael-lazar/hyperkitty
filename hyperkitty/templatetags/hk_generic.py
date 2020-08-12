@@ -26,11 +26,13 @@ import re
 from collections import OrderedDict
 
 from django import template
+from django.conf import settings
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.utils.timezone import utc
 
 from dateutil.tz import tzoffset
+from django_gravatar.templatetags.gravatar import gravatar as gravatar_orig
 
 import hyperkitty.lib.posting
 from hyperkitty.lib.utils import stripped_subject
@@ -286,3 +288,15 @@ def is_unread_by(thread, user):
 @register.filter
 def sort_by_name(p_list):
     return sorted(p_list, key=lambda p: p.name and p.name.lower())
+
+
+@register.simple_tag()
+def gravatar(*args, **kw):
+    """A proxy for django-gravatar's template.
+
+    This templatetag allows disabling Gravatar altogether using
+    HYPERKITTY_ENABLE_GRAVATAR setting, which is True by default.
+    """
+    if not getattr(settings, 'HYPERKITTY_ENABLE_GRAVATAR', True):
+        return mark_safe('')
+    return gravatar_orig(*args, **kw)

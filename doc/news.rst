@@ -13,6 +13,8 @@ News / Changelog
   the lock lifetime for the ``update_and_clean_index`` job.  (Closes #300)
 - Implemented a new ``HYPERKITTY_ALLOW_WEB_POSTING`` that allows disabling the
   web posting feature. (Closes #264)
+- Add the ability to disable Gravatar using ``HYPERKITTY_ENABLE_GRAVATAR``
+  settings. (Closes #303)
 
 
 1.3.3
