@@ -15,6 +15,7 @@ News / Changelog
   web posting feature. (Closes #264)
 - Add the ability to disable Gravatar using ``HYPERKITTY_ENABLE_GRAVATAR``
   settings. (Closes #303)
+- Replaced deprecated ``ugettext`` functions with ``gettext``. (Closes #310)
 
 
 1.3.3
