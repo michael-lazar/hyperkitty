@@ -24,7 +24,7 @@ from django.conf import settings
 from django.forms import ValidationError
 from django.http import Http404
 from django.shortcuts import render
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from django_mailman3.lib.mailman import get_subscriptions
 from django_mailman3.lib.paginator import paginate
