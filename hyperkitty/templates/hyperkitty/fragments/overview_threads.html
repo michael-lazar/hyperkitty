@@ -24,12 +24,6 @@
                         <i class="fa fa-comment"></i>
                         {{ thread|num_comments }}
                     </li>
-                    <li class="hidden-tn">
-                        {% with votes=thread.get_votes %}
-                        <i class="icomoon likestatus {{ votes.status }}"></i>
-                        <span class="likestatus">+{{ votes.likes }}/-{{ votes.dislikes }}</span>
-                        {% endwith %}
-                    </li>
                 </ul>
             </div>
         </a>
