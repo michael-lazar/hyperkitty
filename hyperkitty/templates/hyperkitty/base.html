@@ -51,36 +51,12 @@
                     </a>
                       {% if user.is_authenticated %}
                           <div class="dropdown-menu">
-                            <a role="menuitem" tabindex="-1" class="dropdown-item" href="{% url 'mm_user_profile' %}">
-                                <span class="fa fa-user"></span>
-                                {% trans 'Account' %}
-                            </a>
-                            {% if 'postorius' in INSTALLED_APPS %}
-                            <a role="menuitem" tabindex="-1" class="dropdown-item" href="{% url 'ps_user_profile' %}">
-                                <span class="fa fa-cog"></span>
-                                {% trans 'Mailman settings' %}
-                            </a>
-                            {% endif %}
-                            <a role="menuitem" tabindex="-1" class="dropdown-item" href="{% url 'hk_user_profile' %}">
-                                <span class="fa fa-comments"></span>
-                                {% trans 'Posting activity' %}
-                            </a>
-                            <div class="dropdown-divider"></div>
                             <a role="menuitem" tabindex="-1" class="dropdown-item" href="{% url LOGOUT_URL %}?next={% url 'hk_root' %}">
                                 <span class="fa fa-sign-out"></span>
                                 {% trans "Logout" %}
                             </a>
                           </div> <!-- dropdown menu -->
-                        {% else %}
-                            <a role="menuitem" tabindex="-1" href="{% url LOGIN_URL %}?next={{next|default:request.path|urlencode}}">
-                                <span class="fa fa-sign-in"></span>
-                                {% trans "Sign In" %}
-                            </a>
-                            <a role="menuitem" tabindex="-1" href="{% url 'account_signup' %}?next={{next|default:request.path|urlencode}}">
-                                <span class="fa fa-user-plus"></span>
-                                {% trans "Sign Up" %}
-                            </a>
-                        {% endif %}
+                      {% endif %}
 
                 </div>
                 <form name="search" method="get" action="{% url 'hk_search' %}" class="navbar-form navbar-right my-2 my-lg-2 order-1" role="search">
@@ -106,36 +82,12 @@
                                 <span class="caret"></span>
                             </a>
                             <div class="dropdown-menu">
-                                <a href="{% url 'mm_user_profile' %}" class="dropdown-item">
-                                    <span class="fa fa-user"></span>
-                                    {% trans 'Account' %}
-                                </a>
-                                {% if 'postorius' in INSTALLED_APPS %}
-                                <a href="{% url 'ps_user_profile' %}" class="dropdown-item">
-                                    <span class="fa fa-cog"></span>
-                                    {% trans 'Mailman settings' %}
-                                </a>
-                                {% endif %}
-                                <a href="{% url 'hk_user_profile' %}" class="dropdown-item">
-                                    <span class="fa fa-comments"></span>
-                                    {% trans 'Posting activity' %}
-                                </a>
-                                <div role="separator" class="dropdown-divider"></div>
                                 <a href="{% url LOGOUT_URL %}?next={% url 'hk_root' %}" class="dropdown-item">
                                     <span class="fa fa-sign-out"></span>
                                     {% trans "Logout" %}
                                 </a>
                             </div>
                         </li>
-                    {% else %}
-                        <li class="nav-item"><a href="{% url LOGIN_URL %}?next={{next|default:request.path|urlencode}}" class="nav-link">
-                            <span class="fa fa-sign-in"></span>
-                            {% trans "Sign In" %}
-                        </a></li>
-                        <li class="nav-item"><a href="{% url 'account_signup' %}?next={{next|default:request.path|urlencode}}" class="nav-link">
-                            <span class="fa fa-user-plus"></span>
-                            {% trans "Sign Up" %}
-                        </a></li>
                     {% endif %}
                 </ul>
 
