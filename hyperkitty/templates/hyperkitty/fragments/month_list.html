@@ -42,13 +42,7 @@
                         </a>
                     </h3>
                 </div>
-                <div id="collapse{{forloop.counter0}}" class="panel-collapse
-                         {% if month %}
-                         {% if year == month.year %} show {% else %} collapse {% endif %}
-                         {% else %}
-                         {% if forloop.counter == 1 %} show {% else %} collapse {% endif %}
-                         {% endif %}
-                         " data-parent="#months-list">
+                <div id="collapse{{forloop.counter0}}" class="panel-collapse show" data-parent="#months-list">
                     <div class="card-body">
                         <ul class="list-unstyled">
                             {% for ar_month in months %}
