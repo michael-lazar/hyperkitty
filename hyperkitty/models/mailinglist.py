@@ -31,7 +31,6 @@ from django.utils.timezone import now, utc
 
 import dateutil.parser
 from django_mailman3.lib.mailman import get_mailman_client
-from django_mailman3.lib.user import get_django_user
 from mailmanclient import MailmanConnectionError
 
 from hyperkitty.lib.utils import pgsql_disable_indexscan
@@ -212,19 +211,7 @@ class MailingList(models.Model):
 
     def _update_owner_mods_from_mailman(self, mm_list):
         """Update Owners and moderators from Mailman."""
-        for owner in mm_list.owners:
-            user = get_django_user(owner)
-            if user and not bool(self.owners.filter(id=user.id)):
-                logger.debug('Adding %s as owner of MailingList: %s',
-                             user, self.list_id)
-                self.owners.add(user)
-
-        for mod in mm_list.moderators:
-            user = get_django_user(mod)
-            if user and not bool(self.moderators.filter(id=user.id)):
-                logger.debug('Adding %s as moderator of MailingList: %s',
-                             user, self.list_id)
-                self.moderators.add(user)
+        pass
 
     # Events (signal callbacks)
 
