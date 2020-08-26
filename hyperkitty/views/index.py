@@ -106,9 +106,6 @@ def index(request):
     # Inactive List Setting
     show_inactive = getattr(settings, 'SHOW_INACTIVE_LISTS_DEFAULT', False)
 
-    mlists = paginate(mlists, request.GET.get('page'),
-                      request.GET.get('count'))
-
     context = {
         'view_name': 'all_lists',
         'all_lists': mlists,
