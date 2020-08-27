@@ -51,6 +51,8 @@ REQUIRES = [
     "django-extensions>=1.3.7",
     "flufl.lock>=4.0",
     "django-q>=1.0.0",
+    "requests",
+    "lxml",
 ]
 
 

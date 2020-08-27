@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2014-2019 by the Free Software Foundation, Inc.
+# Copyright (C) 2020 by Michael Lazar
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,20 +17,32 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
 # USA.
 #
-# Author: Aurelien Bompard <abompard@fedoraproject.org>
-
-"""
-Sync list properties and user mailman_id's with Mailman over REST
-"""
+# Author: Michael Lazar <lazar.michael22@gmail.com>
 
 from django_extensions.management.jobs import BaseJob
+from django.core.management import call_command
 
-from hyperkitty.lib.mailman import sync_with_mailman
+
+LISTS = [
+    (
+        "license-discuss@lists.opensource.org",
+        "http://lists.opensource.org/pipermail/license-discuss_lists.opensource.org/",
+    ),
+    (
+        "license-review@lists.opensource.org",
+        "https://lists.opensource.org/pipermail/license-review_lists.opensource.org/",
+    ),
+    (
+        "gemini@lists.orbitalfox.eu",
+        "https://lists.orbitalfox.eu/archives/gemini/",
+    )
+]
 
 
 class Job(BaseJob):
-    help = "Sync user and list properties with Mailman"
+    help = "Scrape the public mail archives"
     when = "daily"
 
     def execute(self):
-        sync_with_mailman()
+        for list_address, archive_url in LISTS:
+            call_command("scrape_web_archive", archive_url, list_address=list_address)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#
+# Copyright (C) 2020 Michael Lazar
 # Copyright (C) 2011-2019 by the Free Software Foundation, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -18,6 +18,7 @@
 # USA.
 #
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
+# Author: Michael Lazar <lazar.michael22@gmail.com>
 
 """
 Import the content of a mbox file into the database.
@@ -100,9 +101,33 @@ class DbImporter(object):
         self.list_address = list_address
         self.verbose = options["verbosity"] >= 2
         self.since = options.get("since")
+        self.until = options.get("until")
         self.impacted_thread_ids = set()
         self.stdout = stdout
         self.stderr = stderr
+
+    def _is_too_young(self, message):
+        if not self.until:
+            return False
+        date = message.get("date")
+        if not date:
+            return False
+        try:
+            date = parse_date(date)
+        except ValueError as e:
+            if self.verbose:
+                self.stderr.write(
+                    "Can't parse date string in message {}: {}. "
+                    "The date string is: '{}'".format(
+                        message["message-id"], e,
+                        date.decode("ascii", "replace")))
+            return False
+        if date.tzinfo is None:
+            date = date.replace(tzinfo=utc)
+        try:
+            return date >= self.until
+        except ValueError:
+            return False
 
     def _is_too_old(self, message):
         if not self.since:
@@ -176,6 +201,8 @@ class DbImporter(object):
                     message['Date'] = date
 
             if self._is_too_old(message):
+                continue
+            if self._is_too_young(message):
                 continue
             progress_marker.tick(message["Message-Id"])
             # Un-wrap the subject line if necessary
@@ -263,6 +290,9 @@ class Command(BaseCommand):
             help="only import emails later than this date.  Defaults to the "
                  "date of the newest message in the existing archive if any.")
         parser.add_argument(
+            '--until',
+            help="only import emails before this date.")
+        parser.add_argument(
             '--ignore-mtime',
             action='store_true', default=False,
             help="do not check mbox mtimes (slower)")
@@ -289,6 +319,14 @@ class Command(BaseCommand):
                         tzinfo=tz.tzlocal())
             except ValueError as e:
                 raise CommandError("invalid value for '--since': %s" % e)
+        if options["until"]:
+            try:
+                options["until"] = parse_date(options["until"])
+                if options["until"].tzinfo is None:
+                    options["until"] = options["until"].replace(
+                        tzinfo=tz.tzlocal())
+            except ValueError as e:
+                raise CommandError("invalid value for '--until': %s" % e)
 
     def handle(self, *args, **options):
         self._check_options(options)
@@ -310,6 +348,9 @@ class Command(BaseCommand):
         if options["since"] and options["verbosity"] >= 2:
             self.stdout.write(
                 "Only emails after %s will be imported" % options["since"])
+        if options["until"] and options["verbosity"] >= 2:
+            self.stdout.write(
+                "Only emails before %s will be imported" % options["until"])
         importer = DbImporter(list_address, options, self.stdout, self.stderr)
         # disable mailman client for now
         for mbfile in options["mbox"]:
@@ -340,12 +381,6 @@ class Command(BaseCommand):
             thread_ids = thread_ids[100:]
             for thread in Thread.objects.filter(id__in=thread_ids_batch):
                 compute_thread_order_and_depth(thread)
-        if not options["no_sync_mailman"]:
-            if options["verbosity"] >= 1:
-                self.stdout.write("Synchronizing properties with Mailman")
-            sync_with_mailman()
-            # if not transaction.get_autocommit():
-            #     transaction.commit()
         if options["verbosity"] >= 1:
             self.stdout.write("Warming up cache")
         call_command("hyperkitty_warm_up_cache", list_address)
