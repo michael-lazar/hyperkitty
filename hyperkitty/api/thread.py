@@ -96,7 +96,7 @@ class ThreadList(generics.ListAPIView):
             raise PermissionDenied
         return Thread.objects.filter(
                 mailinglist__name=self.kwargs["mlist_fqdn"],
-            ).order_by("-date_active")
+            ).exclude(starting_email__subject="None").order_by("-date_active")
 
 
 class ThreadDetail(generics.RetrieveAPIView):
