@@ -55,8 +55,7 @@ class Command(BaseCommand):
         links = [str(m) for m in matches if str(m).endswith(self.FILE_EXTENSIONS)]
 
         if not options['full']:
-            # Take only the 2 most recent archives, which should ensure that
-            # everything is captured since the last scrape.
+            # Assume chronological order
             links = links[0]
 
         yesterday = date.today() - timedelta(days=1)
@@ -79,7 +78,9 @@ class Command(BaseCommand):
 
             with tempfile.NamedTemporaryFile() as fp:
                 fp.write(mbox_data)
-                call_command("hyperkitty_import", [fp.name], **command_kwargs)
+                fp.flush()
+
+                call_command("hyperkitty_import", fp.name, **command_kwargs)
 
             # Rate limit
             time.sleep(1)
