@@ -16,33 +16,12 @@
 
 <div class="overview col-tn-12 col-sm-12">
     <div class="row">
-    <div class="col-md-3">
-    <div class="col-12">
-        <section id="title">
-            <h2>
-                {% if mlist.display_name %}
-                    {{ mlist.display_name }}
-                {% else %}
-                    {{ mlist.name|until:"@" }}
-                {% endif %}
-            </h2>
-            <p id="description">{{ mlist.description|default_if_none:"" }}</p>
-        </section> <!-- /title & description -->
-
-        <!-- Overview page for large screens. -->
-        <div class="d-none d-md-block">
-            <a id="home"></a>
-            <div class="list-actions">
-                {% include 'hyperkitty/fragments/month_list.html' with show_dropdown='False' pagename='overview' %}
-            </div>
-        </div> <!-- /container, navbar & search (tiny/xs screens), new thread button -->
-    </div> <!-- /container, title/description + the elements above -->
-
-    </div> <!-- col-3 -->
-
-    <div class="col-md-9">
 
     <div class="discussions col-12">
+
+        <section id="title">
+            <h2>{{ mlist.name }}</h2>
+        </section>
 
       <ul class="nav nav-pills" role="tablist">
 

@@ -23,18 +23,6 @@
                         {% trans "Original author:" %} {{ vote.email.sender_name|default:vote.email.sender.address }}
                         <br>
                         {% trans "Started on:" %} {{ vote.email.date|date:"D, j M Y H:i" }}
-                        <br>
-                        <form method="post" class="likeform"
-                              action="{% url 'hk_message_vote' mlist_fqdn=vote.email.mailinglist.name message_id_hash=vote.email.message_id_hash %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="vote" value="0" />
-                            {% if vote.value == 1 %}
-                            <span class="youlike">{% trans "You like it" %}
-                            {% elif vote.value == -1 %}
-                            <span class="youdislike">{% trans "You dislike it" %}
-                            {% endif %}
-                            (<a href="#cancelvote" class="cancel">{% trans "cancel" %}</a>)</span>
-                        </form>
                     </td>
                 </tr>
             {% endfor %}
@@ -61,19 +49,6 @@
                             >{{ vote.email.subject }}</a></td>
                     <td>{{ vote.email.sender_name|default:vote.email.sender.address }}</td>
                     <td>{{ vote.email.date|date:"l, j F Y H:i:s" }}</td>
-                    <td>
-                        <form method="post" class="likeform"
-                              action="{% url 'hk_message_vote' mlist_fqdn=vote.email.mailinglist.name message_id_hash=vote.email.message_id_hash %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="vote" value="0" />
-                            {% if vote.value == 1 %}
-                            <span class="youlike">{% trans "You like it" %}
-                            {% elif vote.value == -1 %}
-                            <span class="youdislike">{% trans "You dislike it" %}
-                            {% endif %}
-                            (<a href="#cancelvote" class="cancel">{% trans "cancel" %}</a>)</span>
-                        </form>
-                    </td>
                 </tr>
             {% endfor %}
             </tbody>
