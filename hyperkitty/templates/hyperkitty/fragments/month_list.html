@@ -1,35 +1,6 @@
 {% load i18n %}
 {% load hk_generic %}
 
-{% if show_dropdown %}
-<a href="" id="navbarMonthsListDrop" class="dropdown-toggle {% if pagename == 'overview' %}btn btn-outline-primary {% else %} nav-link {% endif %}" data-toggle="dropdown">
-  <span class="d-none d-md-inline ">{% trans "Threads by" %}</span>{% trans " month" %} <b class="caret"></b>
-</a>
-<ul class="dropdown-menu right" role="menu" aria-labelledby="navbarMonthsListDrop">
-    {% for year, months in months_list|sort %}
-    <li role="presentation" class="dropdown-header disabled dropdown-item">
-        <a href="" class="nav-link">----- {{ year }} -----</a>
-    </li>
-    {% for ar_month in months %}
-    <li>
-        <a class="dropdown-item" href="{% url 'hk_archives_with_month' year=year mlist_fqdn=mlist.name month=ar_month %}"
-           >{{ ar_month|monthtodate:year|date:"F" }}</a>
-    </li>
-    {% endfor %}
-    {% endfor %}
-</ul>
-{% elif show_select %}
-<select id="months-list" class="form-control">
-    {% for year, months in months_list|sort %}
-    <option disabled>----- {{ year }} -----</option>
-    {% for ar_month in months %}
-    <option{% if month and year == month.year and ar_month == month.month %} selected="selected"{% endif %}>{{ ar_month|monthtodate:year|date:"F Y" }}</option>
-    {% endfor %}
-    {% endfor %}
-</select>
-
-{% else %}
-
 <div class="d-none d-md-block col-sm-2">
     <div class="row">
         <div class="col-12 accordion" id="months-list">
@@ -60,4 +31,3 @@
     </div>
     {% include 'hyperkitty/fragments/thread_left_nav.html' with pagename=pagename %}
 </div>
-{% endif %}

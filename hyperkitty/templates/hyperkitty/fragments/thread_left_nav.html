@@ -17,28 +17,6 @@
             <span class="fa fa-backward"></span>
        {% trans "All Threads" %}</a>
     {% endif %}
-    </br>
-    <!-- Download as mbox -->
-    {% if pagename == 'overview' %}
-    <div class="btn-group">
-        <button type="button" class="btn btn-outline-primary dropdown-toggle p-2 m-2" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-            <i class="fa fa-download"></i>
-            {% trans "Download" %} <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-            <li><a href="{{ export.recent }}">{% trans "Past 30 days" %} <small>(mbox)</small></a></li>
-            <li><a href="{{ export.month }}">{% trans "This month" %} <small>(mbox)</small></a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="{% url 'hk_list_export_mbox' mlist_fqdn=mlist.name filename=mlist.name %}">
-                {% trans "Entire archive" %} <small>(mbox)</small></a></li>
-        </ul>
-    </div>
-    {% elif export %}
-    <a href="{{ export.url }}" title="{{ export.title }}"
-          class="btn btn-outline-primary p-2 m-2">
-        <i class="fa fa-download"></i> {{ export.message }}</a>
-    {% endif %}
 </div>
 </div>
 {% endif %}

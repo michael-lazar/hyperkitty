@@ -26,8 +26,7 @@
                 <a id="next-thread" class="btn btn-secondary btn-sm {% if not next_thread %}disabled{% endif %}"
                         {% if next_thread %}title="{{ next_thread.subject|strip_subject:mlist|escape }}"{% endif %}
                         href="{% url 'hk_thread' threadid=next_thread.thread_id mlist_fqdn=mlist.name %}">
-                    <span class="fa fa-chevron-left"></span>
-                    <span class="d-none d-md-inline">{% trans "newer" %}</span>
+                    <span class="fa fa-chevron-left"></span> {% trans "newer" %}
                 </a>
                {% endif %}
             </div>
@@ -40,47 +39,16 @@
                     title="{{ prev_thread.subject|strip_subject:mlist|escape }}"
                     href="{% url 'hk_thread' threadid=prev_thread.thread_id mlist_fqdn=mlist.name %}"
                     {% endif %}>
-                    <span class="fa fa-chevron-right"></span>
-                    <span class="d-none d-md-inline">{% trans "older" %}</span>
+                    <span class="fa fa-chevron-right"></span> {% trans "older" %}
                 </a>
             </div>
           </div>
           <div class="thread-titles">
             <div class="row">
-                <div class="d-none d-md-block col-md-6">
-                {% if next_thread %}
-                    <a href="{% url 'hk_thread' threadid=next_thread.thread_id mlist_fqdn=mlist.name %}"
-                       title="{{ next_thread.subject|strip_subject:mlist|escape }}"
-                       >{{ next_thread.subject|strip_subject:mlist|truncatesmart:"35" }}</a>
-                {% endif %}
-                </div>
-                <div class="right d-none d-md-block col-md-6">
-                {% if prev_thread %}
-                    <a href="{% url 'hk_thread' threadid=prev_thread.thread_id mlist_fqdn=mlist.name %}"
-                       title="{{ prev_thread.subject|strip_subject:mlist|escape }}"
-                       >{{ prev_thread.subject|strip_subject:mlist|truncatesmart:"35" }}</a>
-                {% endif %}
-                </div>
             </div>
             {% endwith %}
             </div>
         </div> <!-- /thread-header -->
-
-        <!-- nav tabs, for smaller screens -->
-        <ul class="nav nav-tabs d-md-none">
-            <li class="nav-item">
-                <a href="#home" class="nav-link active">{% trans "First Post" %}</a>
-            </li>
-            <li class="nav-item">
-                <a href="#replies" class="nav-link">{% trans "Replies" %}</a>
-            </li>
-            <li class="nav-item">
-                <a href="#stats" class="nav-link">{% trans "Stats" %}</a>
-            </li>
-            <li class="dropdown nav-item">
-                {% include 'hyperkitty/fragments/month_list.html' with show_dropdown=True %}
-            </li>
-        </ul> <!-- /navtab -->
 
         <div class="row">
             <div class="col-sm-12 col-md-9">
