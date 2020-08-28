@@ -409,24 +409,8 @@ def reattach(request, mlist_fqdn, threadid):
 def reattach_suggest(request, mlist_fqdn, threadid):
     mlist = get_object_or_404(MailingList, name=mlist_fqdn)
     thread = get_object_or_404(Thread, mailinglist=mlist, thread_id=threadid)
-
-    default_search_query = stripped_subject(
-        mlist, thread.subject).lower().replace("re:", "")
-    search_query = request.GET.get("q")
-    if not search_query:
-        search_query = default_search_query
-    search_query = search_query.strip()
-    emails = SearchQuerySet().filter(
-        mailinglist__exact=mlist_fqdn, content=search_query)[:50]
-    suggested_threads = []
-    for msg in emails:
-        sugg_thread = msg.object.thread
-        if (sugg_thread not in suggested_threads and
-                sugg_thread.thread_id != threadid):
-            suggested_threads.append(sugg_thread)
-
     context = {
         'mlist': mlist,
-        'suggested_threads': suggested_threads[:10],
+        'suggested_threads': [],
     }
     return render(request, "hyperkitty/ajax/reattach_suggest.html", context)

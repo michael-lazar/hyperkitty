@@ -19,16 +19,10 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 # Modified by Mark Sapiro <mark@msapiro.net>
 #
-from django.core.management.base import CommandError
-from django.http.response import Http404
-from django.shortcuts import get_object_or_404
 
 from haystack import indexes
-from haystack.management.commands.update_index import (
-    Command as UpdateIndexCommand)
-from haystack.query import SearchQuerySet
 
-from hyperkitty.models import Email, MailingList
+from hyperkitty.models import Email
 
 
 # Create a global for the listname.
@@ -80,38 +74,4 @@ def update_index(remove=False, listname=None, verbosity=0):
     that list's archives.  Doing the entire archive takes way too long and
     doing a 'since' doesn't get the old imported posts.
     """
-    global LISTNAME
-    LISTNAME = listname
-    update_cmd = UpdateIndexCommand()
-    if LISTNAME is None:
-        # Find the last email in the index:
-        try:
-            last_email = SearchQuerySet().latest('archived_date')
-        except Exception:
-            # Different backends can raise different exceptions unfortunately
-            update_cmd.start_date = None
-        else:
-            update_cmd.start_date = last_email.archived_date
-    else:
-        # Is this a valid list?
-        try:
-            get_object_or_404(MailingList, name=listname)
-        except Http404 as e:
-            raise CommandError('{}: {}'.format(listname, e))
-        # set the start date to None to do the whole list.
-        update_cmd.start_date = None
-    # set defaults
-    update_cmd.verbosity = verbosity
-    update_cmd.batchsize = None
-    update_cmd.end_date = None
-    update_cmd.workers = 0
-    update_cmd.commit = True
-    update_cmd.remove = remove
-    try:
-        from haystack.management.commands.update_index import (
-            DEFAULT_MAX_RETRIES)
-    except ImportError:
-        pass
-    else:
-        update_cmd.max_retries = DEFAULT_MAX_RETRIES
-    update_cmd.update_backend("hyperkitty", "default")
+    pass
