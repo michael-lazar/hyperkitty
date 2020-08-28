@@ -137,7 +137,7 @@ def search(request):
             ))
     for email in emails:
         if request.user.is_authenticated:
-            email.myvote = email.object.votes.filter(
+            email.myvote = email.votes.filter(
                 user=request.user).first()
         else:
             email.myvote = None
