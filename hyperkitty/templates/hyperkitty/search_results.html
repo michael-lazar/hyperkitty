@@ -78,7 +78,7 @@
         {% if query %}
             {% for email in emails %}
                 <!--<div class="search-result">-->
-                {% include "hyperkitty/messages/summary_message.html" with email=email.object %}
+                {% include "hyperkitty/messages/summary_message.html" with email=email %}
                 <!--</div>-->
             {% empty %}
                 <p>{% trans "Sorry no email could be found for this query." %}</p>

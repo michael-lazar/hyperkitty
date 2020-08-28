@@ -137,10 +137,10 @@ def search(request):
             ))
     for email in emails:
         if request.user.is_authenticated:
-            email.object.myvote = email.object.votes.filter(
+            email.myvote = email.object.votes.filter(
                 user=request.user).first()
         else:
-            email.object.myvote = None
+            email.myvote = None
 
     context = {
         'mlist': mlist,
@@ -150,7 +150,4 @@ def search(request):
         'sort_mode': sort_mode,
         'suggestion': None,
     }
-    if results.query.backend.include_spelling:
-        context['suggestion'] = form.get_suggestion()
-
     return render(request, "hyperkitty/search_results.html", context)
