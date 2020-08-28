@@ -34,7 +34,7 @@ from haystack.forms import SearchForm
 from haystack.query import EmptySearchQuerySet, RelatedSearchQuerySet
 
 from hyperkitty.lib.view_helpers import is_mlist_authorized
-from hyperkitty.models import ArchivePolicy, MailingList
+from hyperkitty.models import ArchivePolicy, MailingList, Email
 
 
 class FullTextSearchForm(SearchForm):
@@ -72,11 +72,11 @@ def search(request):
                           }, status=403)
     query = ''
     results = EmptySearchQuerySet()
-    sqs = RelatedSearchQuerySet()
+    sqs = Email.objects.all()
 
     # Remove private non-subscribed lists
     if mlist is not None:
-        sqs = sqs.filter(mailinglist__exact=mlist.name)
+        sqs = sqs.filter(mailinglist=mlist)
     else:
         excluded_mlists = MailingList.objects.filter(
             archive_policy=ArchivePolicy.private.value)
