@@ -25,6 +25,7 @@ from django.forms import ValidationError
 from django.http import Http404
 from django.shortcuts import render
 from django.utils.translation import gettext as _
+from django.db.models import Q
 
 from django_mailman3.lib.mailman import get_subscriptions
 from django_mailman3.lib.paginator import paginate
@@ -34,6 +35,25 @@ from haystack.query import EmptySearchQuerySet, RelatedSearchQuerySet
 
 from hyperkitty.lib.view_helpers import is_mlist_authorized
 from hyperkitty.models import ArchivePolicy, MailingList
+
+
+class FullTextSearchForm(SearchForm):
+    """
+    Full-text search for emails using MongoDB / MariaDB.
+    """
+    def search(self):
+        if not self.is_valid():
+            return self.no_query_found()
+
+        if not self.cleaned_data.get('q'):
+            return self.no_query_found()
+
+        q = self.cleaned_data['q']
+        sqs = self.searchqueryset.filter(Q(subject__search=q) | Q(content__search=q))
+        return sqs
+
+    def get_suggestion(self):
+        return None
 
 
 def search(request):
@@ -76,13 +96,13 @@ def search(request):
 
     # Handle data
     if request.GET.get('q'):
-        form = SearchForm(
+        form = FullTextSearchForm(
             request.GET, searchqueryset=sqs, load_all=True)
         if form.is_valid():
             query = form.cleaned_data['q']
             results = form.search()
     else:
-        form = SearchForm(searchqueryset=sqs, load_all=True)
+        form = FullTextSearchForm(searchqueryset=sqs, load_all=True)
 
     try:
         emails = paginate(

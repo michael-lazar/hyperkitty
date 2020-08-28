@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#
+# Copyright (C) 2020 by Michael Lazar
 # Copyright (C) 2014-2019 by the Free Software Foundation, Inc.
 #
 # This file is part of HyperKitty.
@@ -20,6 +20,7 @@
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
 from django.core.cache import cache
+from django.db import models
 
 
 class CachedValue(object):
@@ -105,3 +106,17 @@ class VotesCachedValue(ModelCachedValue):
         else:
             status = "neutral"
         return {"likes": likes, "dislikes": dislikes, "status": status}
+
+
+class Search(models.Lookup):
+    lookup_name = 'search'
+
+    def as_mysql(self, compiler, connection):
+        lhs, lhs_params = self.process_lhs(compiler, connection)
+        rhs, rhs_params = self.process_rhs(compiler, connection)
+        params = lhs_params + rhs_params
+        return 'MATCH (%s) AGAINST (%s IN BOOLEAN MODE)' % (lhs, rhs), params
+
+
+models.CharField.register_lookup(Search)
+models.TextField.register_lookup(Search)
