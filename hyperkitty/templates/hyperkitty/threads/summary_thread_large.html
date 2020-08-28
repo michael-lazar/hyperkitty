@@ -5,14 +5,6 @@
 <div class="thread{% if thread|is_unread_by:request.user %} unread{% endif %}">
     <div class="thread-info">
         <div class="thread-email row">
-            <div class="d-none d-sm-flex sender gravatar circle p-1">
-                {% if starting_email.sender.address %}
-                {% gravatar starting_email.sender.address 120 %}
-                <br />
-                {% else %}
-                <div class="gravatar-placeholder">&nbsp;</div>
-                {% endif %}
-            </div>
             <div class="col-12 col-sm-10 col-lg-8 col-xl-9 p-7 ">
                 <span class="thread-title">
                     <a name="{{thread.thread_id}}"
